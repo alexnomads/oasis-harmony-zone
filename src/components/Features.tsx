@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Meditation, Dumbbell, Users, Sparkles } from "lucide-react";
+import { Brain, Dumbbell, Users, Sparkles } from "lucide-react";
 
 const features = [
   {
-    icon: Meditation,
+    icon: Brain,
     title: "Meditation Spaces",
     description: "Find your center with guided meditation sessions in our serene spaces",
   },

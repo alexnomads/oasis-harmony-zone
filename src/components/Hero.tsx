@@ -13,7 +13,7 @@ export const Hero = () => {
           className="absolute top-0 left-0 w-full h-full object-cover"
         >
           <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4"
+            src="https://cdn.coverr.co/videos/coverr-ocean-waves-crashing-on-rocks-2527/1080p.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.

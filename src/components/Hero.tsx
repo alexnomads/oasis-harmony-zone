@@ -3,14 +3,14 @@ import { motion } from "framer-motion";
 
 export const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-cream">
-      <div className="absolute inset-0 z-0">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 z-0 w-full h-full">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover"
         >
           <source
             src="https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4"
@@ -18,7 +18,7 @@ export const Hero = () => {
           />
           Your browser does not support the video tag.
         </video>
-        <div className="absolute inset-0 bg-black/20" /> {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20" />
       </div>
       <div className="relative z-10 container mx-auto px-6 py-32 text-center">
         <motion.div

@@ -22,10 +22,10 @@ export const Hero = () => {
             Launching at ETH Denver 2024
           </span>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900">
-            Your Wellness Oasis in the Crypto World
+            Rose of Jericho: Your Wellness Sanctuary
           </h1>
           <p className="text-xl md:text-2xl mb-10 text-gray-700">
-            Discover a sanctuary of wellness and connection at major crypto conferences worldwide
+            Experience rejuvenation and connection at major crypto conferences through our wellness zones
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button

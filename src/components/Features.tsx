@@ -20,7 +20,7 @@ const features = [
   {
     icon: Sparkles,
     title: "ROJ Token Benefits",
-    description: "Exclusive access and rewards through our utility token",
+    description: "Exclusive access and rewards through our Rose of Jericho utility token",
   },
 ];
 

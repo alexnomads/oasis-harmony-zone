@@ -1,7 +1,7 @@
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { Newsletter } from "@/components/Newsletter";
-import { useEffect } from "react";
+import { AsciiArt } from "@/components/AsciiArt";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 const Index = () => {
@@ -19,6 +19,7 @@ const Index = () => {
         style={{ scaleX }}
       />
       <Hero />
+      <AsciiArt />
       <Features />
       <Newsletter />
     </div>

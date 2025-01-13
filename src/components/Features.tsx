@@ -9,19 +9,19 @@ const features = [
   },
   {
     icon: Dumbbell,
-    title: "Fitness Activities",
+    title: "Fitness Growth",
     description: "Stay active with curated workout sessions designed for busy professionals",
   },
   {
     icon: Users,
-    title: "Networking",
-    description: "Connect with like-minded individuals in a relaxed environment",
+    title: "Network Growth",
+    description: "Connect with like-minded web3 pros in a relaxed environment",
   },
 ];
 
 const tokenBenefits = [
-  "Access to Rose of Jericho (ROJ) pop-up areas at conferences",
-  "Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals)",
+  "Access to Rose of Jericho (ROJ) online community and physical areas worldwide",
+  "Discounted meditation sessions and fitness classes",
   "Priority booking for activities and services",
   "Exclusive networking opportunities within the Rose of Jericho (ROJ) community",
   "Token rewards for participation in wellness activities or referrals",

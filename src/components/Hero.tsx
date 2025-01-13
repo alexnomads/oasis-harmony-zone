@@ -32,7 +32,7 @@ export const Hero = () => {
             className="w-32 h-32 mx-auto mb-8"
           />
           <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
-            Launching at ETH Denver 2024
+            Your mental wellness comes before your crypto gains.
           </span>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
             Rose of Jericho

@@ -13,9 +13,9 @@ export const Newsletter = () => {
           viewport={{ once: true }}
           className="max-w-2xl mx-auto text-center"
         >
-          <h2 className="text-4xl font-bold mb-6 text-white">Join Our Community</h2>
+          <h2 className="text-4xl font-bold mb-6 text-white">Join Us</h2>
           <p className="text-xl mb-8 text-white/90">
-            Be the first to know about Rose of Jericho launches and exclusive offers
+            Be the first to know about Rose of Jericho and our community
           </p>
           <form className="flex flex-col sm:flex-row gap-4">
             <Input

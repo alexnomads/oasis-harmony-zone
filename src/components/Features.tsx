@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Brain, Dumbbell, Users, Sparkles } from "lucide-react";
+import { Brain, Dumbbell, Users, Sparkles, Map } from "lucide-react";
 
 const features = [
   {
@@ -31,6 +31,40 @@ const monetizationStrategy = [
   "Initial Token Sale: To raise funds for the development and launch of Rose of Jericho (ROJ)",
   "Transaction Fees: A small fee for every ROJ transaction",
   "Partnerships: Collaborations with crypto projects, wellness brands, and event organizers",
+];
+
+const roadmapPhases = [
+  {
+    phase: "Phase 1",
+    items: [
+      "Concept validation and community building.",
+      "Development of ROJ token and smart contracts.",
+      "Strategic partnerships with wellness brands and crypto projects.",
+    ],
+  },
+  {
+    phase: "Phase 2",
+    items: [
+      "Launch of the first Rose of Jericho (ROJ) pop-up at a major crypto conference.",
+      "Initial token sale and distribution.",
+      "Collect feedback for improvements.",
+    ],
+  },
+  {
+    phase: "Phase 3",
+    items: [
+      "Expansion to additional conferences globally.",
+      "Development of a digital platform for ongoing engagement.",
+      "Introduce staking mechanisms and token rewards for wellness activities.",
+    ],
+  },
+  {
+    phase: "Phase 4",
+    items: [
+      "Establish permanent Rose of Jericho (ROJ) wellness hubs in key crypto hubs (e.g., Singapore, Miami, Lisbon).",
+      "Collaborate with Web3 health-tech projects to integrate innovative wellness solutions.",
+    ],
+  },
 ];
 
 export const Features = () => {
@@ -119,6 +153,48 @@ export const Features = () => {
                 ))}
               </ul>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-black">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <Map className="w-16 h-16 text-[#FF4444] mx-auto mb-6" />
+              <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
+                Roadmap
+              </span>
+              <h2 className="text-4xl font-bold mb-4 text-white">Development Timeline</h2>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {roadmapPhases.map((phase, index) => (
+              <motion.div
+                key={phase.phase}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="p-8 rounded-2xl bg-zinc-900 hover:bg-zinc-800 transition-all duration-300 border border-zinc-800"
+              >
+                <h3 className="text-2xl font-bold mb-6 text-[#FF4444]">{phase.phase}</h3>
+                <ul className="space-y-4">
+                  {phase.items.map((item, itemIndex) => (
+                    <li key={itemIndex} className="flex items-start gap-3 text-gray-300">
+                      <span className="text-[#FF4444] mt-1">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

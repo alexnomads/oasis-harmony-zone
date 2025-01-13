@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black">
       <div className="absolute inset-0 z-0 w-full h-full">
         <video
           autoPlay
@@ -19,7 +19,7 @@ export const Hero = () => {
           Your browser does not support the video tag.
         </video>
       </div>
-      <div className="relative z-10 container mx-auto px-6 py-32 text-center">
+      <div className="relative z-10 container mx-auto px-6 py-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ export const Hero = () => {
           <p className="text-xl md:text-2xl mb-10 text-white/90">
             A physical and digital community that caters to Wellness, Meditation, and Fitness-conscious crypto professionals
           </p>
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-[-20px]">
             <Button
               className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-16 py-6 text-lg rounded-full transition-all duration-300 w-full max-w-md"
             >

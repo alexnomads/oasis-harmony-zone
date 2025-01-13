@@ -26,14 +26,14 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-black">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-sage/20 text-sage rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
             Features
           </span>
-          <h2 className="text-4xl font-bold mb-4">A Complete Wellness Experience</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold mb-4 text-white">A Complete Wellness Experience</h2>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Everything you need to stay balanced and connected during crypto conferences
           </p>
         </div>
@@ -45,11 +45,11 @@ export const Features = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="p-8 rounded-2xl bg-cream hover:shadow-lg transition-all duration-300"
+              className="p-8 rounded-2xl bg-zinc-900 hover:bg-zinc-800 transition-all duration-300 border border-zinc-800"
             >
-              <feature.icon className="w-12 h-12 text-sage mb-6" />
-              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <feature.icon className="w-12 h-12 text-[#FF4444] mb-6" />
+              <h3 className="text-xl font-semibold mb-3 text-white">{feature.title}</h3>
+              <p className="text-gray-400">{feature.description}</p>
             </motion.div>
           ))}
         </div>

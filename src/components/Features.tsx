@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Brain, Dumbbell, Users, Rose, Map } from "lucide-react";
+import { Brain, Dumbbell, Users, Flower, Map } from "lucide-react";
 
 const features = [
   {
@@ -109,7 +109,7 @@ export const Features = () => {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              <Rose className="w-16 h-16 text-[#FF4444] mx-auto mb-6" />
+              <Flower className="w-16 h-16 text-[#FF4444] mx-auto mb-6" />
               <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
                 Token Utility
               </span>

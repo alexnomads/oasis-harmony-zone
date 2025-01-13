@@ -27,12 +27,6 @@ const tokenBenefits = [
   "Token rewards for participation in wellness activities or referrals",
 ];
 
-const monetizationStrategy = [
-  "Initial Token Sale: To raise funds for the development and launch of Rose of Jericho (ROJ)",
-  "Transaction Fees: A small fee for every ROJ transaction",
-  "Partnerships: Collaborations with crypto projects, wellness brands, and event organizers",
-];
-
 const roadmapPhases = [
   {
     phase: "Phase 1",

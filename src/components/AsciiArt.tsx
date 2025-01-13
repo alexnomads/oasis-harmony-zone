@@ -2,7 +2,7 @@ export const AsciiArt = () => {
   return (
     <div className="w-full bg-black text-[#FF4444] py-8">
       <pre className="font-mono text-xs sm:text-sm md:text-base whitespace-pre overflow-x-auto text-center">
-{`                    ..ooo.
+{`              ..ooo.
              .888888888.
              88"P""T"T888 8o
          o8o 8.8"8 88o."8o 8o

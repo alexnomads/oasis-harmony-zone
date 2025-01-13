@@ -38,7 +38,7 @@ export const Hero = () => {
             Rose of Jericho
           </h1>
           <p className="text-xl md:text-2xl mb-10 text-white/90">
-            Experience rejuvenation and connection at major crypto conferences through our wellness zones
+            A physical and digital community that caters to Wellness, Meditation, and Fitness-conscious crypto professionals
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button

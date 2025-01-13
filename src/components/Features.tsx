@@ -27,6 +27,14 @@ const tokenBenefits = [
   "Token rewards for participation in wellness activities or referrals",
 ];
 
+const monetizationStrategy = [
+  "Membership subscription fees paid in ROJ tokens",
+  "Premium content and exclusive wellness sessions",
+  "Partnership revenue from wellness brands and crypto projects",
+  "Token staking rewards and liquidity provision",
+  "Event ticket sales and merchandise",
+];
+
 const roadmapPhases = [
   {
     phase: "Phase 1",

@@ -40,17 +40,11 @@ export const Hero = () => {
           <p className="text-xl md:text-2xl mb-10 text-white/90">
             A physical and digital community that caters to Wellness, Meditation, and Fitness-conscious crypto professionals
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button
-              className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300"
+              className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-16 py-6 text-lg rounded-full transition-all duration-300 w-full max-w-md"
             >
               Join Waitlist
-            </Button>
-            <Button
-              variant="outline"
-              className="border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50]/10 px-8 py-6 text-lg rounded-full transition-all duration-300"
-            >
-              Learn More
             </Button>
           </div>
         </motion.div>

@@ -4,8 +4,8 @@ import { Brain, Dumbbell, Users, Sparkles, Map } from "lucide-react";
 const features = [
   {
     icon: Brain,
-    title: "Meditation Spaces",
-    description: "Find your center with guided meditation sessions in our serene spaces",
+    title: "Meditation Growth",
+    description: "Join our online meditation community for crypto professionals",
   },
   {
     icon: Dumbbell,
@@ -70,7 +70,7 @@ const roadmapPhases = [
 export const Features = () => {
   return (
     <>
-      <section className="py-24 bg-black">
+      <section className="py-12 bg-black">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">

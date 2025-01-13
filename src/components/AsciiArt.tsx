@@ -1,8 +1,9 @@
 export const AsciiArt = () => {
   return (
-    <div className="w-full bg-black text-[#FF4444] py-8">
+    <div className="w-full bg-black py-8">
       <pre className="font-mono text-xs sm:text-sm md:text-base whitespace-pre overflow-x-auto text-center">
-{`              ..ooo.
+        <span className="text-white">              ..ooo.</span>
+        <span className="text-[#FF4444]">{`
              .888888888.
              88"P""T"T888 8o
          o8o 8.8"8 88o."8o 8o
@@ -11,7 +12,8 @@ export const AsciiArt = () => {
        88."8o."T88P.88". 88888 88
        "888o"8888oo8888 o888 o8P"
          "88888ooo  888P".o888
-           ""8P"".oooooo8888P
+           ""8P"".oooooo8888P`}</span>
+        <span className="text-sage">{`
   .oo888ooo.    8888NICK8P8
 o88888"888"88o.  "8888"".88   .oo888oo..
  8888" "88 88888.       88".o88888888"888.
@@ -23,7 +25,7 @@ o88888"888"88o.  "8888"".88   .oo888oo..
             "888" 88"    888888888""
                 o8P       "888"""
           ...oo88
- "8oo...oo888""`}
+ "8oo...oo888""`}</span>
       </pre>
     </div>
   );

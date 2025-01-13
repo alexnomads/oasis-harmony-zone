@@ -37,10 +37,10 @@ export const Hero = () => {
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
             Rose of Jericho
           </h1>
-          <p className="text-xl md:text-2xl mb-10 text-white/90">
+          <p className="text-xl md:text-2xl mb-8 text-white/90">
             A physical and digital community that caters to Wellness, Meditation, and Fitness-conscious crypto professionals
           </p>
-          <div className="flex justify-center mt-[-20px]">
+          <div className="flex justify-center">
             <Button
               className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-16 py-6 text-lg rounded-full transition-all duration-300 w-full max-w-md"
             >

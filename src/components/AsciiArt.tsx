@@ -1,6 +1,6 @@
 export const AsciiArt = () => {
   return (
-    <div className="w-full bg-black py-8">
+    <div className="w-full bg-black py-6">
       <pre className="font-mono text-xs sm:text-sm md:text-base whitespace-pre overflow-x-auto text-center">
         <span className="text-white">              ..ooo.</span>
         <span className="text-[#FF4444]">{`

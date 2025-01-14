@@ -2,6 +2,7 @@ import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { Newsletter } from "@/components/Newsletter";
 import { AsciiArt } from "@/components/AsciiArt";
+import { Programs } from "@/components/Programs";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
       />
       <Hero />
       <AsciiArt />
+      <Programs />
       <Features />
       <Newsletter />
     </div>

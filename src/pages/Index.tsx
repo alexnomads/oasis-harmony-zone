@@ -21,13 +21,13 @@ const Index = () => {
         className="fixed top-0 left-0 right-0 h-1 bg-sage origin-left z-50"
         style={{ scaleX }}
       />
+      <div className="absolute top-4 right-4 z-50">
+        <RegisterForm />
+      </div>
       <Hero />
       <AsciiArt />
       <Programs />
       <Features />
-      <div className="py-16 bg-black">
-        <RegisterForm />
-      </div>
       <div className="py-16 bg-zinc-900">
         <UserProfile />
       </div>

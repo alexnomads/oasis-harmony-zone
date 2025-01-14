@@ -3,6 +3,8 @@ import { Features } from "@/components/Features";
 import { Newsletter } from "@/components/Newsletter";
 import { AsciiArt } from "@/components/AsciiArt";
 import { Programs } from "@/components/Programs";
+import { RegisterForm } from "@/components/auth/RegisterForm";
+import { UserProfile } from "@/components/profile/UserProfile";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 const Index = () => {
@@ -23,6 +25,12 @@ const Index = () => {
       <AsciiArt />
       <Programs />
       <Features />
+      <div className="py-16 bg-black">
+        <RegisterForm />
+      </div>
+      <div className="py-16 bg-zinc-900">
+        <UserProfile />
+      </div>
       <Newsletter />
     </div>
   );

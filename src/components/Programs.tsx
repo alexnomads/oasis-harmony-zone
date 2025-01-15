@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Dumbbell, Brain, Users, Lotus } from "lucide-react";
+import { Dumbbell, Brain, Users } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 
 export const Programs = () => {
@@ -7,7 +7,7 @@ export const Programs = () => {
     {
       title: "Guided Meditation",
       description: "Expert-led sessions designed for crypto professionals to reduce stress and enhance focus.",
-      icon: Lotus,
+      icon: Brain,
       benefits: [
         "Stress reduction",
         "Improved focus",

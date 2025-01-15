@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Leaf, Dumbbell, Brain, Users } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const programs = [
   {
@@ -58,30 +57,25 @@ export const Programs = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
+              className="text-white"
             >
-              <Card className="bg-zinc-800/50 border-zinc-700/50 backdrop-blur-sm hover:bg-zinc-800/70 transition-all duration-300">
-                <CardHeader>
-                  <program.icon className="w-12 h-12 text-[#FF4444] mb-4" />
-                  <CardTitle className="text-2xl font-bold text-white">{program.title}</CardTitle>
-                  <CardDescription className="text-gray-300">{program.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {program.benefits.map((benefit, i) => (
-                      <motion.li
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3, delay: i * 0.1 }}
-                        className="flex items-center text-gray-300"
-                      >
-                        <span className="text-[#FF4444] mr-2">•</span>
-                        {benefit}
-                      </motion.li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+              <program.icon className="w-12 h-12 text-[#FF4444] mb-4" />
+              <h3 className="text-2xl font-bold mb-2">{program.title}</h3>
+              <p className="text-gray-300 mb-4">{program.description}</p>
+              <ul className="space-y-2">
+                {program.benefits.map((benefit, i) => (
+                  <motion.li
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.1 }}
+                    className="flex items-center text-gray-300"
+                  >
+                    <span className="text-[#FF4444] mr-2">•</span>
+                    {benefit}
+                  </motion.li>
+                ))}
+              </ul>
             </motion.div>
           ))}
         </div>

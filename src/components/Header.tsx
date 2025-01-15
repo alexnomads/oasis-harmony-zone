@@ -42,7 +42,7 @@ export const Header = () => {
           <div className="relative">
             <Button
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-white text-black bg-white hover:bg-white/90"
               onClick={() => setShowSignIn(!showSignIn)}
             >
               Sign In

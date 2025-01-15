@@ -2,12 +2,13 @@ import { motion } from "framer-motion";
 import { User, Mail, Calendar, Settings } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export const UserProfile = () => {
   // This would typically fetch user data from a backend
   const mockUser = {
-    name: "John Doe",
-    email: "john@example.com",
+    name: "Siddhartha Gautama",
+    email: "buddha@enlightenment.com",
     joinDate: "January 2024",
     programsAttended: 12,
   };
@@ -22,7 +23,13 @@ export const UserProfile = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-1 bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-xl text-white">Profile</CardTitle>
+            <div className="flex flex-col items-center space-y-4">
+              <Avatar className="w-24 h-24">
+                <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Buddha_in_Sarnath_Museum_%28Dhammajak_Mutra%29.jpg/800px-Buddha_in_Sarnath_Museum_%28Dhammajak_Mutra%29.jpg" alt="Buddha" />
+                <AvatarFallback>BU</AvatarFallback>
+              </Avatar>
+              <CardTitle className="text-xl text-white">Profile</CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-4 text-gray-300">

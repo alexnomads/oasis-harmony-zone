@@ -1,32 +1,4 @@
 import { motion } from "framer-motion";
-import { Leaf, Dumbbell, Brain, Users } from "lucide-react";
-
-const programs = [
-  {
-    icon: Leaf,
-    title: "Guided Meditation",
-    description: "Expert-led sessions designed for crypto professionals to reduce stress and enhance focus.",
-    benefits: ["Stress reduction", "Improved focus", "Better decision making", "Mental clarity"]
-  },
-  {
-    icon: Dumbbell,
-    title: "Fitness Programs",
-    description: "Tailored workout sessions that fit into your busy crypto trading schedule.",
-    benefits: ["Physical wellness", "Energy boost", "Stress relief", "Better sleep"]
-  },
-  {
-    icon: Brain,
-    title: "Mindfulness Training",
-    description: "Learn techniques to stay present and make better trading decisions.",
-    benefits: ["Emotional balance", "Trading psychology", "Anxiety management", "Focus enhancement"]
-  },
-  {
-    icon: Users,
-    title: "Community Sessions",
-    description: "Connect with like-minded individuals in our wellness-focused crypto community.",
-    benefits: ["Networking", "Shared experiences", "Support system", "Knowledge sharing"]
-  }
-];
 
 export const Programs = () => {
   return (
@@ -48,37 +20,6 @@ export const Programs = () => {
             Discover our carefully curated programs designed to enhance your mental and physical well-being
           </p>
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {programs.map((program, index) => (
-            <motion.div
-              key={program.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="text-white"
-            >
-              <program.icon className="w-12 h-12 text-[#FF4444] mb-4" />
-              <h3 className="text-2xl font-bold mb-2">{program.title}</h3>
-              <p className="text-gray-300 mb-4">{program.description}</p>
-              <ul className="space-y-2">
-                {program.benefits.map((benefit, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.1 }}
-                    className="flex items-center text-gray-300"
-                  >
-                    <span className="text-[#FF4444] mr-2">•</span>
-                    {benefit}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );

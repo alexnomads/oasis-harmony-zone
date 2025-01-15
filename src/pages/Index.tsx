@@ -3,6 +3,8 @@ import { Features } from "@/components/Features";
 import { Newsletter } from "@/components/Newsletter";
 import { AsciiArt } from "@/components/AsciiArt";
 import { Programs } from "@/components/Programs";
+import { Token } from "@/components/Token";
+import { Roadmap } from "@/components/Roadmap";
 import { UserProfile } from "@/components/profile/UserProfile";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Header } from "@/components/Header";
@@ -22,11 +24,12 @@ const Index = () => {
         style={{ scaleX }}
       />
       <Header />
-      <div className="pt-16"> {/* Add padding to account for fixed header */}
+      <div className="pt-16">
         <Hero />
         <AsciiArt />
         <Programs />
-        <Features />
+        <Token />
+        <Roadmap />
         <div className="py-16 bg-zinc-900">
           <UserProfile />
         </div>

@@ -25,7 +25,7 @@ export const UserProfile = () => {
           <CardHeader>
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="w-24 h-24">
-                <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Buddha_in_Sarnath_Museum_%28Dhammajak_Mutra%29.jpg/800px-Buddha_in_Sarnath_Museum_%28Dhammajak_Mutra%29.jpg" alt="Buddha" />
+                <AvatarImage src="/lovable-uploads/97b94475-30c2-47c1-97f3-7fc62e26dd85.png" alt="Buddha" />
                 <AvatarFallback>BU</AvatarFallback>
               </Avatar>
               <CardTitle className="text-xl text-white">Profile</CardTitle>

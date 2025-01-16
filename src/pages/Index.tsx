@@ -25,15 +25,27 @@ const Index = () => {
       />
       <Header />
       <div className="pt-16">
-        <Hero />
-        <AsciiArt />
-        <Programs />
-        <Token />
-        <Roadmap />
-        <div className="py-16 bg-zinc-900">
+        <div id="hero">
+          <Hero />
+        </div>
+        <div id="ascii-art">
+          <AsciiArt />
+        </div>
+        <div id="programs">
+          <Programs />
+        </div>
+        <div id="token">
+          <Token />
+        </div>
+        <div id="roadmap">
+          <Roadmap />
+        </div>
+        <div id="profile" className="py-16 bg-zinc-900">
           <UserProfile />
         </div>
-        <Newsletter />
+        <div id="newsletter">
+          <Newsletter />
+        </div>
       </div>
     </div>
   );

@@ -27,17 +27,6 @@ export const Programs = () => {
       ]
     },
     {
-      title: "Mindfulness Training",
-      description: "Learn advanced techniques to staying present and make better life (and trading) decisions.",
-      icon: Brain,
-      benefits: [
-        "Emotional balance",
-        "Trading psychology",
-        "Anxiety management",
-        "Focus enhancement"
-      ]
-    },
-    {
       title: "Community Sessions",
       description: "Connect with like-minded individuals in our wellness-focused crypto community.",
       icon: Users,
@@ -69,7 +58,7 @@ export const Programs = () => {
             Discover our carefully curated programs designed to enhance your mental and physical well-being
           </p>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {programs.map((program, index) => (
             <motion.div
               key={program.title}

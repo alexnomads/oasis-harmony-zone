@@ -28,7 +28,7 @@ export const Programs = () => {
     },
     {
       title: "Mindfulness Training",
-      description: "Learn techniques to stay present and make better trading decisions.",
+      description: "Learn advanced techniques to staying present and make better life (and trading) decisions.",
       icon: Brain,
       benefits: [
         "Emotional balance",

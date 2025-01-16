@@ -3,7 +3,6 @@ import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { RegisterForm } from "./auth/RegisterForm";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +22,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-gradient-to-r from-[#D946EF] to-[#8B5CF6] backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-[#ea384c] dark:bg-[#ea384c] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left - Burger Menu */}
         <DropdownMenu>
@@ -32,7 +31,7 @@ export const Header = () => {
               <Menu className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48 bg-white/95 backdrop-blur-md border-2 border-[#FEC6A1]">
+          <DropdownMenuContent align="start" className="w-48">
             <DropdownMenuItem onClick={() => scrollToSection("hero")}>
               Home
             </DropdownMenuItem>
@@ -58,16 +57,13 @@ export const Header = () => {
         </DropdownMenu>
 
         {/* Center - Logo */}
-        <motion.div 
-          className="flex items-center"
-          whileHover={{ scale: 1.05 }}
-        >
+        <div className="flex items-center">
           <img 
             src="/lovable-uploads/d392e042-f503-4777-9d67-9d7149153ca5.png" 
             alt="Rose of Jericho" 
             className="h-8 w-auto"
           />
-        </motion.div>
+        </div>
 
         {/* Right - Theme Toggle & Sign In */}
         <div className="flex items-center gap-2">
@@ -86,7 +82,7 @@ export const Header = () => {
           <div className="relative">
             <Button
               variant="outline"
-              className="border-2 border-white text-white bg-transparent hover:bg-white/10 rounded-full"
+              className="border-white text-black bg-white hover:bg-white/90"
               onClick={() => setShowSignIn(!showSignIn)}
             >
               Sign In

@@ -3,6 +3,7 @@ import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { RegisterForm } from "./auth/RegisterForm";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,

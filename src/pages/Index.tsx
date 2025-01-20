@@ -37,14 +37,14 @@ const Index = () => {
         <div id="token">
           <Token />
         </div>
+        <div id="newsletter">
+          <Newsletter />
+        </div>
         <div id="roadmap">
           <Roadmap />
         </div>
         <div id="profile" className="py-16 bg-zinc-900">
           <UserProfile />
-        </div>
-        <div id="newsletter">
-          <Newsletter />
         </div>
       </div>
     </div>

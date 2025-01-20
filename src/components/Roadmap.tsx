@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Milestone } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
+import { Tweet } from 'react-tweet';
 
 export const Roadmap = () => {
   const phases = [
@@ -72,6 +73,14 @@ export const Roadmap = () => {
               <Card className={`w-[calc(50%-40px)] ${index % 2 === 0 ? 'ml-0' : 'ml-[calc(50%+40px)]'} bg-zinc-800/50 border-zinc-700`}>
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4 text-[#FF4444]">{phase.title}</h3>
+                  {index === 0 && (
+                    <div className="mb-4">
+                      <blockquote className="twitter-tweet">
+                        <a href="https://twitter.com/ROJOasis/status/1879964568014975319"></a>
+                      </blockquote>
+                      <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+                    </div>
+                  )}
                   <ul className="space-y-3">
                     {phase.items.map((item, itemIndex) => (
                       <li key={itemIndex} className="text-gray-300">

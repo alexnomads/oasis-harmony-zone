@@ -75,10 +75,7 @@ export const Roadmap = () => {
                   <h3 className="text-xl font-bold mb-4 text-[#FF4444]">{phase.title}</h3>
                   {index === 0 && (
                     <div className="mb-4">
-                      <blockquote className="twitter-tweet">
-                        <a href="https://twitter.com/ROJOasis/status/1879964568014975319"></a>
-                      </blockquote>
-                      <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+                      <Tweet id="1879964568014975319" />
                     </div>
                   )}
                   <ul className="space-y-3">

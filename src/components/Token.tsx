@@ -20,7 +20,7 @@ export const Token = () => {
   ];
 
   return (
-    <section className="py-16 bg-zinc-900">
+    <section className="py-16 pb-8 bg-zinc-900">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

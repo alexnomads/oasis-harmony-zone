@@ -18,7 +18,7 @@ export const Newsletter = () => {
           </span>
           <h2 className="text-4xl font-bold mb-6 text-white">Stay Connected</h2>
           <p className="text-xl mb-8 text-gray-300">
-            Be the first to know about Rose of Jericho and our community
+            Be the first to know about Rose of Jericho & our community
           </p>
           <form className="flex flex-col sm:flex-row gap-4">
             <Input

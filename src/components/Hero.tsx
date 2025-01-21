@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Twitter } from "lucide-react";
 
 export const Hero = () => {
   const handleFollow = () => {
@@ -54,7 +55,7 @@ export const Hero = () => {
               onClick={handleFollow}
               className="bg-black hover:bg-black/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 flex-[0.4]"
             >
-              Follow @ROJOasis
+              <Twitter className="w-5 h-5 mr-2" /> Follow @ROJOasis
             </Button>
           </div>
         </motion.div>

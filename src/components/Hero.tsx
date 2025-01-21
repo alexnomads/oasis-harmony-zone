@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Twitter } from "lucide-react";
 
 export const Hero = () => {
   const handleFollow = () => {
@@ -55,7 +54,12 @@ export const Hero = () => {
               onClick={handleFollow}
               className="bg-black hover:bg-black/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 flex-[0.4]"
             >
-              <Twitter className="w-5 h-5 mr-2" /> Follow @ROJOasis
+              <img 
+                src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
+                alt="X Logo" 
+                className="w-5 h-5 mr-2 invert"
+              /> 
+              Follow @ROJOasis
             </Button>
           </div>
         </motion.div>

@@ -46,13 +46,13 @@ export const Hero = () => {
           </p>
           <div className="flex justify-center gap-4 px-4">
             <Button
-              className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"
+              className="bg-[#FF4444] hover:bg-[#FF4444]/70 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"
             >
               Join AI Wellness Agent Waitlist
             </Button>
             <Button
               onClick={handleFollow}
-              className="bg-black hover:bg-black/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 flex-[0.4]"
+              className="bg-black hover:bg-zinc-800 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 hover:border-white/40 flex-[0.4]"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 

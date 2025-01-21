@@ -11,12 +11,30 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export const Token = () => {
   const benefits = [
-    "Access to Rose of Jericho (ROJ) pop-up areas at conferences and in physical spots worldwide.",
-    "Access to online ROJ wellness platform",
-    "Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",
-    "Priority booking for activities and services.",
-    "Exclusive networking opportunities within the Rose of Jericho (ROJ) community.",
-    "Token rewards for participation in wellness activities or referrals."
+    {
+      text: "Access to Rose of Jericho (ROJ) pop-up areas at conferences and in physical spots worldwide.",
+      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81"
+    },
+    {
+      text: "Access to online ROJ wellness platform",
+      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
+    },
+    {
+      text: "Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+    },
+    {
+      text: "Priority booking for activities and services.",
+      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+    },
+    {
+      text: "Exclusive networking opportunities within the Rose of Jericho (ROJ) community.",
+      image: "https://images.unsplash.com/photo-1518770660439-4636190af475"
+    },
+    {
+      text: "Token rewards for participation in wellness activities or referrals.",
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+    }
   ];
 
   return (
@@ -64,9 +82,16 @@ export const Token = () => {
             <CarouselContent>
               {benefits.map((benefit, index) => (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="bg-zinc-800/50 border-zinc-700">
+                  <Card className="bg-zinc-800/50 border-zinc-700 overflow-hidden">
+                    <div className="h-40 w-full overflow-hidden">
+                      <img 
+                        src={benefit.image} 
+                        alt={`Benefit ${index + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      />
+                    </div>
                     <CardContent className="flex items-center p-6">
-                      <p className="text-gray-300 text-center">{benefit}</p>
+                      <p className="text-gray-300 text-center">{benefit.text}</p>
                     </CardContent>
                   </Card>
                 </CarouselItem>

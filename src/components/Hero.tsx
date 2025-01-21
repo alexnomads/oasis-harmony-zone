@@ -2,6 +2,10 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 export const Hero = () => {
+  const handleFollow = () => {
+    window.open('https://x.com/ROJOasis', '_blank');
+  };
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black">
       <div className="absolute inset-0 z-0 w-full h-full">
@@ -40,11 +44,17 @@ export const Hero = () => {
           <p className="text-xl md:text-2xl mb-8 text-white/90">
             A physical and digital community that caters to Wellness, Meditation, and Fitness-conscious crypto professionals
           </p>
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4 px-4">
             <Button
-              className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-16 py-6 text-lg rounded-full transition-all duration-300 w-full max-w-md"
+              className="bg-[#FF4444] hover:bg-[#FF4444]/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"
             >
-              Join Waitlist
+              Join AI Wellness Agent Waitlist
+            </Button>
+            <Button
+              onClick={handleFollow}
+              className="bg-black hover:bg-black/90 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 flex-[0.4]"
+            >
+              Follow @ROJOasis
             </Button>
           </div>
         </motion.div>

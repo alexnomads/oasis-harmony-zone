@@ -6,7 +6,7 @@ export const Programs = () => {
   const programs = [
     {
       title: "Guided Meditation",
-      description: "Expert-led sessions designed for crypto professionals to reduce stress and enhance focus",
+      description: "Expert-led sessions designed for crypto professionals to reduce stress and enhance focus.",
       icon: Brain,
       benefits: [
         "Stress reduction",
@@ -17,7 +17,7 @@ export const Programs = () => {
     },
     {
       title: "Fitness Programs",
-      description: "Tailored workout sessions that fit into your busy crypto trading schedule",
+      description: "Tailored workout sessions that fit into your busy crypto trading schedule.",
       icon: Dumbbell,
       benefits: [
         "Physical wellness",
@@ -28,7 +28,7 @@ export const Programs = () => {
     },
     {
       title: "Community Sessions",
-      description: "Connect with like-minded individuals in our wellness-focused crypto community",
+      description: "Connect with like-minded individuals in our wellness-focused crypto community.",
       icon: Users,
       benefits: [
         "Networking",

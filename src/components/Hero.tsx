@@ -1,7 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slides = ["Wellness", "Meditation", "Fitness"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleFollow = () => {
     window.open('https://x.com/ROJOasis', '_blank');
   };
@@ -41,9 +52,20 @@ export const Hero = () => {
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
             Rose of Jericho
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-white/90">
-            A physical and digital community that caters to Wellness, Meditation, and Fitness-conscious crypto professionals
-          </p>
+          <div className="text-xl md:text-2xl mb-8 text-white/90 h-[120px] flex flex-col items-center justify-center">
+            <p className="mb-2">An AI Agent and a physical community that caters to</p>
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="text-[#FF4444] font-semibold text-3xl md:text-4xl mb-2"
+            >
+              {slides[currentSlide]}
+            </motion.div>
+            <p>conscious crypto professionals</p>
+          </div>
           <div className="flex justify-center gap-4 px-4">
             <Button
               className="bg-[#FF4444] hover:bg-[#FF4444]/70 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"

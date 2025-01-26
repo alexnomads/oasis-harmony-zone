@@ -22,16 +22,16 @@ export const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-sage dark:bg-sage backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-[#ea384c] dark:bg-[#ea384c] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left - Burger Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="hover:bg-skyblue/10 text-charcoal">
+            <Button variant="ghost" size="icon" className="hover:bg-white/10 text-white">
               <Menu className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48 bg-beige">
+          <DropdownMenuContent align="start" className="w-48">
             <DropdownMenuItem onClick={() => scrollToSection("hero")}>
               Home
             </DropdownMenuItem>
@@ -71,7 +71,7 @@ export const Header = () => {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="hover:bg-skyblue/10 text-charcoal"
+            className="hover:bg-white/10 text-white"
           >
             {theme === "dark" ? (
               <Sun className="h-5 w-5" />
@@ -82,7 +82,7 @@ export const Header = () => {
           <div className="relative">
             <Button
               variant="outline"
-              className="border-skyblue text-charcoal bg-skyblue hover:bg-skyblue/90"
+              className="border-white text-black bg-white hover:bg-white/90"
               onClick={() => setShowSignIn(!showSignIn)}
             >
               Sign In

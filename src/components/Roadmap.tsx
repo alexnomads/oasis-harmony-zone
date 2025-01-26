@@ -70,7 +70,7 @@ export const Roadmap = () => {
               <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div className="w-4 h-4 rounded-full bg-[#FF4444]" />
               </div>
-              <Card className={`w-[calc(50%-60px)] ${index % 2 === 0 ? 'mr-[calc(50%+60px)]' : 'ml-[calc(50%+60px)]'} bg-zinc-800/50 border-zinc-700`}>
+              <Card className={`w-[calc(65%-40px)] ${index % 2 === 0 ? 'ml-0' : 'ml-[calc(35%+40px)]'} bg-zinc-800/50 border-zinc-700`}>
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-bold mb-6 text-[#FF4444]">{phase.title}</h3>
                   {index === 0 && (

@@ -19,8 +19,8 @@ export default {
     },
     extend: {
       colors: {
-        green: "#87e37a",
-        orange: "#e7984f",
+        sage: "#B2C8BA",
+        skyblue: "#A8DADC",
         blush: "#F4ACB7",
         beige: "#E6D5B8",
         charcoal: "#333333",

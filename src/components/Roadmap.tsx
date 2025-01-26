@@ -57,7 +57,7 @@ export const Roadmap = () => {
             Building the future of wellness in the crypto space, one milestone at a time
           </p>
         </motion.div>
-        <div className="relative max-w-2xl mx-auto">
+        <div className="relative max-w-4xl mx-auto">
           <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#FF4444]/20" />
           {phases.map((phase, index) => (
             <motion.div
@@ -65,22 +65,22 @@ export const Roadmap = () => {
               initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="relative mb-12 last:mb-0"
+              className="relative mb-16 last:mb-0"
             >
               <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div className="w-4 h-4 rounded-full bg-[#FF4444]" />
               </div>
-              <Card className={`w-[calc(50%-40px)] ${index % 2 === 0 ? 'ml-0' : 'ml-[calc(50%+40px)]'} bg-zinc-800/50 border-zinc-700`}>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-4 text-[#FF4444]">{phase.title}</h3>
+              <Card className={`w-[calc(65%-40px)] ${index % 2 === 0 ? 'ml-0' : 'ml-[calc(35%+40px)]'} bg-zinc-800/50 border-zinc-700`}>
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold mb-6 text-[#FF4444]">{phase.title}</h3>
                   {index === 0 && (
-                    <div className="mb-4">
+                    <div className="mb-6">
                       <Tweet id="1879964568014975319" />
                     </div>
                   )}
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {phase.items.map((item, itemIndex) => (
-                      <li key={itemIndex} className="text-gray-300">
+                      <li key={itemIndex} className="text-lg text-gray-300">
                         {item}
                       </li>
                     ))}

@@ -60,7 +60,7 @@ export const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-[#FF4444] font-semibold text-3xl md:text-4xl mb-2"
+              className="text-[#FF4444] font-semibold text-5xl md:text-7xl mb-2"
             >
               {slides[currentSlide]}
             </motion.div>

@@ -21,7 +21,7 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="py-12 bg-black">
+    <section className="py-12 bg-beige">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
@@ -31,11 +31,11 @@ export const Features = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="p-8 rounded-2xl bg-zinc-900 hover:bg-zinc-800 transition-all duration-300 border border-zinc-800"
+              className="p-8 rounded-2xl bg-sage hover:bg-sage/90 transition-all duration-300 border border-skyblue"
             >
-              <feature.icon className="w-12 h-12 text-[#FF4444] mb-6" />
-              <h3 className="text-xl font-semibold mb-3 text-white">{feature.title}</h3>
-              <p className="text-gray-400">{feature.description}</p>
+              <feature.icon className="w-12 h-12 text-blush mb-6" />
+              <h3 className="text-xl font-semibold mb-3 text-charcoal">{feature.title}</h3>
+              <p className="text-charcoal/80">{feature.description}</p>
             </motion.div>
           ))}
         </div>

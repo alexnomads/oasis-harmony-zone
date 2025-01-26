@@ -19,7 +19,7 @@ export default {
     },
     extend: {
       colors: {
-        sage: "#B2C8BA",
+        sage: "#6db549",
         skyblue: "#A8DADC",
         blush: "#F4ACB7",
         beige: "#E6D5B8",

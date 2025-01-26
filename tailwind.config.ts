@@ -19,22 +19,6 @@ export default {
     },
     extend: {
       colors: {
-        // Primary Colors
-        "soft-green": "#F2FCE2",
-        "serene-blue": "#D3E4FD",
-        "warm-white": "#F1F1F1",
-        
-        // Secondary Colors
-        lavender: "#E5DEFF",
-        "blush-pink": "#FFDEE2",
-        "earthy-neutral": "#F2FCE2",
-        
-        // Accent Colors
-        "pale-yellow": "#FEF7CD",
-        peach: "#FDE1D3",
-        "muted-teal": "#D3E4FD",
-
-        // Original theme colors
         sage: "#8CA891",
         sand: "#F5F0E8",
         cream: "#FFF9F0",

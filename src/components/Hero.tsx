@@ -18,14 +18,14 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-serene-blue/10">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black">
       <div className="absolute inset-0 z-0 w-full h-full">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover opacity-30"
+          className="absolute top-0 left-0 w-full h-full object-cover opacity-40"
         >
           <source
             src="https://cdn.coverr.co/videos/coverr-ocean-waves-crashing-on-rocks-2527/1080p.mp4"
@@ -46,39 +46,39 @@ export const Hero = () => {
             alt="ROJ Logo" 
             className="w-32 h-32 mx-auto mb-8"
           />
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-soft-green text-muted-teal rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
             Your mental wellness comes before your crypto gains.
           </span>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-muted-teal">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
             Rose of Jericho
           </h1>
-          <div className="text-xl md:text-2xl mb-8 text-muted-teal/90 h-[120px] flex flex-col items-center justify-center">
-            <p className="mb-2">An AI Agent & a physical community that helps crypto professionals with</p>
+          <div className="text-xl md:text-2xl mb-8 text-white/90 h-[120px] flex flex-col items-center justify-center">
+            <p className="mb-2">An AI Agent and a physical community that helps crypto professionals with</p>
             <motion.div
               key={currentSlide}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-peach font-semibold text-5xl md:text-7xl mb-2"
+              className="text-[#FF4444] font-semibold text-5xl md:text-7xl mb-2"
             >
               {slides[currentSlide]}
             </motion.div>
           </div>
           <div className="flex justify-center gap-4 px-4">
             <Button
-              className="bg-soft-green hover:bg-soft-green/70 text-muted-teal px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"
+              className="bg-[#FF4444] hover:bg-[#FF4444]/70 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"
             >
               Join AI Wellness Agent Waitlist
             </Button>
             <Button
               onClick={handleFollow}
-              className="bg-lavender hover:bg-lavender/80 text-muted-teal px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-muted-teal/20 hover:border-muted-teal/40 flex-[0.4]"
+              className="bg-black hover:bg-zinc-800 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 hover:border-white/40 flex-[0.4]"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
                 alt="X Logo" 
-                className="w-5 h-5 mr-2"
+                className="w-5 h-5 mr-2 invert"
               /> 
               Follow @ROJOasis
             </Button>

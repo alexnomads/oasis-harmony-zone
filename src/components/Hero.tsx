@@ -18,7 +18,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
       <div className="absolute inset-0 z-0 w-full h-full">
         <video
           autoPlay
@@ -46,7 +46,7 @@ export const Hero = () => {
             alt="ROJ Logo" 
             className="w-32 h-32 mx-auto mb-8"
           />
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
             Your mental wellness comes before your crypto gains.
           </span>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
@@ -60,20 +60,20 @@ export const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-[#FF4444] font-semibold text-5xl md:text-7xl mb-2"
+              className="text-white font-semibold text-5xl md:text-7xl mb-2"
             >
               {slides[currentSlide]}
             </motion.div>
           </div>
           <div className="flex justify-center gap-4 px-4">
             <Button
-              className="bg-[#FF4444] hover:bg-[#FF4444]/70 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6]"
+              className="bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6] border border-white/20"
             >
               Join AI Wellness Agent Waitlist
             </Button>
             <Button
               onClick={handleFollow}
-              className="bg-black hover:bg-zinc-800 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border-2 border-white/20 hover:border-white/40 flex-[0.4]"
+              className="bg-black/30 hover:bg-black/40 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40 flex-[0.4]"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 

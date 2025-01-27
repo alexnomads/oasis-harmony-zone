@@ -22,7 +22,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-[#ea384c] dark:bg-[#ea384c] backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange backdrop-blur-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left - Burger Menu */}
         <DropdownMenu>
@@ -31,26 +31,26 @@ export const Header = () => {
               <Menu className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
-            <DropdownMenuItem onClick={() => scrollToSection("hero")}>
+          <DropdownMenuContent align="start" className="w-48 bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
+            <DropdownMenuItem onClick={() => scrollToSection("hero")} className="text-white hover:bg-white/10">
               Home
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("ascii-art")}>
+            <DropdownMenuItem onClick={() => scrollToSection("ascii-art")} className="text-white hover:bg-white/10">
               ASCII Art
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("programs")}>
+            <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/10">
               Programs
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("token")}>
+            <DropdownMenuItem onClick={() => scrollToSection("token")} className="text-white hover:bg-white/10">
               ROJ Token
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("roadmap")}>
+            <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/10">
               Roadmap
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("profile")}>
+            <DropdownMenuItem onClick={() => scrollToSection("profile")} className="text-white hover:bg-white/10">
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("newsletter")}>
+            <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="text-white hover:bg-white/10">
               Newsletter
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -82,7 +82,7 @@ export const Header = () => {
           <div className="relative">
             <Button
               variant="outline"
-              className="border-white text-black bg-white hover:bg-white/90"
+              className="border-white text-white bg-transparent hover:bg-white/10"
               onClick={() => setShowSignIn(!showSignIn)}
             >
               Sign In

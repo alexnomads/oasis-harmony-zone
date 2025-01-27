@@ -40,7 +40,7 @@ export const Programs = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-b from-black to-zinc-900">
+    <section className="py-16 bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -48,13 +48,13 @@ export const Programs = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
             Our Programs
           </span>
           <h2 className="text-4xl font-bold mb-4 text-white">
             Wellness Programs for Crypto Professionals
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
             Discover our carefully curated programs designed to enhance your mental and physical well-being
           </p>
         </motion.div>
@@ -66,14 +66,14 @@ export const Programs = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              <Card className="bg-zinc-800/50 border-zinc-700">
+              <Card className="bg-black/20 border-white/10">
                 <CardContent className="p-6">
-                  <program.icon className="w-12 h-12 text-[#FF4444] mx-auto mb-4" />
+                  <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
-                  <p className="text-gray-300 mb-4">{program.description}</p>
+                  <p className="text-white/80 mb-4">{program.description}</p>
                   <ul className="space-y-2">
                     {program.benefits.map((benefit) => (
-                      <li key={benefit} className="text-gray-400">
+                      <li key={benefit} className="text-white/70">
                         • {benefit}
                       </li>
                     ))}

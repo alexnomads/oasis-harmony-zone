@@ -38,7 +38,7 @@ export const Token = () => {
   ];
 
   return (
-    <section className="py-16 pb-8 bg-zinc-900">
+    <section className="py-16 pb-8 bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,13 +46,13 @@ export const Token = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
             ROJ Token
           </span>
           <h2 className="text-4xl font-bold mb-4 text-white">
             Powering the Wellness Economy
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
             Our native token enables seamless access to wellness services and rewards active community participation
           </p>
         </motion.div>
@@ -63,7 +63,7 @@ export const Token = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="flex justify-center mb-12"
         >
-          <Coins className="w-24 h-24 text-[#FF4444]" />
+          <Coins className="w-24 h-24 text-softOrange" />
         </motion.div>
 
         <motion.div
@@ -82,7 +82,7 @@ export const Token = () => {
             <CarouselContent>
               {benefits.map((benefit, index) => (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="bg-zinc-800/50 border-zinc-700 overflow-hidden">
+                  <Card className="bg-black/20 border-white/10">
                     <div className="h-40 w-full overflow-hidden">
                       <img 
                         src={benefit.image} 
@@ -91,15 +91,15 @@ export const Token = () => {
                       />
                     </div>
                     <CardContent className="flex items-center p-6">
-                      <p className="text-gray-300 text-center">{benefit.text}</p>
+                      <p className="text-white/80 text-center">{benefit.text}</p>
                     </CardContent>
                   </Card>
                 </CarouselItem>
               ))}
             </CarouselContent>
             <div className="flex justify-center gap-4 mt-4">
-              <CarouselPrevious className="relative static" />
-              <CarouselNext className="relative static" />
+              <CarouselPrevious className="relative static bg-black/20 border-white/10 text-white hover:bg-black/30" />
+              <CarouselNext className="relative static bg-black/20 border-white/10 text-white hover:bg-black/30" />
             </div>
           </Carousel>
         </motion.div>

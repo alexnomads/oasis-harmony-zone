@@ -19,11 +19,10 @@ export default {
     },
     extend: {
       colors: {
-        sage: "#B2C8BA",
-        skyblue: "#A8DADC",
-        blush: "#F4ACB7",
-        beige: "#E6D5B8",
-        charcoal: "#333333",
+        vibrantOrange: "#FF8A00",
+        vibrantPurple: "#9C27B0",
+        softOrange: "#FFA726",
+        softPurple: "#BA68C8",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

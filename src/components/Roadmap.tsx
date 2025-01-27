@@ -39,7 +39,7 @@ export const Roadmap = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-b from-zinc-900 to-black">
+    <section className="py-16 bg-gradient-to-br from-vibrantPurple/90 to-vibrantOrange/90">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -47,18 +47,18 @@ export const Roadmap = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-[#FF4444]/20 text-[#FF4444] rounded-full">
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
             Roadmap
           </span>
           <h2 className="text-4xl font-bold mb-4 text-white">
             Our Journey Forward
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
             Building the future of wellness in the crypto space, one milestone at a time
           </p>
         </motion.div>
         <div className="relative max-w-4xl mx-auto">
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#FF4444]/20" />
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-white/20" />
           {phases.map((phase, index) => (
             <motion.div
               key={phase.title}
@@ -68,11 +68,11 @@ export const Roadmap = () => {
               className="relative mb-16 last:mb-0"
             >
               <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-4 h-4 rounded-full bg-[#FF4444]" />
+                <div className="w-4 h-4 rounded-full bg-softOrange" />
               </div>
-              <Card className={`w-[calc(50%-60px)] ${index % 2 === 0 ? 'mr-[calc(50%+60px)]' : 'ml-[calc(50%+60px)]'} bg-zinc-800/50 border-zinc-700`}>
+              <Card className={`w-[calc(50%-60px)] ${index % 2 === 0 ? 'mr-[calc(50%+60px)]' : 'ml-[calc(50%+60px)]'} bg-black/20 border-white/10`}>
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-6 text-[#FF4444]">{phase.title}</h3>
+                  <h3 className="text-2xl font-bold mb-6 text-softOrange">{phase.title}</h3>
                   {index === 0 && (
                     <div className="mb-6">
                       <Tweet id="1879964568014975319" />
@@ -80,7 +80,7 @@ export const Roadmap = () => {
                   )}
                   <ul className="space-y-4">
                     {phase.items.map((item, itemIndex) => (
-                      <li key={itemIndex} className="text-lg text-gray-300">
+                      <li key={itemIndex} className="text-lg text-white/80">
                         {item}
                       </li>
                     ))}

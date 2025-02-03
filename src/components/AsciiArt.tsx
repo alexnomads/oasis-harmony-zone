@@ -60,7 +60,7 @@ export const AsciiArt = () => {
                 />
               </div>
               <div>
-                <h3 className="text-white font-semibold">Rose of Jericho</h3>
+                <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
                 <span className="text-white/70 text-sm">AI Wellness Agent</span>
               </div>
             </div>

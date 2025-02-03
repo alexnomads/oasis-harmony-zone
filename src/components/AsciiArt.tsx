@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Tweet } from 'react-tweet';
 
 export const AsciiArt = () => {
   const [messages, setMessages] = useState([
@@ -41,13 +42,9 @@ export const AsciiArt = () => {
     <div className="w-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Astronaut Image Section */}
+          {/* Tweet Section */}
           <div className="flex justify-center items-center">
-            <img 
-              src="/lovable-uploads/2666064f-8909-4cd1-844b-4cfbed2e83f6.png" 
-              alt="Rose of Jericho - AI Wellness Agent"
-              className="w-full max-w-md rounded-lg shadow-xl transform hover:scale-105 transition-transform duration-300"
-            />
+            <Tweet id="1886406346787914235" />
           </div>
 
           {/* Chat Simulation Section */}

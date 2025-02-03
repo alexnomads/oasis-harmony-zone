@@ -5,7 +5,7 @@ import { Tweet } from 'react-tweet';
 export const AsciiArt = () => {
   const [messages, setMessages] = useState([
     { role: "agent", content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. How can I help you with meditation today?", timestamp: new Date() },
-    { role: "user", content: "I'm feeling stressed about work", timestamp: new Date(Date.now() - 2000) },
+    { role: "user", content: "I'm stressed about the current crypto market condition", timestamp: new Date(Date.now() - 2000) },
     { role: "agent", content: "I understand. Let's start with a simple breathing exercise. Would you like to try a 5-minute meditation focused on stress relief?", timestamp: new Date(Date.now() - 1000) }
   ]);
 
@@ -41,14 +41,14 @@ export const AsciiArt = () => {
   return (
     <div className="w-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Tweet Section */}
-          <div className="flex justify-center items-center">
+          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center">
             <Tweet id="1886406346787914235" />
           </div>
 
           {/* Chat Simulation Section */}
-          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20">
+          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex flex-col">
             <div className="flex items-center gap-3 border-b border-white/20 pb-4 mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 <img 
@@ -63,7 +63,7 @@ export const AsciiArt = () => {
               </div>
             </div>
 
-            <div className="h-[300px] overflow-y-auto mb-4 space-y-4">
+            <div className="flex-1 overflow-y-auto mb-4 space-y-4">
               {messages.map((message, index) => (
                 <motion.div
                   key={index}

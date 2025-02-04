@@ -43,8 +43,8 @@ export const AsciiArt = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Tweet Section */}
-          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center overflow-hidden">
-            <div className="transform scale-[0.5] origin-center w-full h-full flex items-center justify-center">
+          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center">
+            <div className="transform scale-[0.5] origin-center w-[200%] h-[200%] flex items-center justify-center">
               <Tweet id="1886406346787914235" />
             </div>
           </div>
@@ -54,7 +54,7 @@ export const AsciiArt = () => {
             <div className="flex items-center gap-3 border-b border-white/20 pb-4 mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 <img 
-                  src="/lovable-uploads/2666064f-8909-4cd1-844b-4cfbed2e83f6.png"
+                  src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
                   alt="Rose of Jericho"
                   className="w-full h-full object-cover"
                 />

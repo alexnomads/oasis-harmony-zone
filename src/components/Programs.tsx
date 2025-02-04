@@ -52,7 +52,7 @@ export const Programs = () => {
             Our Programs
           </span>
           <h2 className="text-4xl font-bold mb-4 text-white">
-            Wellness Programs for Crypto Professionals
+            Score An All-Time-High For Your Wellness
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
             Discover our curated programs designed to enhance your mental & physical well-being

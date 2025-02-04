@@ -43,8 +43,8 @@ export const AsciiArt = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Tweet Section */}
-          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center">
-            <div className="scale-[0.85] transform origin-center">
+          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center overflow-hidden">
+            <div className="transform scale-75 origin-center w-full h-full flex items-center justify-center">
               <Tweet id="1886406346787914235" />
             </div>
           </div>

@@ -69,7 +69,7 @@ export const Hero = () => {
             <Button
               className="bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6] border border-white/20"
             >
-              Join AI Wellness Agent Waitlist
+              Join the Waitlist
             </Button>
             <Button
               onClick={handleFollow}

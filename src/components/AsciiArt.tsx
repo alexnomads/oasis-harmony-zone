@@ -41,16 +41,16 @@ export const AsciiArt = () => {
   return (
     <div className="w-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* Tweet Section */}
-          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center">
+        <div className="grid grid-cols-12 gap-8 items-start">
+          {/* Tweet Section - 30% */}
+          <div className="col-span-4 bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center">
             <div className="transform scale-[0.5] origin-center w-[200%] h-[200%] flex items-center justify-center">
               <Tweet id="1886406346787914235" />
             </div>
           </div>
 
-          {/* Chat Simulation Section */}
-          <div className="bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex flex-col">
+          {/* Chat Simulation Section - 70% */}
+          <div className="col-span-8 bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex flex-col">
             <div className="flex items-center gap-3 border-b border-white/20 pb-4 mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 <img 

@@ -28,7 +28,7 @@ const Index = () => {
         <div id="hero">
           <Hero />
         </div>
-        <div id="ascii-art">
+        <div id="ai-agent-alpha">
           <AsciiArt />
         </div>
         <div id="programs">

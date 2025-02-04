@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const slides = ["Wellness", "Meditation", "Fitness"];
+  const slides = ["Wellness🧠", "Meditation🧘🏼‍♂️", "Fitness🏋️"];
 
   useEffect(() => {
     const interval = setInterval(() => {

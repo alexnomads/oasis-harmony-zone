@@ -55,7 +55,7 @@ export const Programs = () => {
             Wellness Programs for Crypto Professionals
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            Discover our carefully curated programs designed to enhance your mental and physical well-being
+            Discover our curated programs designed to enhance your mental & physical well-being
           </p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

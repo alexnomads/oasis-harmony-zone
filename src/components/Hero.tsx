@@ -53,7 +53,7 @@ export const Hero = () => {
             Rose of Jericho
           </h1>
           <div className="text-xl md:text-2xl mb-8 text-white/90 h-[120px] flex flex-col items-center justify-center">
-            <p className="mb-2">An AaaS AI Agent platform that helps crypto professionals with</p>
+            <p className="mb-2">An AaaS AI Agent platform that rewards crypto professionals when they focus on</p>
             <motion.div
               key={currentSlide}
               initial={{ opacity: 0, y: 20 }}

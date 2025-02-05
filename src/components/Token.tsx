@@ -88,7 +88,7 @@ export const Token = () => {
                       <img 
                         src={benefit.image} 
                         alt={`Benefit ${index + 1}`}
-                        className="w-full h-full object-cover object-[center_35%] transition-transform duration-300 hover:scale-110"
+                        className="w-full h-full object-cover object-[center_70%] transition-transform duration-300 hover:scale-110"
                       />
                     </div>
                     <CardContent className="flex items-center p-6">

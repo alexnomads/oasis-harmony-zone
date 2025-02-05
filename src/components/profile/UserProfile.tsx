@@ -11,6 +11,7 @@ export const UserProfile = () => {
     email: "buddha@enlightenment.com",
     joinDate: "January 2024",
     programsAttended: 12,
+    rojTokens: 2000,
   };
 
   return (
@@ -60,9 +61,15 @@ export const UserProfile = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="p-4 bg-black/30 rounded-lg">
-                <h4 className="text-lg font-medium text-white mb-2">Programs Attended</h4>
-                <p className="text-3xl font-bold text-softOrange">{mockUser.programsAttended}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-black/30 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">Programs Attended</h4>
+                  <p className="text-3xl font-bold text-softOrange">{mockUser.programsAttended}</p>
+                </div>
+                <div className="p-4 bg-black/30 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">$ROJ Tokens Earned</h4>
+                  <p className="text-3xl font-bold text-softOrange">${mockUser.rojTokens.toLocaleString()}</p>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Button variant="outline" className="w-full border-white/10 text-white hover:bg-black/30">

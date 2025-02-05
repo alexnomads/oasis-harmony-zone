@@ -31,6 +31,9 @@ const Index = () => {
         <div id="ai-agent-alpha">
           <AsciiArt />
         </div>
+        <div id="profile" className="py-16 bg-zinc-900">
+          <UserProfile />
+        </div>
         <div id="programs">
           <Programs />
         </div>
@@ -42,9 +45,6 @@ const Index = () => {
         </div>
         <div id="roadmap">
           <Roadmap />
-        </div>
-        <div id="profile" className="py-16 bg-zinc-900">
-          <UserProfile />
         </div>
       </div>
     </div>

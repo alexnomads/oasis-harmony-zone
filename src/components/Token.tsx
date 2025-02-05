@@ -13,11 +13,11 @@ export const Token = () => {
   const benefits = [
     {
       text: "Access to Rose of Jericho (ROJ) pop-up areas at conferences and in physical spots worldwide.",
-      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81"
+      image: "/lovable-uploads/d129538f-def1-4f43-a2fe-9ef8cc81445a.png"
     },
     {
       text: "Access to online ROJ wellness platform",
-      image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
+      image: "/lovable-uploads/d04ac241-16f8-41c0-a55c-ff656a5a92d9.png"
     },
     {
       text: "Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",

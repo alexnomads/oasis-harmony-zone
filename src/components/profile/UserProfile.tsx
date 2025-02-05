@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export const UserProfile = () => {
-  // This would typically fetch user data from a backend
   const mockUser = {
     name: "Siddhartha Gautama",
     email: "buddha@enlightenment.com",
     joinDate: "January 2024",
-    programsAttended: 12,
+    guidedMeditations: 8,
+    soundMeditations: 4,
     rojTokens: 2000,
   };
 
@@ -61,10 +61,14 @@ export const UserProfile = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div className="p-4 bg-black/30 rounded-lg">
-                  <h4 className="text-lg font-medium text-white mb-2">Programs Attended</h4>
-                  <p className="text-3xl font-bold text-softOrange">{mockUser.programsAttended}</p>
+                  <h4 className="text-lg font-medium text-white mb-2">Guided Meditations Completed</h4>
+                  <p className="text-3xl font-bold text-softOrange">{mockUser.guidedMeditations}</p>
+                </div>
+                <div className="p-4 bg-black/30 rounded-lg">
+                  <h4 className="text-lg font-medium text-white mb-2">Sound Meditations Completed</h4>
+                  <p className="text-3xl font-bold text-softOrange">{mockUser.soundMeditations}</p>
                 </div>
                 <div className="p-4 bg-black/30 rounded-lg">
                   <h4 className="text-lg font-medium text-white mb-2">$ROJ Tokens Earned</h4>
@@ -76,7 +80,7 @@ export const UserProfile = () => {
                   View History
                 </Button>
                 <Button className="w-full bg-softPurple hover:bg-softPurple/90">
-                  Book Session
+                  Check Balance Onchain
                 </Button>
               </div>
             </div>

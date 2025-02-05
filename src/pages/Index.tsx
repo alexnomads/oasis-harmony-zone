@@ -31,7 +31,7 @@ const Index = () => {
         <div id="ai-agent-alpha">
           <AsciiArt />
         </div>
-        <div id="profile" className="py-16 bg-zinc-900">
+        <div id="profile" className="py-8 bg-zinc-900">
           <UserProfile />
         </div>
         <div id="programs">

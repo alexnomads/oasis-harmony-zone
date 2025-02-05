@@ -6,7 +6,7 @@ export const AsciiArt = () => {
   const [messages, setMessages] = useState([
     { role: "agent", content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. How can I help you with meditation today?", timestamp: new Date() },
     { role: "user", content: "I'm stressed about the current crypto market condition", timestamp: new Date(Date.now() - 2000) },
-    { role: "agent", content: "I understand. Let's start with a simple breathing exercise. Would you like to try a 5-minute meditation focused on stress relief?", timestamp: new Date(Date.now() - 1000) }
+      { role: "agent", content: "I am sorry to hear that. Let's start with a simple breathing exercise. Are you ready?", timestamp: new Date(Date.now() - 1000) }
   ]);
 
   const [inputValue, setInputValue] = useState("");

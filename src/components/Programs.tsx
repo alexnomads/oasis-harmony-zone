@@ -30,7 +30,7 @@ export const Programs = () => {
     },
     {
       title: "Community Sessions",
-      description: "Connect with like-minded individuals in wellness-focused crypto community.",
+      description: "Connect with like-minded individuals in our wellness-focused community.",
       icon: Users,
       benefits: [
         "Networking",

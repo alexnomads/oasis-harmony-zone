@@ -20,14 +20,14 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Video Background - Moved to top layer but with lower opacity */}
-      <div className="absolute inset-0 w-full h-full">
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full z-0">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover opacity-80"
         >
           <source
             src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4"
@@ -37,11 +37,11 @@ export const Hero = () => {
         </video>
       </div>
 
-      {/* Gradient Overlay - Added between video and content */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#9C27B0]/80 to-[#FF8A00]/80" />
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#9C27B0]/60 to-[#FF8A00]/60 z-10" />
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 py-16 text-center">
+      <div className="relative z-20 container mx-auto px-6 py-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

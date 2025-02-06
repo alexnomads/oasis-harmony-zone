@@ -15,7 +15,7 @@ export const SubscriptionPlans = () => {
         >
           <h2 className="text-4xl font-bold text-white mb-4">Subscription Plans</h2>
           <p className="text-white/80 max-w-2xl mx-auto">
-            Choose the perfect plan to unlock enhanced AI features, exclusive content, and wellness analytics
+            Choose the perfect plan to unlock enhanced AI features and analytics
           </p>
         </motion.div>
 
@@ -32,7 +32,7 @@ export const SubscriptionPlans = () => {
             <div className="text-3xl font-bold text-white mb-4">
               $20<span className="text-lg font-normal text-white/60">/month</span>
             </div>
-            <p className="text-white/60 mb-2">Paid in $ROJ tokens</p>
+            <p className="text-white/60 mb-2">Pay in $ROJ tokens</p>
             <ul className="text-white/80 text-left space-y-4 mb-8">
               <li>✓ Access to AI Wellness Agent</li>
               <li>✓ Basic wellness analytics</li>
@@ -58,10 +58,10 @@ export const SubscriptionPlans = () => {
             <div className="text-3xl font-bold text-white mb-4">
               $50<span className="text-lg font-normal text-white/60">/month</span>
             </div>
-            <p className="text-white/60 mb-2">Paid in $ROJ tokens</p>
+            <p className="text-white/60 mb-2">Pay in $ROJ tokens</p>
             <ul className="text-white/80 text-left space-y-4 mb-8">
               <li>✓ Enhanced AI features</li>
-              <li>✓ Advanced wellness analytics</li>
+              <li>✓ Advanced analytics</li>
               <li>✓ Exclusive content</li>
               <li>✓ Priority support</li>
             </ul>

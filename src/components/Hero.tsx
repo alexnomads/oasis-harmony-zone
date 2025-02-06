@@ -29,7 +29,7 @@ export const Hero = () => {
           className="absolute top-0 left-0 w-full h-full object-cover opacity-40"
         >
           <source
-            src="https://cdn.coverr.co/videos/coverr-ocean-waves-crashing-on-rocks-2527/1080p.mp4"
+            src="https://player.vimeo.com/progressive_redirect/playback/498700403/rendition/1080p/file.mp4?loc=external&signature=08e3e9180c27918a30c79d3abebc8e48b50e3c5ec63e1dac1fa37eb2799acf0f"
             type="video/mp4"
           />
           Your browser does not support the video tag.

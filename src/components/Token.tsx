@@ -22,7 +22,7 @@ export const Token = () => {
     },
     {
       text: "COMING UP! Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",
-      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+      image: "/lovable-uploads/4e55ca27-b008-4b6e-b6ce-840accb1245f.png"
     },
     {
       text: "Priority booking for activities and services.",

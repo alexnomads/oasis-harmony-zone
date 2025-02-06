@@ -37,7 +37,7 @@ export const SubscriptionPlans = () => {
               <li>✓ Access to AI Wellness Agent</li>
               <li>✓ Basic wellness analytics</li>
               <li>✓ Standard support</li>
-              <li></li>
+              <li>✓ Access to online community</li>
             </ul>
             <Button className="w-full bg-white/10 hover:bg-white/20 text-white">
               Get Started
@@ -63,7 +63,7 @@ export const SubscriptionPlans = () => {
             <ul className="text-white/80 text-left space-y-4 mb-8">
               <li>✓ Enhanced AI features</li>
               <li>✓ Advanced analytics</li>
-              <li>✓ Exclusive content</li>
+              <li>✓ IRL Pop-up Access</li>
               <li>✓ Priority support</li>
             </ul>
             <Button className="w-full bg-gradient-to-r from-[#9C27B0] to-[#FF8A00] hover:opacity-90 text-white">

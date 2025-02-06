@@ -42,9 +42,9 @@ export const AsciiArt = () => {
   return (
     <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-2 gap-8 items-stretch">
           {/* Profile Section - 50% */}
-          <div className="col-span-1">
+          <div className="col-span-1 h-[600px] overflow-y-auto">
             <UserProfile />
           </div>
 

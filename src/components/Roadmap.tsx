@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Milestone } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
@@ -75,7 +76,7 @@ export const Roadmap = () => {
                   <h3 className="text-2xl font-bold mb-6 text-softOrange">{phase.title}</h3>
                   {index === 0 && (
                     <div className="mb-6">
-                      <Tweet id="1879964568014975319" />
+                      <Tweet id="1886840995259592951" />
                     </div>
                   )}
                   <ul className="space-y-4">

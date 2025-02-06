@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Coins } from "lucide-react";
 import {
@@ -83,11 +84,11 @@ export const Token = () => {
               {benefits.map((benefit, index) => (
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <Card className="bg-black/20 border-white/10">
-                    <div className="h-40 w-full overflow-hidden">
+                    <div className="h-48 w-full overflow-hidden">
                       <img 
                         src={benefit.image} 
                         alt={`Benefit ${index + 1}`}
-                        className="w-full h-full object-cover object-[center_70%] transition-transform duration-300 hover:scale-110"
+                        className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-110"
                       />
                     </div>
                     <CardContent className="flex items-center p-6">

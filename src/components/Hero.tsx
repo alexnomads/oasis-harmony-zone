@@ -29,7 +29,7 @@ export const Hero = () => {
           className="absolute top-0 left-0 w-full h-full object-cover opacity-40"
         >
           <source
-            src="https://player.vimeo.com/progressive_redirect/playback/498700403/rendition/1080p/file.mp4?loc=external&signature=08e3e9180c27918a30c79d3abebc8e48b50e3c5ec63e1dac1fa37eb2799acf0f"
+            src="https://vod-progressive.akamaized.net/exp=1711413023~acl=%2Fvimeo-prod-skyfire-std-us%2F01%2F1471%2F14%2F357893124%2F1444243741.mp4~hmac=99a1dd41d4a80c9e80634c8d4e92b3392d63bc58eee8d0a45cd95ddeae41b9a3/vimeo-prod-skyfire-std-us/01/1471/14/357893124/1444243741.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.

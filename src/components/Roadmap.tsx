@@ -1,5 +1,6 @@
 
 import { motion } from "framer-motion";
+import { Milestone } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Tweet } from 'react-tweet';
 
@@ -57,41 +58,38 @@ export const Roadmap = () => {
             Building the future of wellness in the crypto space, one milestone at a time
           </p>
         </motion.div>
-        
-        <div className="relative max-w-[90vw] mx-auto overflow-x-auto pb-8">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-white/20" />
-          <div className="flex gap-8 min-w-max px-4">
-            {phases.map((phase, index) => (
-              <motion.div
-                key={phase.title}
-                initial={{ opacity: 0, y: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                className="relative"
-              >
-                <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <div className="w-4 h-4 rounded-full bg-softOrange" />
-                </div>
-                <Card className="w-[300px] bg-black/20 border-white/10">
-                  <CardContent className="p-8">
-                    <h3 className="text-2xl font-bold mb-6 text-softOrange">{phase.title}</h3>
-                    {index === 0 && (
-                      <div className="mb-6">
-                        <Tweet id="1886840995259592951" />
-                      </div>
-                    )}
-                    <ul className="space-y-4">
-                      {phase.items.map((item, itemIndex) => (
-                        <li key={itemIndex} className="text-lg text-white/80">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+        <div className="relative max-w-4xl mx-auto">
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-white/20" />
+          {phases.map((phase, index) => (
+            <motion.div
+              key={phase.title}
+              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
+              className="relative mb-16 last:mb-0"
+            >
+              <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 rounded-full bg-softOrange" />
+              </div>
+              <Card className={`w-[calc(50%-60px)] ${index % 2 === 0 ? 'mr-[calc(50%+60px)]' : 'ml-[calc(50%+60px)]'} bg-black/20 border-white/10`}>
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold mb-6 text-softOrange">{phase.title}</h3>
+                  {index === 0 && (
+                    <div className="mb-6">
+                      <Tweet id="1886840995259592951" />
+                    </div>
+                  )}
+                  <ul className="space-y-4">
+                    {phase.items.map((item, itemIndex) => (
+                      <li key={itemIndex} className="text-lg text-white/80">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

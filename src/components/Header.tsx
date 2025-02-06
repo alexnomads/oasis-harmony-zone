@@ -60,7 +60,7 @@ export const Header = () => {
         {/* Center - Logo */}
         <div className="flex items-center">
           <img 
-            src="/lovable-uploads/44ba5b42-989b-484b-be4b-a455227b3547.png" 
+            src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
             alt="Rose of Jericho" 
             className="h-8 w-auto"
           />

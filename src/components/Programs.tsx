@@ -34,7 +34,9 @@ export const Programs = () => {
       icon: Users,
       benefits: [
         "Networking and mindfullness",
-        "Support system"
+        "Support system",
+        "Community growth",
+        "Shared experiences"
       ]
     }
   ];
@@ -65,13 +67,14 @@ export const Programs = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="h-full"
             >
-              <Card className="bg-black/20 border-white/10">
-                <CardContent className="p-6">
+              <Card className="bg-black/20 border-white/10 h-full">
+                <CardContent className="p-6 flex flex-col h-full">
                   <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
                   <p className="text-white/80 mb-4">{program.description}</p>
-                  <ul className="space-y-2 mb-4">
+                  <ul className="space-y-2 mb-4 flex-grow">
                     {program.benefits.map((benefit) => (
                       <li key={benefit} className="text-white/70">
                         • {benefit}

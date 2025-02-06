@@ -13,7 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export const Token = () => {
   const benefits = [
     {
-      text: "Access to Rose of Jericho (ROJ) pop-up areas at conferences and in physical spots worldwide.",
+      text: "Access to ROJ pop-up areas at conferences and in physical spots worldwide.",
       image: "/lovable-uploads/d129538f-def1-4f43-a2fe-9ef8cc81445a.png"
     },
     {

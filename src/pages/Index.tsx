@@ -4,7 +4,6 @@ import { AsciiArt } from "@/components/AsciiArt";
 import { Programs } from "@/components/Programs";
 import { Token } from "@/components/Token";
 import { Roadmap } from "@/components/Roadmap";
-import { UserProfile } from "@/components/profile/UserProfile";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Newsletter } from "@/components/Newsletter";
@@ -37,9 +36,6 @@ const Index = () => {
         </div>
         <div id="subscription-plans">
           <SubscriptionPlans />
-        </div>
-        <div id="profile" className="py-8 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
-          <UserProfile />
         </div>
         <div id="token">
           <Token />

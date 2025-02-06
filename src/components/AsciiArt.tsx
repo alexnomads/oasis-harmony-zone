@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Tweet } from 'react-tweet';
+import { UserProfile } from "./profile/UserProfile";
 
 export const AsciiArt = () => {
   const [messages, setMessages] = useState([
@@ -42,11 +43,9 @@ export const AsciiArt = () => {
     <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-12 gap-8 items-start">
-          {/* Tweet Section - 30% */}
-          <div className="col-span-4 bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex items-center justify-center">
-            <div className="transform scale-[0.5] origin-center w-[200%] h-[200%] flex items-center justify-center">
-              <Tweet id="1886406346787914235" />
-            </div>
+          {/* Profile Section - 30% */}
+          <div className="col-span-4">
+            <UserProfile />
           </div>
 
           {/* Chat Simulation Section - 70% */}

@@ -44,8 +44,12 @@ export const AsciiArt = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 items-stretch">
           {/* Profile Section - 50% */}
-          <div className="col-span-1 h-[600px] overflow-y-auto">
-            <UserProfile />
+          <div className="col-span-1 h-[600px]">
+            <div className="h-full bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20">
+              <div className="h-full overflow-y-auto">
+                <UserProfile />
+              </div>
+            </div>
           </div>
 
           {/* Chat Simulation Section - 50% */}
@@ -125,3 +129,4 @@ export const AsciiArt = () => {
     </div>
   );
 };
+

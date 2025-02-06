@@ -33,9 +33,8 @@ export const Programs = () => {
       description: "Connect with like-minded individuals in our wellness-focused community.",
       icon: Users,
       benefits: [
-        "Networking",
-        "Support system",
-        "Knowledge sharing"
+        "Networking and mindfullness",
+        "Support system"
       ]
     }
   ];

@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -42,7 +43,7 @@ export const Hero = () => {
           className="max-w-3xl mx-auto"
         >
           <img 
-            src="/lovable-uploads/d392e042-f503-4777-9d67-9d7149153ca5.png" 
+            src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
             alt="ROJ Logo" 
             className="w-32 h-32 mx-auto mb-8"
           />

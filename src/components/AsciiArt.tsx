@@ -42,14 +42,14 @@ export const AsciiArt = () => {
   return (
     <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-12 gap-8 items-start">
-          {/* Profile Section - 30% */}
-          <div className="col-span-4">
+        <div className="grid grid-cols-2 gap-8 items-start">
+          {/* Profile Section - 50% */}
+          <div className="col-span-1">
             <UserProfile />
           </div>
 
-          {/* Chat Simulation Section - 70% */}
-          <div className="col-span-8 bg-black/20 rounded-xl backdrop-blur-sm p-4 border border-white/20 h-[500px] flex flex-col">
+          {/* Chat Simulation Section - 50% */}
+          <div className="col-span-1 bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
             <div className="flex items-center gap-3 border-b border-white/20 pb-4 mb-4">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 <img 
@@ -64,7 +64,7 @@ export const AsciiArt = () => {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto mb-4 space-y-4">
+            <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
               {messages.map((message, index) => (
                 <motion.div
                   key={index}
@@ -79,7 +79,7 @@ export const AsciiArt = () => {
                         : "bg-white/10 text-white"
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-sm md:text-base">{message.content}</p>
                     <span className="text-xs opacity-70">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -104,17 +104,17 @@ export const AsciiArt = () => {
               )}
             </div>
 
-            <form onSubmit={handleSubmit} className="relative">
+            <form onSubmit={handleSubmit} className="relative mt-auto">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Type your message..."
-                className="w-full bg-white/10 rounded-full px-4 py-2 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-softPurple"
+                className="w-full bg-white/10 rounded-full px-6 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-softPurple"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white px-4 py-1 rounded-full text-sm hover:opacity-90 transition-opacity"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition-opacity"
               >
                 Send
               </button>

@@ -85,7 +85,7 @@ export const SubscriptionPlans = () => {
             <p className="text-white/60 mb-2">Tailored solutions</p>
             <ul className="text-white/80 text-left space-y-4 mb-8">
               <li>✓ Custom AI implementation</li>
-              <li>✓ Advanced analytics dashboard</li>
+              <li>✓ Multiple users usage</li>
               <li>✓ Dedicated support team</li>
               <li>✓ Custom integrations</li>
             </ul>

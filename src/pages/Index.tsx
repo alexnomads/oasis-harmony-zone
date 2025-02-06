@@ -32,14 +32,14 @@ const Index = () => {
         <div id="ai-agent-alpha">
           <AsciiArt />
         </div>
+        <div id="programs">
+          <Programs />
+        </div>
         <div id="subscription-plans">
           <SubscriptionPlans />
         </div>
         <div id="profile" className="py-8 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
           <UserProfile />
-        </div>
-        <div id="programs">
-          <Programs />
         </div>
         <div id="token">
           <Token />

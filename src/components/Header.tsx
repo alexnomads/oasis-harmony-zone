@@ -37,7 +37,7 @@ export const Header = () => {
               Home
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => scrollToSection("ai-agent-alpha")} className="text-white hover:bg-white/10">
-              ASCII Art
+              AI Agent
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/10">
               Programs
@@ -60,7 +60,7 @@ export const Header = () => {
         {/* Center - Logo */}
         <div className="flex items-center">
           <img 
-            src="/lovable-uploads/44ba5b42-989b-484b-be4b-a455227b3547.png" 
+            src="/lovable-uploads/d392e042-f503-4777-9d67-9d7149153ca5.png" 
             alt="Rose of Jericho" 
             className="h-8 w-auto"
           />

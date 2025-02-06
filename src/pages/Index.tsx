@@ -7,6 +7,7 @@ import { Roadmap } from "@/components/Roadmap";
 import { UserProfile } from "@/components/profile/UserProfile";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Header } from "@/components/Header";
+import { Newsletter } from "@/components/Newsletter";
 
 const Index = () => {
   const { scrollYProgress } = useScroll();

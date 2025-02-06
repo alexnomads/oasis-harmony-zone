@@ -1,6 +1,5 @@
+
 import { Hero } from "@/components/Hero";
-import { Features } from "@/components/Features";
-import { Newsletter } from "@/components/Newsletter";
 import { AsciiArt } from "@/components/AsciiArt";
 import { Programs } from "@/components/Programs";
 import { Token } from "@/components/Token";
@@ -31,7 +30,7 @@ const Index = () => {
         <div id="ai-agent-alpha">
           <AsciiArt />
         </div>
-        <div id="profile" className="py-8 bg-zinc-900">
+        <div id="profile" className="py-8 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
           <UserProfile />
         </div>
         <div id="programs">

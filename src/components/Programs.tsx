@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Dumbbell, Brain, Users } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
@@ -40,7 +41,7 @@ export const Programs = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
+    <section className="py-16 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

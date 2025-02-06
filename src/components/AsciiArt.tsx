@@ -6,7 +6,7 @@ export const AsciiArt = () => {
   const [messages, setMessages] = useState([
     { role: "agent", content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. How can I help you with meditation today?", timestamp: new Date() },
     { role: "user", content: "I'm stressed about the current crypto market condition", timestamp: new Date(Date.now() - 2000) },
-      { role: "agent", content: "I am sorry to hear that. Let's start with a simple breathing exercise. Are you ready?", timestamp: new Date(Date.now() - 1000) }
+    { role: "agent", content: "I am sorry to hear that. Let's start with a simple breathing exercise. Are you ready?", timestamp: new Date(Date.now() - 1000) }
   ]);
 
   const [inputValue, setInputValue] = useState("");
@@ -39,7 +39,7 @@ export const AsciiArt = () => {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange py-12">
+    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-12 gap-8 items-start">
           {/* Tweet Section - 30% */}

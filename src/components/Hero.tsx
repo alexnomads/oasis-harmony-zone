@@ -18,7 +18,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
       <div className="absolute inset-0 z-0 w-full h-full">
         <video
           autoPlay

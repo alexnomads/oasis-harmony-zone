@@ -34,7 +34,6 @@ export const Programs = () => {
       icon: Users,
       benefits: [
         "Networking",
-        "Shared experiences",
         "Support system",
         "Knowledge sharing"
       ]

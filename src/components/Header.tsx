@@ -1,4 +1,3 @@
-
 import { Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
@@ -24,41 +23,43 @@ export const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 px-4 py-2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex items-center justify-between relative">
         {/* Left - Burger Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 text-white">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48 bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
-            <DropdownMenuItem onClick={() => scrollToSection("hero")} className="text-white hover:bg-white/10">
-              Home
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("ai-agent-alpha")} className="text-white hover:bg-white/10">
-              AI Agent
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/10">
-              Programs
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("subscription-plans")} className="text-white hover:bg-white/10">
-              Subscription Plans
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("token")} className="text-white hover:bg-white/10">
-              ROJ Token
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="text-white hover:bg-white/10">
-              Newsletter
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/10">
-              Roadmap
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="absolute left-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="hover:bg-white/10 text-white">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 bg-gradient-to-br from-vibrantPurple to-vibrantOrange">
+              <DropdownMenuItem onClick={() => scrollToSection("hero")} className="text-white hover:bg-white/10">
+                Home
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => scrollToSection("ai-agent-alpha")} className="text-white hover:bg-white/10">
+                AI Agent
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/10">
+                Programs
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => scrollToSection("subscription-plans")} className="text-white hover:bg-white/10">
+                Subscription Plans
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => scrollToSection("token")} className="text-white hover:bg-white/10">
+                ROJ Token
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="text-white hover:bg-white/10">
+                Newsletter
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/10">
+                Roadmap
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Center - Logo */}
-        <div className="flex items-center">
+        <div className="absolute left-1/2 -translate-x-1/2">
           <img 
             src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
             alt="Rose of Jericho" 
@@ -67,7 +68,7 @@ export const Header = () => {
         </div>
 
         {/* Right - Theme Toggle & Sign In */}
-        <div className="flex items-center gap-2">
+        <div className="absolute right-0 flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"

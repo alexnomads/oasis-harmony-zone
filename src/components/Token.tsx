@@ -71,7 +71,7 @@ export const Token = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
           <Carousel
             opts={{
@@ -80,25 +80,25 @@ export const Token = () => {
             }}
             className="w-full"
           >
-            <CarouselContent>
+            <CarouselContent className="-ml-2 md:-ml-4">
               {benefits.map((benefit, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="bg-black/20 border-white/10">
-                    <div className="h-48 w-full overflow-hidden">
+                <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <Card className="bg-black/20 border-white/10 h-[400px] flex flex-col">
+                    <div className="h-[250px] w-full overflow-hidden">
                       <img 
                         src={benefit.image} 
                         alt={`Benefit ${index + 1}`}
                         className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-110"
                       />
                     </div>
-                    <CardContent className="flex items-center p-6">
-                      <p className="text-white/80 text-center">{benefit.text}</p>
+                    <CardContent className="flex items-center justify-center flex-grow p-6">
+                      <p className="text-white/80 text-center text-lg">{benefit.text}</p>
                     </CardContent>
                   </Card>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex justify-center gap-4 mt-4">
+            <div className="flex justify-center gap-4 mt-8">
               <CarouselPrevious className="relative static bg-black/20 border-white/10 text-white hover:bg-black/30" />
               <CarouselNext className="relative static bg-black/20 border-white/10 text-white hover:bg-black/30" />
             </div>

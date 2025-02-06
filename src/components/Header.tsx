@@ -1,3 +1,4 @@
+
 import { Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
@@ -35,23 +36,23 @@ export const Header = () => {
             <DropdownMenuItem onClick={() => scrollToSection("hero")} className="text-white hover:bg-white/10">
               Home
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("ascii-art")} className="text-white hover:bg-white/10">
+            <DropdownMenuItem onClick={() => scrollToSection("ai-agent-alpha")} className="text-white hover:bg-white/10">
               ASCII Art
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/10">
               Programs
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => scrollToSection("subscription-plans")} className="text-white hover:bg-white/10">
+              Subscription Plans
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => scrollToSection("token")} className="text-white hover:bg-white/10">
               ROJ Token
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/10">
-              Roadmap
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => scrollToSection("profile")} className="text-white hover:bg-white/10">
-              Profile
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="text-white hover:bg-white/10">
               Newsletter
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/10">
+              Roadmap
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -59,7 +60,7 @@ export const Header = () => {
         {/* Center - Logo */}
         <div className="flex items-center">
           <img 
-            src="/lovable-uploads/d392e042-f503-4777-9d67-9d7149153ca5.png" 
+            src="/lovable-uploads/44ba5b42-989b-484b-be4b-a455227b3547.png" 
             alt="Rose of Jericho" 
             className="h-8 w-auto"
           />

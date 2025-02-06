@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { MessageSquare } from "lucide-react";
 
 export const SubscriptionPlans = () => {
   return (
@@ -90,8 +91,12 @@ export const SubscriptionPlans = () => {
               <li>✓ Dedicated support team</li>
               <li>✓ Custom integrations</li>
             </ul>
-            <Button className="w-full bg-white/10 hover:bg-white/20 text-white">
-              Contact Sales
+            <Button 
+              className="w-full bg-white/10 hover:bg-white/20 text-white"
+              onClick={() => window.open('https://t.me/alexnomads', '_blank')}
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Contact Us
             </Button>
           </motion.div>
         </div>

@@ -8,6 +8,7 @@ import { UserProfile } from "@/components/profile/UserProfile";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Newsletter } from "@/components/Newsletter";
+import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 
 const Index = () => {
   const { scrollYProgress } = useScroll();
@@ -36,6 +37,9 @@ const Index = () => {
         </div>
         <div id="programs">
           <Programs />
+        </div>
+        <div id="subscription-plans">
+          <SubscriptionPlans />
         </div>
         <div id="token">
           <Token />

@@ -1,7 +1,8 @@
 
 import { motion } from "framer-motion";
-import { Dumbbell, Brain, Users } from "lucide-react";
+import { Dumbbell, Brain, Users, MessageSquare } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
 
 export const Programs = () => {
   const programs = [
@@ -72,13 +73,22 @@ export const Programs = () => {
                   <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
                   <p className="text-white/80 mb-4">{program.description}</p>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 mb-4">
                     {program.benefits.map((benefit) => (
                       <li key={benefit} className="text-white/70">
                         • {benefit}
                       </li>
                     ))}
                   </ul>
+                  {program.title === "Community Sessions" && (
+                    <Button 
+                      className="w-full bg-white/10 hover:bg-white/20 text-white mt-4"
+                      onClick={() => window.open('https://RoseOfJerichoweb3', '_blank')}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Join Our Telegram Group
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

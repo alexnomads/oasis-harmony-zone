@@ -17,11 +17,11 @@ export const Token = () => {
       image: "/lovable-uploads/d129538f-def1-4f43-a2fe-9ef8cc81445a.png"
     },
     {
-      text: "Access to online ROJ wellness platform",
+      text: "Owning $ROJ gives you access to the ROJ AI Wellness Agent.",
       image: "/lovable-uploads/d04ac241-16f8-41c0-a55c-ff656a5a92d9.png"
     },
     {
-      text: "Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",
+      text: "COMING UP! Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",
       image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
     },
     {

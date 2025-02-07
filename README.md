@@ -90,8 +90,8 @@ Growth & Partnerships
 6 years in web3
 former The Sandbox, Safe
 
-linkedin.com/in/alessandrocapezza/ 
-x.com/alexnomads 
+https://linkedin.com/in/alessandrocapezza/ 
+https://x.com/alexnomads 
 
 
 

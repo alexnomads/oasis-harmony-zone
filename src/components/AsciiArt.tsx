@@ -5,9 +5,21 @@ import { UserProfile } from "./profile/UserProfile";
 
 export const AsciiArt = () => {
   const [messages, setMessages] = useState([
-    { role: "agent", content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. How can I help you with meditation today?", timestamp: new Date() },
-    { role: "user", content: "I'm stressed about the current crypto market condition", timestamp: new Date(Date.now() - 2000) },
-    { role: "agent", content: "I am sorry to hear that. Let's start with a simple breathing exercise. Are you ready?", timestamp: new Date(Date.now() - 1000) }
+    { 
+      role: "agent", 
+      content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. I'm here to help you find balance and mindfulness in the dynamic crypto world. How are you feeling today?", 
+      timestamp: new Date() 
+    },
+    { 
+      role: "user", 
+      content: "I'm stressed about the current crypto market condition", 
+      timestamp: new Date(Date.now() - 2000) 
+    },
+    { 
+      role: "agent", 
+      content: "I hear you, and it's completely natural to feel this way. Let's take a moment to center ourselves. Would you like to try a brief breathing exercise? It can help calm your mind and bring clarity to your thoughts.", 
+      timestamp: new Date(Date.now() - 1000) 
+    }
   ]);
 
   const [inputValue, setInputValue] = useState("");
@@ -27,11 +39,11 @@ export const AsciiArt = () => {
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate AI response
+    // Simulate AI response with mindful, supportive tone
     setTimeout(() => {
       const aiResponse = {
         role: "agent",
-        content: "That's a great point. Let's focus on your breath for a moment. Take a deep breath in through your nose for 4 counts, and out through your mouth for 6 counts.",
+        content: "Let's practice together. Take a deep breath in through your nose for 4 counts, hold it gently, then release it slowly through your mouth for 6 counts. This will help ground you in the present moment. Remember, market fluctuations are temporary, but your well-being is essential.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);

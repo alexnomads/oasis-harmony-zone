@@ -1,25 +1,53 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
 
 const getAIResponse = (userMessage: string) => {
-  // Convert message to lowercase for easier matching
   const message = userMessage.toLowerCase();
   
-  // Array of possible responses based on message content
-  if (message.includes("stress") || message.includes("worried") || message.includes("anxiety")) {
-    return "I understand that stress can feel overwhelming. Let's practice a calming technique together. Take a deep breath in through your nose for 4 counts, hold it gently, then release it slowly through your mouth for 6 counts. How does that feel?";
-  } else if (message.includes("market") || message.includes("price") || message.includes("crypto")) {
-    return "Market fluctuations can be challenging to navigate. Remember that maintaining perspective is key. Would you like to explore some mindfulness techniques that can help you stay grounded during market volatility?";
-  } else if (message.includes("meditation") || message.includes("mindful")) {
-    return "Meditation is a powerful tool for maintaining clarity. Let's start with a simple practice: focus on your breath for just 60 seconds. Would you like me to guide you through it?";
-  } else if (message.includes("tired") || message.includes("exhausted")) {
-    return "I hear that you're feeling depleted. Sometimes the crypto world can be overwhelming. Let's take a moment to recharge. Would you like to try a quick energizing breathing exercise?";
-  } else if (message.includes("thank")) {
-    return "You're welcome! Remember, your well-being is the foundation of sustainable success. Is there anything else you'd like to explore together?";
-  } else {
-    return "I'm here to support your journey to balance and mindfulness. Would you like to try a grounding exercise or discuss specific challenges you're facing?";
+  // Wealth and Success-related responses
+  if (message.includes("money") || message.includes("wealth") || message.includes("success")) {
+    return "True wealth extends beyond financial success. Let's explore how finding your authentic path and maintaining inner peace can lead to sustainable prosperity. Would you like to try a mindfulness exercise to clarify your goals?";
+  }
+  
+  // Market and Crypto-specific responses
+  else if (message.includes("market") || message.includes("price") || message.includes("crypto")) {
+    return "The crypto market's volatility can be intense. Remember, your worth isn't tied to market fluctuations. Let's practice a grounding technique that helps maintain perspective during market movements. Shall we begin with a brief centering exercise?";
+  }
+  
+  // Work-Life Balance
+  else if (message.includes("overwhelmed") || message.includes("busy") || message.includes("work")) {
+    return "In the fast-paced crypto world, feeling overwhelmed is common. Let's create a moment of stillness together. Close your eyes, take three deep breaths, and let's discuss how to integrate small mindful breaks into your day. What time of day do you typically feel most overwhelmed?";
+  }
+  
+  // Mindfulness and Meditation
+  else if (message.includes("meditation") || message.includes("mindful") || message.includes("peace")) {
+    return "Meditation is your gateway to clarity and balanced decision-making. Let's start with a simple 60-second breath awareness practice. Focus on the natural rhythm of your breath, letting market thoughts float by like clouds. Would you like me to guide you?";
+  }
+  
+  // Physical Wellness
+  else if (message.includes("tired") || message.includes("exhausted") || message.includes("energy")) {
+    return "Physical vitality is crucial for crypto professionals. Let's try an energizing breath technique: inhale for 4 counts, hold for 4, exhale for 4, hold for 4. This 'box breathing' can help revitalize your energy. Shall we practice together?";
+  }
+  
+  // Emotional Wellness
+  else if (message.includes("stress") || message.includes("worried") || message.includes("anxiety")) {
+    return "I hear the concern in your words. Remember that stress is inevitable, but burnout is preventable. Let's practice the 5-5-5 technique: breathe in for 5 seconds, hold for 5, release for 5. This can help bring you back to center. Ready to try?";
+  }
+  
+  // Growth and Learning
+  else if (message.includes("learn") || message.includes("grow") || message.includes("improve")) {
+    return "Personal growth is a journey, not a destination. Your desire to learn shows wisdom. Would you like to explore some daily mindfulness practices that can support your development while maintaining balance?";
+  }
+  
+  // Gratitude and Appreciation
+  else if (message.includes("thank")) {
+    return "Your commitment to self-care and growth is inspiring. Remember, small steps lead to lasting change. Is there a particular area of wellness you'd like to explore further in our next interaction?";
+  }
+  
+  // Default Response
+  else {
+    return "In the dynamic world of crypto, maintaining balance is essential. I'm here to support your journey to wellness and clarity. Would you like to explore breathing techniques, meditation practices, or discuss specific challenges you're facing?";
   }
 };
 

@@ -3,22 +3,32 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
 
+const getAIResponse = (userMessage: string) => {
+  // Convert message to lowercase for easier matching
+  const message = userMessage.toLowerCase();
+  
+  // Array of possible responses based on message content
+  if (message.includes("stress") || message.includes("worried") || message.includes("anxiety")) {
+    return "I understand that stress can feel overwhelming. Let's practice a calming technique together. Take a deep breath in through your nose for 4 counts, hold it gently, then release it slowly through your mouth for 6 counts. How does that feel?";
+  } else if (message.includes("market") || message.includes("price") || message.includes("crypto")) {
+    return "Market fluctuations can be challenging to navigate. Remember that maintaining perspective is key. Would you like to explore some mindfulness techniques that can help you stay grounded during market volatility?";
+  } else if (message.includes("meditation") || message.includes("mindful")) {
+    return "Meditation is a powerful tool for maintaining clarity. Let's start with a simple practice: focus on your breath for just 60 seconds. Would you like me to guide you through it?";
+  } else if (message.includes("tired") || message.includes("exhausted")) {
+    return "I hear that you're feeling depleted. Sometimes the crypto world can be overwhelming. Let's take a moment to recharge. Would you like to try a quick energizing breathing exercise?";
+  } else if (message.includes("thank")) {
+    return "You're welcome! Remember, your well-being is the foundation of sustainable success. Is there anything else you'd like to explore together?";
+  } else {
+    return "I'm here to support your journey to balance and mindfulness. Would you like to try a grounding exercise or discuss specific challenges you're facing?";
+  }
+};
+
 export const AsciiArt = () => {
   const [messages, setMessages] = useState([
     { 
       role: "agent", 
       content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. I'm here to help you find balance and mindfulness in the dynamic crypto world. How are you feeling today?", 
       timestamp: new Date() 
-    },
-    { 
-      role: "user", 
-      content: "I'm stressed about the current crypto market condition", 
-      timestamp: new Date(Date.now() - 2000) 
-    },
-    { 
-      role: "agent", 
-      content: "I hear you, and it's completely natural to feel this way. Let's take a moment to center ourselves. Would you like to try a brief breathing exercise? It can help calm your mind and bring clarity to your thoughts.", 
-      timestamp: new Date(Date.now() - 1000) 
     }
   ]);
 
@@ -39,11 +49,11 @@ export const AsciiArt = () => {
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate AI response with mindful, supportive tone
+    // Generate dynamic AI response based on user input
     setTimeout(() => {
       const aiResponse = {
         role: "agent",
-        content: "Let's practice together. Take a deep breath in through your nose for 4 counts, hold it gently, then release it slowly through your mouth for 6 counts. This will help ground you in the present moment. Remember, market fluctuations are temporary, but your well-being is essential.",
+        content: getAIResponse(inputValue),
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);
@@ -141,4 +151,3 @@ export const AsciiArt = () => {
     </div>
   );
 };
-

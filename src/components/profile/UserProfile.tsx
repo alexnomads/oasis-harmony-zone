@@ -4,6 +4,7 @@ import { User, Mail, Calendar, Settings } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ActivityTracker } from "./ActivityTracker";
 
 export const UserProfile = () => {
   const mockUser = {
@@ -47,6 +48,8 @@ export const UserProfile = () => {
           </div>
         </CardContent>
       </Card>
+
+      <ActivityTracker />
 
       <Card className="bg-black/20 border-white/10">
         <CardHeader>

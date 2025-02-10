@@ -1,18 +1,18 @@
 
 import { motion } from "framer-motion";
-import { Timer, Calendar, History, Gift, Trophy, Coins } from "lucide-react";
+import { Timer, Calendar, History } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 export const ActivityTracker = () => {
   // Mock data - would be replaced with real data when connected to backend
   const mockData = {
-    dailyMinutes: 0,
-    weeklyMinutes: 0,
+    dailyMinutes: 15, // Updated to show complete daily goal
+    weeklyMinutes: 52.5, // Updated to show 50% of weekly goal (105/2)
     dailyGoal: 15,
     weeklyGoal: 105,
     totalPoints: 560,
-    currentStreak: 0,
+    currentStreak: 23, // Updated streak
   };
 
   const dailyProgress = (mockData.dailyMinutes / mockData.dailyGoal) * 100;
@@ -77,25 +77,6 @@ export const ActivityTracker = () => {
               <h4 className="text-sm font-medium text-white">Current Streak</h4>
             </div>
             <p className="text-2xl font-bold text-softOrange">{mockData.currentStreak} days</p>
-          </motion.div>
-        </div>
-
-        {/* Rewards Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="p-4 bg-black/30 rounded-lg cursor-pointer"
-          >
-            <Trophy className="w-6 h-6 text-softOrange mb-2" />
-            <h4 className="text-sm font-medium text-white">Rewards to Unlock</h4>
-          </motion.div>
-
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="p-4 bg-black/30 rounded-lg cursor-pointer"
-          >
-            <Coins className="w-6 h-6 text-softOrange mb-2" />
-            <h4 className="text-sm font-medium text-white">Earn More Points</h4>
           </motion.div>
         </div>
       </CardContent>

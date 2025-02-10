@@ -52,13 +52,7 @@ export const UserProfile = () => {
       <ActivityTracker />
 
       <Card className="bg-black/20 border-white/10">
-        <CardHeader>
-          <CardTitle className="text-xl text-white">Activity Overview</CardTitle>
-          <CardDescription className="text-white/60">
-            Your wellness journey progress
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-black/30 rounded-lg">
               <h4 className="text-lg font-medium text-white mb-2">Guided Meditations</h4>

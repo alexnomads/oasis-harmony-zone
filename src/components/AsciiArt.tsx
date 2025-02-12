@@ -7,47 +7,57 @@ const getAIResponse = (userMessage: string) => {
   
   // Wealth and Success-related responses
   if (message.includes("money") || message.includes("wealth") || message.includes("success")) {
-    return "True wealth extends beyond financial success. Let's explore how finding your authentic path and maintaining inner peace can lead to sustainable prosperity. Would you like to try a mindfulness exercise to clarify your goals?";
+    return "I understand your interest in financial success. The crypto world can be intense, but let's approach it mindfully. Would you like to try a 2-minute breathing exercise designed specifically for traders? This technique has helped many stay centered during market volatility. We can also explore setting balanced financial goals that align with your personal values.";
   }
   
   // Market and Crypto-specific responses
   else if (message.includes("market") || message.includes("price") || message.includes("crypto")) {
-    return "The crypto market's volatility can be intense. Remember, your worth isn't tied to market fluctuations. Let's practice a grounding technique that helps maintain perspective during market movements. Shall we begin with a brief centering exercise?";
+    return "Market fluctuations can be emotionally challenging. Let's practice the '5-5-5' technique: observe the market for 5 seconds, breathe deeply for 5 seconds, then reassess your emotions for 5 seconds. This helps separate market movements from emotional reactions. Would you like to explore more strategies for maintaining emotional balance during trading?";
   }
   
   // Work-Life Balance
   else if (message.includes("overwhelmed") || message.includes("busy") || message.includes("work")) {
-    return "In the fast-paced crypto world, feeling overwhelmed is common. Let's create a moment of stillness together. Close your eyes, take three deep breaths, and let's discuss how to integrate small mindful breaks into your day. What time of day do you typically feel most overwhelmed?";
+    return "I hear that you're feeling overwhelmed. The crypto space never sleeps, but you need to. Let's create a sustainable routine together. First, try this quick reset: close your eyes, inhale for 4 counts, hold for 4, exhale for 4. How do you feel? We can then discuss setting healthy boundaries between trading and personal time.";
   }
   
   // Mindfulness and Meditation
   else if (message.includes("meditation") || message.includes("mindful") || message.includes("peace")) {
-    return "Meditation is your gateway to clarity and balanced decision-making. Let's start with a simple 60-second breath awareness practice. Focus on the natural rhythm of your breath, letting market thoughts float by like clouds. Would you like me to guide you?";
+    return "Excellent choice to explore meditation! Let's start with a simple but powerful exercise: the 'Market Observer' technique. Find a comfortable position, and for just 60 seconds, imagine your thoughts about the market as clouds passing by. Don't judge them, just observe. Would you like me to guide you through this brief meditation now?";
   }
   
   // Physical Wellness
   else if (message.includes("tired") || message.includes("exhausted") || message.includes("energy")) {
-    return "Physical vitality is crucial for crypto professionals. Let's try an energizing breath technique: inhale for 4 counts, hold for 4, exhale for 4, hold for 4. This 'box breathing' can help revitalize your energy. Shall we practice together?";
+    return "Screen fatigue and market-watching can be draining. Let's try an energizing technique called 'Trading Breaks': Every hour, stand up, stretch your arms overhead, take 3 deep breaths, and gently roll your shoulders. This helps prevent burnout and maintains mental clarity. Would you like more desk-friendly exercises?";
   }
   
   // Emotional Wellness
   else if (message.includes("stress") || message.includes("worried") || message.includes("anxiety")) {
-    return "I hear the concern in your words. Remember that stress is inevitable, but burnout is preventable. Let's practice the 5-5-5 technique: breathe in for 5 seconds, hold for 5, release for 5. This can help bring you back to center. Ready to try?";
+    return "Managing stress in crypto trading is crucial. Let's use the 'RAIN' method: Recognize your feelings, Allow them to be there, Investigate with kindness, and Non-identify (remember: you are not your trades). Take a moment now - what emotion is strongest for you right now? We can explore it together using this framework.";
   }
   
   // Growth and Learning
   else if (message.includes("learn") || message.includes("grow") || message.includes("improve")) {
-    return "Personal growth is a journey, not a destination. Your desire to learn shows wisdom. Would you like to explore some daily mindfulness practices that can support your development while maintaining balance?";
+    return "Your commitment to growth is admirable. Let's combine mindfulness with learning: Before each trading session, take 3 mindful breaths and set an intention to learn, not just earn. What specific aspect of trading mindfulness would you like to develop? We can create a personalized growth plan together.";
   }
   
   // Gratitude and Appreciation
   else if (message.includes("thank")) {
-    return "Your commitment to self-care and growth is inspiring. Remember, small steps lead to lasting change. Is there a particular area of wellness you'd like to explore further in our next interaction?";
+    return "Your journey toward mindful trading is inspiring. Remember, every market cycle is an opportunity for growth. Would you like to explore more specific techniques or discuss another aspect of trading wellness? I'm here to support your continued development.";
+  }
+  
+  // Sleep and Rest
+  else if (message.includes("sleep") || message.includes("rest") || message.includes("insomnia")) {
+    return "Quality rest is crucial for traders. Let's try the '4-7-8' breathing technique: Inhale for 4 counts, hold for 7, exhale for 8. This naturally calms your nervous system. Would you like to learn more about creating a pre-sleep routine that helps separate trading thoughts from rest time?";
+  }
+  
+  // Focus and Concentration
+  else if (message.includes("focus") || message.includes("concentrate") || message.includes("distracted")) {
+    return "In the fast-paced crypto world, maintaining focus is essential. Try this: Before checking charts, take 30 seconds to mentally state your trading intention. This creates a mindful pause and improves decision-making. Would you like to explore more concentration-enhancing techniques?";
   }
   
   // Default Response
   else {
-    return "In the dynamic world of crypto, maintaining balance is essential. I'm here to support your journey to wellness and clarity. Would you like to explore breathing techniques, meditation practices, or discuss specific challenges you're facing?";
+    return "Welcome to your mindful trading journey. I'm here to help you navigate the crypto markets with greater awareness and emotional balance. Would you like to explore specific techniques for trading mindfulness, stress management, or maintaining work-life balance? Feel free to ask about any aspect of wellness in trading.";
   }
 };
 

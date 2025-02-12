@@ -206,14 +206,15 @@ export const AsciiArt = () => {
   const [messages, setMessages] = useState([
     { 
       role: "agent", 
-      content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. Select your meditation duration and sound preference, then click the timer to begin.", 
-      timestamp: new Date() 
+      content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. Select your meditation duration and sound preference above. When you're ready, click the button below to begin.", 
+      timestamp: new Date(),
+      showMeditationStart: true 
     }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(5 * 60); // Default 5 minutes
-  const [selectedDuration, setSelectedDuration] = useState(5); // Default 5 minutes
+  const [timeRemaining, setTimeRemaining] = useState(5 * 60);
+  const [selectedDuration, setSelectedDuration] = useState(5);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [soundOption, setSoundOption] = useState<SoundOption>("silent");
   const { toast } = useToast();
@@ -259,6 +260,16 @@ export const AsciiArt = () => {
     setTimeRemaining(selectedDuration * 60);
   };
 
+  const startMeditation = () => {
+    setIsTimerRunning(true);
+    const newMessage = {
+      role: "agent",
+      content: `Starting ${selectedDuration}-minute meditation with ${soundOption === "silent" ? "no sound" : `${soundOption} sounds`}. Find a comfortable position and close your eyes. I'll be here when you're done.`,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
@@ -277,7 +288,8 @@ export const AsciiArt = () => {
       const aiResponse = {
         role: "agent",
         content: getAIResponse(inputValue),
-        timestamp: new Date()
+        timestamp: new Date(),
+        showMeditationStart: inputValue.toLowerCase().includes("meditate") || inputValue.toLowerCase().includes("meditation")
       };
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
@@ -384,12 +396,12 @@ export const AsciiArt = () => {
                   key={index}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"}`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                       message.role === "user"
-                        ? "bg-softPurple text-white ml-auto"
+                        ? "bg-softPurple text-white"
                         : "bg-white/10 text-white"
                     }`}
                   >
@@ -398,6 +410,15 @@ export const AsciiArt = () => {
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
+                  {message.showMeditationStart && !isTimerRunning && (
+                    <Button
+                      onClick={startMeditation}
+                      className="mt-2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Start Meditation
+                    </Button>
+                  )}
                 </motion.div>
               ))}
               {isTyping && (

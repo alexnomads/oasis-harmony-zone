@@ -8,7 +8,7 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Newsletter } from "@/components/Newsletter";
 import { SubscriptionPlans } from "@/components/SubscriptionPlans";
-import { Linkedin, Telegram, X } from "lucide-react";
+import { Linkedin, MessageCircle, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const Index = () => {
@@ -80,7 +80,7 @@ const Index = () => {
                   rel="noopener noreferrer"
                   className="text-white/80 hover:text-softOrange transition-colors"
                 >
-                  <Telegram className="w-8 h-8" />
+                  <MessageCircle className="w-8 h-8" />
                 </a>
               </div>
             </CardContent>

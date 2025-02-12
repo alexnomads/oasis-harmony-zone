@@ -4,61 +4,189 @@ import { UserProfile } from "./profile/UserProfile";
 
 const getAIResponse = (userMessage: string) => {
   const message = userMessage.toLowerCase();
-  
-  // Wealth and Success-related responses
-  if (message.includes("money") || message.includes("wealth") || message.includes("success")) {
-    return "I understand your interest in financial success. The crypto world can be intense, but let's approach it mindfully. Would you like to try a 2-minute breathing exercise designed specifically for traders? This technique has helped many stay centered during market volatility. We can also explore setting balanced financial goals that align with your personal values.";
+  const responses = {
+    // Market Conditions
+    "market is down": `I understand this can be a challenging time. Let's practice the 'Market Cycles Meditation':
+    1. Find a quiet space (2 minutes)
+    2. Visualize previous market cycles - both ups and downs
+    3. Practice the 'Cycle Breath':
+       - Inhale: "This too shall pass"
+       - Exhale: "Markets are cyclical"
+    4. Remember: Winter markets build summer fortunes
+    What's your longest hold through a downturn?`,
+
+    "bull market fomo": `FOMO can cloud judgment. Let's practice 'Grounded Growth':
+    1. Step away from charts (3 minutes)
+    2. Emotional temperature check:
+       - Rate your FOMO 1-10
+       - Breathe until it reduces
+    3. Review your strategy calmly
+    What's triggering your FOMO right now?`,
+
+    "bear market depression": `Bear markets test our resilience. Try this 'Hibernation Wisdom':
+    1. Gratitude for dry powder
+    2. Bear market breathing:
+       - Inhale: "Building position"
+       - Exhale: "Patience pays"
+    3. Focus on accumulation mindset
+    How are you using this time to grow?`,
+
+    // Trading Psychology
+    "revenge trading": `Let's transform that energy with 'Trade Transmutation':
+    1. Physical reset (stand up, shake it off)
+    2. Loss acceptance breathing:
+       - Inhale: "Learn"
+       - Exhale: "Release"
+    3. Write down the lesson
+    What triggered this urge?`,
+
+    "overleveraged": `Let's center ourselves with 'Leverage Logic':
+    1. Close trading apps (5 minutes)
+    2. Risk reflection:
+       - Breathe in peace
+       - Breathe out pressure
+    3. Review position sizing rules
+    How can we prevent this next time?`,
+
+    "missed": `FOMO after big moves needs care. Practice 'Abundance Awareness':
+    1. Market opportunity meditation
+    2. Remind yourself:
+       - "There's always another trade"
+       - "My time will come"
+    3. Focus on next setup
+    What's your next trading plan?`,
+
+    // Investment Strategy
+    "portfolio": `Let's approach this systematically with 'Balance Breath':
+    1. Portfolio peace practice
+    2. Asset alignment:
+       - Each breath = one asset
+       - Find peace with each position
+    3. Make small, mindful adjustments
+    What's your ideal allocation?`,
+
+    "dca": `Dollar-cost averaging needs conviction. Try 'DCA Dharma':
+    1. Zoom out meditation
+    2. Strategy strengthening:
+       - Inhale: "Consistent growth"
+       - Exhale: "Trust the process"
+    3. Review your DCA records
+    How long is your DCA horizon?`,
+
+    "altcoin": `Altcoin choices need clear minds. Practice 'Token Tranquility':
+    1. Project meditation
+    2. Value verification:
+       - List fundamental strengths
+       - Question assumptions
+    3. Check conviction level
+    What attracts you to this project?`,
+
+    // Technical Analysis
+    "chart": `Let's find balance with 'Pattern Peace':
+    1. Chart closure (5 minutes)
+    2. Pattern perspective:
+       - Breathe with price waves
+       - Find calm in chaos
+    3. Set pattern priorities
+    What patterns speak to you most?`,
+
+    "indicator": `Simplify with 'Indicator Insight':
+    1. Clear chart meditation
+    2. Essential element breath:
+       - Add one indicator per breath
+       - Keep only what's necessary
+    3. Create clean setup
+    Which indicators truly help you?`,
+
+    "timeframe": `Center yourself with 'Timeline Tranquility':
+    1. Single timeframe focus
+    2. Time horizon breathing:
+       - Match breath to candles
+       - Find your natural rhythm
+    3. Choose primary timeframe
+    What's your trading timeline?`,
+
+    // Personal Growth
+    "learn": `Embrace growth with 'Learning Light':
+    1. Progress perspective
+    2. Knowledge nurturing:
+       - Celebrate small wins
+       - Accept the journey
+    3. Set micro-goals
+    What did you learn today?`,
+
+    "community": `Build bonds with 'Community Coherence':
+    1. Engagement energy
+    2. Connection cultivation:
+       - Give value first
+       - Build authentic bonds
+    3. Join key conversations
+    Where do you want to contribute?`,
+
+    // Lifestyle Balance
+    "addiction": `Find balance with 'Life Alignment':
+    1. Screen sunset ritual
+    2. Balance breathing:
+       - Life beyond charts
+       - Joy in variety
+    3. Set healthy boundaries
+    What brings you joy outside crypto?`,
+
+    "sleep": `Restore rest with 'Sleep Sanctuary':
+    1. Digital sunset
+    2. Rest ritual:
+       - No charts after dinner
+       - Calming breath practice
+    3. Create sleep schedule
+    How's your sleep hygiene?`,
+
+    "stress": `Navigate uncertainty with 'Stress Serenity':
+    1. Immediate pause
+    2. Balanced breathing:
+       - Facts not fear
+       - Clarity through chaos
+    3. Focus on fundamentals
+    What's your stress management strategy?`,
+
+    // Market Cycles
+    "top": `Navigate peaks with 'Summit Serenity':
+    1. Profit peace practice
+    2. Peak perspective:
+       - Nothing rises forever
+       - Plan don't panic
+    3. Review exit strategy
+    What's your top target?`,
+
+    "bottom": `Find bottom peace with 'Base Building':
+    1. Accumulation awareness
+    2. Bottom breathing:
+       - Patient positions
+       - Value vision
+    3. Set entry ladders
+    How do you spot bottoms?`,
+
+    "sideways": `Transform boredom with 'Range Recognition':
+    1. Range respect ritual
+    2. Consolidation calm:
+       - Build during boredom
+       - Prepare for breakout
+    3. Range opportunity plan
+    How do you handle chop?`
+  };
+
+  // Enhanced matching logic
+  for (const [key, value] of Object.entries(responses)) {
+    if (message.includes(key)) {
+      return value;
+    }
   }
   
-  // Market and Crypto-specific responses
-  else if (message.includes("market") || message.includes("price") || message.includes("crypto")) {
-    return "Market fluctuations can be emotionally challenging. Let's practice the '5-5-5' technique: observe the market for 5 seconds, breathe deeply for 5 seconds, then reassess your emotions for 5 seconds. This helps separate market movements from emotional reactions. Would you like to explore more strategies for maintaining emotional balance during trading?";
-  }
-  
-  // Work-Life Balance
-  else if (message.includes("overwhelmed") || message.includes("busy") || message.includes("work")) {
-    return "I hear that you're feeling overwhelmed. The crypto space never sleeps, but you need to. Let's create a sustainable routine together. First, try this quick reset: close your eyes, inhale for 4 counts, hold for 4, exhale for 4. How do you feel? We can then discuss setting healthy boundaries between trading and personal time.";
-  }
-  
-  // Mindfulness and Meditation
-  else if (message.includes("meditation") || message.includes("mindful") || message.includes("peace")) {
-    return "Excellent choice to explore meditation! Let's start with a simple but powerful exercise: the 'Market Observer' technique. Find a comfortable position, and for just 60 seconds, imagine your thoughts about the market as clouds passing by. Don't judge them, just observe. Would you like me to guide you through this brief meditation now?";
-  }
-  
-  // Physical Wellness
-  else if (message.includes("tired") || message.includes("exhausted") || message.includes("energy")) {
-    return "Screen fatigue and market-watching can be draining. Let's try an energizing technique called 'Trading Breaks': Every hour, stand up, stretch your arms overhead, take 3 deep breaths, and gently roll your shoulders. This helps prevent burnout and maintains mental clarity. Would you like more desk-friendly exercises?";
-  }
-  
-  // Emotional Wellness
-  else if (message.includes("stress") || message.includes("worried") || message.includes("anxiety")) {
-    return "Managing stress in crypto trading is crucial. Let's use the 'RAIN' method: Recognize your feelings, Allow them to be there, Investigate with kindness, and Non-identify (remember: you are not your trades). Take a moment now - what emotion is strongest for you right now? We can explore it together using this framework.";
-  }
-  
-  // Growth and Learning
-  else if (message.includes("learn") || message.includes("grow") || message.includes("improve")) {
-    return "Your commitment to growth is admirable. Let's combine mindfulness with learning: Before each trading session, take 3 mindful breaths and set an intention to learn, not just earn. What specific aspect of trading mindfulness would you like to develop? We can create a personalized growth plan together.";
-  }
-  
-  // Gratitude and Appreciation
-  else if (message.includes("thank")) {
-    return "Your journey toward mindful trading is inspiring. Remember, every market cycle is an opportunity for growth. Would you like to explore more specific techniques or discuss another aspect of trading wellness? I'm here to support your continued development.";
-  }
-  
-  // Sleep and Rest
-  else if (message.includes("sleep") || message.includes("rest") || message.includes("insomnia")) {
-    return "Quality rest is crucial for traders. Let's try the '4-7-8' breathing technique: Inhale for 4 counts, hold for 7, exhale for 8. This naturally calms your nervous system. Would you like to learn more about creating a pre-sleep routine that helps separate trading thoughts from rest time?";
-  }
-  
-  // Focus and Concentration
-  else if (message.includes("focus") || message.includes("concentrate") || message.includes("distracted")) {
-    return "In the fast-paced crypto world, maintaining focus is essential. Try this: Before checking charts, take 30 seconds to mentally state your trading intention. This creates a mindful pause and improves decision-making. Would you like to explore more concentration-enhancing techniques?";
-  }
-  
-  // Default Response
-  else {
-    return "Welcome to your mindful trading journey. I'm here to help you navigate the crypto markets with greater awareness and emotional balance. Would you like to explore specific techniques for trading mindfulness, stress management, or maintaining work-life balance? Feel free to ask about any aspect of wellness in trading.";
-  }
+  // Default wisdom response
+  return `I sense you're seeking guidance on your crypto journey. Let's start with a mindful check-in:
+  1. Take three conscious breaths
+  2. Notice your current state
+  3. Share what's present for you
+  What specific aspect would you like to explore?`;
 };
 
 export const AsciiArt = () => {

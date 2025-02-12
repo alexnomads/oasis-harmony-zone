@@ -1,4 +1,3 @@
-
 import { Hero } from "@/components/Hero";
 import { AsciiArt } from "@/components/AsciiArt";
 import { Programs } from "@/components/Programs";
@@ -50,7 +49,7 @@ const Index = () => {
         </div>
         
         {/* Contact Section */}
-        <div className="py-16 px-4">
+        <div id="contact" className="py-16 px-4">
           <Card className="max-w-2xl mx-auto bg-black/20 border-white/10">
             <CardContent className="p-8">
               <h2 className="text-3xl font-bold text-center text-white mb-6">Get in Touch with the Founder</h2>

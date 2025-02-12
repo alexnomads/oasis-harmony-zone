@@ -56,6 +56,9 @@ export const Header = () => {
                 <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/10">
                   Roadmap
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => scrollToSection("contact")} className="text-white hover:bg-white/10">
+                  Get in Touch
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

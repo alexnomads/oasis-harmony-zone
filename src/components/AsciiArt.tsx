@@ -1,6 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
+import { Timer, Play, Square } from "lucide-react";
+import { Button } from "./ui/button";
+import { useToast } from "./ui/use-toast";
 
 const getAIResponse = (userMessage: string) => {
   const message = userMessage.toLowerCase();
@@ -193,13 +197,52 @@ export const AsciiArt = () => {
   const [messages, setMessages] = useState([
     { 
       role: "agent", 
-      content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. I'm here to help you find balance and mindfulness in the dynamic crypto world. How are you feeling today?", 
+      content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. Let's start with a 60-minute meditation session. Click the timer to begin.", 
       timestamp: new Date() 
     }
   ]);
-
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(60 * 60); // 60 minutes in seconds
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isTimerRunning && timeRemaining > 0) {
+      timer = setInterval(() => {
+        setTimeRemaining((prev) => prev - 1);
+      }, 1000);
+    } else if (timeRemaining === 0 && isTimerRunning) {
+      setIsTimerRunning(false);
+      toast({
+        title: "Meditation Complete! 🎉",
+        description: "60 minutes have been added to your daily progress.",
+      });
+      const newMessage = {
+        role: "agent",
+        content: "Wonderful! You've completed your meditation session. How do you feel? Would you like to share your experience?",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, newMessage]);
+    }
+    return () => clearInterval(timer);
+  }, [isTimerRunning, timeRemaining, toast]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const toggleTimer = () => {
+    setIsTimerRunning(!isTimerRunning);
+  };
+
+  const resetTimer = () => {
+    setIsTimerRunning(false);
+    setTimeRemaining(60 * 60);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,7 +258,6 @@ export const AsciiArt = () => {
     setInputValue("");
     setIsTyping(true);
 
-    // Generate dynamic AI response based on user input
     setTimeout(() => {
       const aiResponse = {
         role: "agent",
@@ -242,17 +284,38 @@ export const AsciiArt = () => {
 
           {/* Chat Simulation Section - 50% */}
           <div className="col-span-1 bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
-            <div className="flex items-center gap-3 border-b border-white/20 pb-4 mb-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden">
-                <img 
-                  src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
-                  alt="Rose of Jericho"
-                  className="w-full h-full object-cover"
-                />
+            <div className="flex items-center justify-between gap-3 border-b border-white/20 pb-4 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
+                    alt="Rose of Jericho"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
+                  <span className="text-white/70 text-sm">AI Wellness Agent</span>
+                </div>
               </div>
-              <div>
-                <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
-                <span className="text-white/70 text-sm">AI Wellness Agent</span>
+              <div className="flex items-center gap-2">
+                <div className="text-white text-xl font-mono">{formatTime(timeRemaining)}</div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={toggleTimer}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  {isTimerRunning ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={resetTimer}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  <Timer className="h-4 w-4" />
+                </Button>
               </div>
             </div>
 

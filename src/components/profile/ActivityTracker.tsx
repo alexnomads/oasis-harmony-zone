@@ -7,12 +7,12 @@ import { Progress } from "@/components/ui/progress";
 export const ActivityTracker = () => {
   // Mock data - would be replaced with real data when connected to backend
   const mockData = {
-    dailyMinutes: 15, // Updated to show complete daily goal
-    weeklyMinutes: 52.5, // Updated to show 50% of weekly goal (105/2)
-    dailyGoal: 15,
+    dailyMinutes: 75, // Updated to include completed meditation
+    weeklyMinutes: 112.5, // Updated weekly progress
+    dailyGoal: 75,
     weeklyGoal: 105,
     totalPoints: 560,
-    currentStreak: 23, // Updated streak
+    currentStreak: 23,
   };
 
   const dailyProgress = (mockData.dailyMinutes / mockData.dailyGoal) * 100;

@@ -9,7 +9,7 @@ export const GetInTouch = () => {
         <CardContent className="p-8">
           <h2 className="text-3xl font-bold text-center text-white mb-6">Get in Touch with the Founder</h2>
           <p className="text-white/80 text-center mb-8">
-            Connect with Alex to learn more about Rose of Jericho and join our mission of bringing mindfulness to the crypto world.
+            Connect with our founder to learn more about Rose of Jericho and join our mission of bringing mindfulness to the crypto community.
           </p>
           <div className="flex justify-center gap-8">
             <a 

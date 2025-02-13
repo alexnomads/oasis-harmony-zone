@@ -19,36 +19,38 @@ const Index = () => {
   });
 
   return (
-    <div className="relative">
+    <div className="relative min-h-screen bg-black">
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-sage origin-left z-50"
+        className="fixed top-0 left-0 right-0 h-1 bg-softOrange origin-left z-50"
         style={{ scaleX }}
       />
       <Header />
-      <div className="pt-16">
-        <div id="hero">
+      <main className="relative">
+        <section id="hero">
           <Hero />
-        </div>
-        <div id="ai-agent-alpha">
+        </section>
+        <section id="ai-agent-alpha">
           <AsciiArt />
-        </div>
-        <div id="programs">
+        </section>
+        <section id="programs">
           <Programs />
-        </div>
-        <div id="subscription-plans">
+        </section>
+        <section id="subscription-plans">
           <SubscriptionPlans />
-        </div>
-        <div id="token">
+        </section>
+        <section id="token">
           <Token />
-        </div>
-        <div id="newsletter">
+        </section>
+        <section id="newsletter">
           <Newsletter />
-        </div>
-        <div id="roadmap">
+        </section>
+        <section id="roadmap">
           <Roadmap />
-        </div>
-        <GetInTouch />
-      </div>
+        </section>
+        <section>
+          <GetInTouch />
+        </section>
+      </main>
     </div>
   );
 };

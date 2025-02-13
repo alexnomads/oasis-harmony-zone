@@ -224,6 +224,9 @@ export const AsciiArt = () => {
   const [selectedDuration, setSelectedDuration] = useState(5);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [soundOption, setSoundOption] = useState<SoundOption>("silent");
+  const [focusLost, setFocusLost] = useState(0);
+  const [lastActiveTimestamp, setLastActiveTimestamp] = useState<Date | null>(null);
+  const [hasMovement, setHasMovement] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -238,13 +241,24 @@ export const AsciiArt = () => {
       }, 1000);
     } else if (timeRemaining === 0 && isTimerRunning) {
       setIsTimerRunning(false);
+      
+      // Verify session quality
+      const sessionQuality = calculateSessionQuality();
+      const rewardEarned = sessionQuality >= 0.7; // 70% quality threshold
+
       toast({
-        title: "Meditation Complete! 🎉",
-        description: `${selectedDuration} minutes have been added to your daily progress.`,
+        title: rewardEarned ? "Meditation Complete! 🎉" : "Meditation Completed with Issues",
+        description: rewardEarned 
+          ? `Great job! ${selectedDuration} minutes have been added to your progress and rewards earned.`
+          : "Session completed but quality threshold not met. Try to maintain better focus next time.",
+        variant: rewardEarned ? "default" : "destructive"
       });
+
       const newMessage: Message = {
         role: "agent",
-        content: "Wonderful! You've completed your meditation session. How do you feel? Would you like to share your experience?",
+        content: rewardEarned 
+          ? "Wonderful! You've completed your meditation session successfully. How do you feel? Would you like to share your experience?"
+          : "Session complete, but I noticed some distractions. Would you like tips for maintaining better focus next time?",
         timestamp: new Date(),
         showMeditationStart: false
       };
@@ -252,6 +266,67 @@ export const AsciiArt = () => {
     }
     return () => clearInterval(timer);
   }, [isTimerRunning, timeRemaining, toast, selectedDuration]);
+
+  const calculateSessionQuality = () => {
+    let quality = 1.0;
+    
+    // Deduct for tab switches
+    quality -= (focusLost * 0.2); // -20% per tab switch
+    
+    // Deduct for excessive movement
+    if (hasMovement) {
+      quality -= 0.3; // -30% for excessive movement
+    }
+    
+    return Math.max(0, quality); // Don't go below 0
+  };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (isTimerRunning) {
+        if (document.hidden) {
+          setFocusLost(prev => prev + 1);
+          toast({
+            title: "Focus Lost",
+            description: "Please stay on this tab during meditation.",
+            variant: "destructive"
+          });
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [isTimerRunning, toast]);
+
+  useEffect(() => {
+    if (!isTimerRunning) return;
+
+    const handleActivity = () => {
+      if (isTimerRunning) {
+        const now = new Date();
+        if (lastActiveTimestamp) {
+          const timeDiff = now.getTime() - lastActiveTimestamp.getTime();
+          if (timeDiff < 500) { // Excessive movement detection
+            setHasMovement(true);
+            toast({
+              title: "Movement Detected",
+              description: "Try to remain still during meditation.",
+              variant: "destructive"
+            });
+          }
+        }
+        setLastActiveTimestamp(now);
+      }
+    };
+
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("keydown", handleActivity);
+    return () => {
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+    };
+  }, [isTimerRunning, lastActiveTimestamp, toast]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -310,7 +385,6 @@ export const AsciiArt = () => {
     <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 items-stretch">
-          {/* Profile Section - 50% */}
           <div className="col-span-1 h-[600px]">
             <div className="h-full bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20">
               <div className="h-full overflow-y-auto">
@@ -319,7 +393,6 @@ export const AsciiArt = () => {
             </div>
           </div>
 
-          {/* Chat Simulation Section - 50% */}
           <div className="col-span-1 bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
             <div className="flex flex-col gap-4 border-b border-white/20 pb-4 mb-4">
               <div className="flex items-center justify-between gap-3">
@@ -357,7 +430,6 @@ export const AsciiArt = () => {
                 </div>
               </div>
 
-              {/* Timer Duration and Sound Controls */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm text-white/70">Duration (minutes)</label>

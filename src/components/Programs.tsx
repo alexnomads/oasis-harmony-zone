@@ -84,7 +84,7 @@ export const Programs = () => {
                   {program.title === "Community Sessions" && (
                     <Button 
                       className="w-full bg-white/10 hover:bg-white/20 text-white mt-4"
-                      onClick={() => window.open('https://RoseOfJerichoweb3', '_blank')}
+                      onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Join Our Telegram Group

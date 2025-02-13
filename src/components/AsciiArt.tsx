@@ -13,6 +13,15 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 
+type Message = {
+  role: "user" | "agent";
+  content: string;
+  timestamp: Date;
+  showMeditationStart: boolean;
+};
+
+type SoundOption = "silent" | "forest" | "waves" | "birds";
+
 const getAIResponse = (userMessage: string) => {
   const message = userMessage.toLowerCase();
   const responses = {
@@ -200,10 +209,8 @@ const getAIResponse = (userMessage: string) => {
   What specific aspect would you like to explore?`;
 };
 
-type SoundOption = "silent" | "forest" | "waves" | "birds";
-
 export const AsciiArt = () => {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { 
       role: "agent", 
       content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. Select your meditation duration and sound preference above. When you're ready, click the button below to begin.", 
@@ -235,10 +242,11 @@ export const AsciiArt = () => {
         title: "Meditation Complete! 🎉",
         description: `${selectedDuration} minutes have been added to your daily progress.`,
       });
-      const newMessage = {
+      const newMessage: Message = {
         role: "agent",
         content: "Wonderful! You've completed your meditation session. How do you feel? Would you like to share your experience?",
-        timestamp: new Date()
+        timestamp: new Date(),
+        showMeditationStart: false
       };
       setMessages(prev => [...prev, newMessage]);
     }
@@ -262,10 +270,11 @@ export const AsciiArt = () => {
 
   const startMeditation = () => {
     setIsTimerRunning(true);
-    const newMessage = {
+    const newMessage: Message = {
       role: "agent",
       content: `Starting ${selectedDuration}-minute meditation with ${soundOption === "silent" ? "no sound" : `${soundOption} sounds`}. Find a comfortable position and close your eyes. I'll be here when you're done.`,
-      timestamp: new Date()
+      timestamp: new Date(),
+      showMeditationStart: false
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -274,10 +283,11 @@ export const AsciiArt = () => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    const newUserMessage = {
+    const newUserMessage: Message = {
       role: "user",
       content: inputValue,
-      timestamp: new Date()
+      timestamp: new Date(),
+      showMeditationStart: false
     };
 
     setMessages(prev => [...prev, newUserMessage]);
@@ -285,7 +295,7 @@ export const AsciiArt = () => {
     setIsTyping(true);
 
     setTimeout(() => {
-      const aiResponse = {
+      const aiResponse: Message = {
         role: "agent",
         content: getAIResponse(inputValue),
         timestamp: new Date(),

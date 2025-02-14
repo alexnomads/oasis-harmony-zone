@@ -260,7 +260,7 @@ export const AsciiArt = () => {
       // Show sharing dialog for successful meditations
       if (rewardEarned) {
         const referralCode = "ROJ123";
-        const referralUrl = `https://rojoasis.com/join?ref=${referralCode}`;
+        const referralUrl = `https://roseofjericho.xyz/join?ref=${referralCode}`;
         
         const tweetText = encodeURIComponent(
           `I just finished a meditation on @ROJOasis and I feel better.\n\nGet rewards when you take care of yourself! ${referralUrl}`

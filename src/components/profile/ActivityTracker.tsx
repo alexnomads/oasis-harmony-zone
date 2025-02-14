@@ -37,8 +37,8 @@ export const ActivityTracker = () => {
   const weeklyProgress = (mockData.weeklyMinutes / mockData.weeklyGoal) * 100;
 
   const handleShare = async (date: string) => {
-    // Create referral URL - in production this would be your actual domain
-    const referralUrl = `https://rojoasis.com/join?ref=${mockData.referralCode}`;
+    // Create referral URL with the new domain
+    const referralUrl = `https://roseofjericho.xyz/join?ref=${mockData.referralCode}`;
     
     const tweetText = encodeURIComponent(
       `I just finished a meditation on @ROJOasis and I feel better.\n\nGet rewards when you take care of yourself! ${referralUrl}`

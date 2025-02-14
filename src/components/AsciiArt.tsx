@@ -259,17 +259,22 @@ export const AsciiArt = () => {
 
       // Show sharing dialog for successful meditations
       if (rewardEarned) {
-        const tweetText = encodeURIComponent("I just finished a meditation on @ROJOasis and I feel better");
+        const referralCode = "ROJ123";
+        const referralUrl = `https://rojoasis.com/join?ref=${referralCode}`;
+        
+        const tweetText = encodeURIComponent(
+          `I just finished a meditation on @ROJOasis and I feel better.\n\nGet rewards when you take care of yourself! ${referralUrl}`
+        );
         
         // Ask user if they want to share
-        if (window.confirm("Would you like to share your achievement on X (Twitter) and earn extra points?")) {
+        if (window.confirm("Would you like to share your achievement on X (Twitter) and earn referral rewards?")) {
           // Use direct URL instead of popup
-          window.location.href = `https://twitter.com/intent/tweet?text=${tweetText}`;
+          window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
           
           // Award extra points for sharing
           toast({
-            title: "Bonus Points Earned! 🌟",
-            description: "Thank you for sharing! Extra points have been added to your account.",
+            title: "Bonus Points & Referral Link Shared! 🌟",
+            description: "Thank you for sharing! You've earned bonus points and will receive additional rewards when people join using your referral link!",
           });
         }
       }
@@ -277,7 +282,7 @@ export const AsciiArt = () => {
       const newMessage: Message = {
         role: "agent",
         content: rewardEarned 
-          ? "Wonderful! You've completed your meditation session successfully. How do you feel? Would you like to share your experience?"
+          ? "Wonderful! You've completed your meditation session successfully. Share your achievement to earn referral rewards when others join!"
           : "Session complete, but I noticed some distractions. Would you like tips for maintaining better focus next time?",
         timestamp: new Date(),
         showMeditationStart: false

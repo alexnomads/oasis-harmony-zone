@@ -23,6 +23,7 @@ export const ActivityTracker = () => {
     weeklyGoal: 105,
     totalPoints: 560,
     currentStreak: 23,
+    referralCode: "ROJ123", // Mock referral code - would be unique per user
     meditationHistory: [
       { date: "2024-03-14", duration: 15, points: 30, shared: true },
       { date: "2024-03-13", duration: 20, points: 40 },
@@ -36,7 +37,13 @@ export const ActivityTracker = () => {
   const weeklyProgress = (mockData.weeklyMinutes / mockData.weeklyGoal) * 100;
 
   const handleShare = async (date: string) => {
-    const tweetText = encodeURIComponent("I just finished a meditation on @ROJOasis and I feel better");
+    // Create referral URL - in production this would be your actual domain
+    const referralUrl = `https://rojoasis.com/join?ref=${mockData.referralCode}`;
+    
+    const tweetText = encodeURIComponent(
+      `I just finished a meditation on @ROJOasis and I feel better.\n\nGet rewards when you take care of yourself! ${referralUrl}`
+    );
+    
     // Open in a new tab instead of redirecting
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
     
@@ -44,7 +51,7 @@ export const ActivityTracker = () => {
     console.log("Tweet shared! Awarding extra points...");
     toast({
       title: "Bonus Points Earned! 🌟",
-      description: "Thank you for sharing! Extra points have been added to your account.",
+      description: "Thank you for sharing! Extra points have been added to your account. You'll earn additional rewards when people join using your referral link!",
     });
   };
 
@@ -61,6 +68,7 @@ export const ActivityTracker = () => {
             <button 
               onClick={() => handleShare(session.date)}
               className="text-softPurple hover:text-softPurple/80 transition-colors"
+              title="Share and earn referral rewards"
             >
               <Share2 className="w-4 h-4" />
             </button>

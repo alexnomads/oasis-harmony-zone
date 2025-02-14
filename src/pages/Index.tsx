@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { Newsletter } from "@/components/Newsletter";
 import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 import { GetInTouch } from "@/components/GetInTouch";
+import { Testimonials } from "@/components/Testimonials";
 
 const Index = () => {
   const { scrollYProgress } = useScroll();
@@ -46,6 +47,9 @@ const Index = () => {
         </section>
         <section id="roadmap">
           <Roadmap />
+        </section>
+        <section id="testimonials">
+          <Testimonials />
         </section>
         <section>
           <GetInTouch />

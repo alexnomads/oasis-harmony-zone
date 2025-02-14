@@ -1,0 +1,57 @@
+
+import { motion } from "framer-motion";
+import { Tweet } from 'react-tweet';
+
+export const Testimonials = () => {
+  return (
+    <section className="py-16 bg-black">
+      <div className="container mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
+            Testimonials
+          </span>
+          <h2 className="text-4xl font-bold mb-4 text-white">
+            Community Feedback
+          </h2>
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
+            See what our community members are saying about their experiences
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-black/20 rounded-xl p-4"
+          >
+            <Tweet id="1884675578495635578" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="bg-black/20 rounded-xl p-4"
+          >
+            <Tweet id="1886523932330627224" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-black/20 rounded-xl p-4"
+          >
+            <Tweet id="1884682972248371583" />
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};

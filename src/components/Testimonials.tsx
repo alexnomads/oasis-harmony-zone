@@ -19,7 +19,7 @@ export const Testimonials = () => {
             Testimonials
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            See what our community members and partners are saying about Rose of Jericho
+            See what our community members are saying about Rose of Jericho
           </p>
         </motion.div>
 

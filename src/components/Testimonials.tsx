@@ -13,13 +13,13 @@ export const Testimonials = () => {
           className="text-center mb-12"
         >
           <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
-            Testimonials
+            They say about us
           </span>
           <h2 className="text-4xl font-bold mb-4 text-white">
-            Community Feedback
+            Testimonials
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            See what our community members are saying about their experiences
+            See what our community members and partners are saying about Rose of Jericho
           </p>
         </motion.div>
 

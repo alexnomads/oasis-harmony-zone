@@ -23,7 +23,7 @@ export const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -49,6 +49,23 @@ export const Testimonials = () => {
             className="bg-black/20 rounded-xl p-4"
           >
             <Tweet id="1884682972248371583" />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="bg-black/20 rounded-xl p-4 flex items-center justify-center"
+          >
+            <iframe 
+              src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7294695290186432512" 
+              height="863" 
+              width="100%" 
+              frameBorder="0" 
+              allowFullScreen 
+              title="Embedded LinkedIn post"
+              className="max-w-full"
+            />
           </motion.div>
         </div>
       </div>

@@ -1,22 +1,47 @@
 
 import { motion } from "framer-motion";
-import { Timer, Calendar, History } from "lucide-react";
+import { Timer, Calendar, History, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const ActivityTracker = () => {
   // Mock data - would be replaced with real data when connected to backend
   const mockData = {
-    dailyMinutes: 75, // Updated to include completed meditation
-    weeklyMinutes: 112.5, // Updated weekly progress
+    dailyMinutes: 75,
+    weeklyMinutes: 112.5,
     dailyGoal: 75,
     weeklyGoal: 105,
     totalPoints: 560,
     currentStreak: 23,
+    meditationHistory: [
+      { date: "2024-03-14", duration: 15, points: 30, shared: true },
+      { date: "2024-03-13", duration: 20, points: 40 },
+      { date: "2024-03-12", duration: 10, points: 20 },
+      { date: "2024-03-11", duration: 30, points: 60, shared: true },
+      { date: "2024-03-10", duration: 5, points: 10 },
+    ]
   };
 
   const dailyProgress = (mockData.dailyMinutes / mockData.dailyGoal) * 100;
   const weeklyProgress = (mockData.weeklyMinutes / mockData.weeklyGoal) * 100;
+
+  const handleShare = async () => {
+    const tweetText = encodeURIComponent("I just finished a meditation on @ROJOasis and I feel better");
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+    
+    // Open Twitter sharing dialog
+    window.open(tweetUrl, 'Share on Twitter', 'width=550,height=420');
+    
+    // In a real implementation, we would track the share and award points here
+    console.log("Tweet shared! Awarding extra points...");
+  };
 
   return (
     <Card className="bg-black/20 border-white/10">
@@ -57,16 +82,41 @@ export const ActivityTracker = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-4">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="p-4 bg-black/30 rounded-lg cursor-pointer"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <History className="w-4 h-4 text-softOrange" />
-              <h4 className="text-sm font-medium text-white">Points History</h4>
-            </div>
-            <p className="text-2xl font-bold text-softOrange">{mockData.totalPoints} pts</p>
-          </motion.div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="p-4 bg-black/30 rounded-lg cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <History className="w-4 h-4 text-softOrange" />
+                  <h4 className="text-sm font-medium text-white">Meditation History</h4>
+                </div>
+                <p className="text-2xl font-bold text-softOrange">{mockData.totalPoints} pts</p>
+              </motion.div>
+            </DialogTrigger>
+            <DialogContent className="bg-black/90 border-white/10">
+              <DialogHeader>
+                <DialogTitle className="text-white">Meditation History</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                {mockData.meditationHistory.map((session, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded-lg border border-white/10">
+                    <div className="space-y-1">
+                      <p className="text-white text-sm">{new Date(session.date).toLocaleDateString()}</p>
+                      <p className="text-white/70 text-xs">{session.duration} minutes</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-softOrange font-medium">{session.points} pts</span>
+                      {session.shared && (
+                        <Share2 className="w-4 h-4 text-softPurple" />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <motion.div 
             whileHover={{ scale: 1.02 }}

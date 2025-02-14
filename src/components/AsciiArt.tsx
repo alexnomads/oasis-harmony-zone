@@ -257,6 +257,23 @@ export const AsciiArt = () => {
         variant: rewardEarned ? "default" : "destructive"
       });
 
+      // Show sharing dialog for successful meditations
+      if (rewardEarned) {
+        const tweetText = encodeURIComponent("I just finished a meditation on @ROJOasis and I feel better");
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+        
+        // Ask user if they want to share
+        if (window.confirm("Would you like to share your achievement on X (Twitter) and earn extra points?")) {
+          window.open(tweetUrl, 'Share on Twitter', 'width=550,height=420');
+          
+          // Award extra points for sharing
+          toast({
+            title: "Bonus Points Earned! 🌟",
+            description: "Thank you for sharing! Extra points have been added to your account.",
+          });
+        }
+      }
+
       const newMessage: Message = {
         role: "agent",
         content: rewardEarned 

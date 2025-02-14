@@ -11,13 +11,13 @@ Our AI-powered wellness platform is built specifically for crypto professionals,
 
 To access the platform, users must buy $ROJ (1 month, 20$ in $ROJ). 
 
-Key Features:
-Personalized meditation and fitness plans.
-Token-gated access to advanced AI features.
-Rewards for maintaining wellness streaks.
-Integration with wearable devices and health data.
-Bonus Offering: Real-life pop-up wellness spaces at crypto conferences for networking and stress relief.
-Website (WIP) https://oasis-harmony-zone.lovable.app/ 
+Key Features:<br>
+Personalized meditation and fitness plans.<br>
+Token-gated access to advanced AI features.<br>
+Rewards for maintaining wellness streaks.<br>
+Integration with wearable devices and health data.<br>
+Bonus Offering: Real-life pop-up wellness spaces at crypto conferences for networking and stress relief.<br>
+Website (WIP) https://oasis-harmony-zone.lovable.app/ <br>
 
 Key Offering: The AI Wellness Agent
 What Is It?

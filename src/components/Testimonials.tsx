@@ -55,7 +55,7 @@ export const Testimonials = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="bg-black/20 rounded-xl p-4 flex items-center justify-center"
+            className="bg-black/20 rounded-xl p-4"
           >
             <iframe 
               src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7294695290186432512" 

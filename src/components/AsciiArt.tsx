@@ -517,7 +517,7 @@ export const AsciiArt = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm text-white/70">Duration (minutes)</label>
+                  <label className="text-sm text-white/70">Duration</label>
                   <Select 
                     value={selectedDuration.toString()}
                     onValueChange={(value) => setSelectedDuration(Number(value))}
@@ -526,6 +526,8 @@ export const AsciiArt = () => {
                       <SelectValue placeholder="Select duration" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="0.5">30 seconds</SelectItem>
+                      <SelectItem value="1">1 minute</SelectItem>
                       <SelectItem value="5">5 minutes</SelectItem>
                       <SelectItem value="10">10 minutes</SelectItem>
                       <SelectItem value="15">15 minutes</SelectItem>

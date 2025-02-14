@@ -37,8 +37,8 @@ export const ActivityTracker = () => {
 
   const handleShare = async (date: string) => {
     const tweetText = encodeURIComponent("I just finished a meditation on @ROJOasis and I feel better");
-    // Instead of opening a popup, redirect to Twitter's share URL
-    window.location.href = `https://twitter.com/intent/tweet?text=${tweetText}`;
+    // Open in a new tab instead of redirecting
+    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
     
     // In a real implementation, we would track the share and award points here
     console.log("Tweet shared! Awarding extra points...");

@@ -260,11 +260,11 @@ export const AsciiArt = () => {
       // Show sharing dialog for successful meditations
       if (rewardEarned) {
         const tweetText = encodeURIComponent("I just finished a meditation on @ROJOasis and I feel better");
-        const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
         
         // Ask user if they want to share
         if (window.confirm("Would you like to share your achievement on X (Twitter) and earn extra points?")) {
-          window.open(tweetUrl, 'Share on Twitter', 'width=550,height=420');
+          // Use direct URL instead of popup
+          window.location.href = `https://twitter.com/intent/tweet?text=${tweetText}`;
           
           // Award extra points for sharing
           toast({

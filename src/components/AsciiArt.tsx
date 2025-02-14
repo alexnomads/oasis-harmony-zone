@@ -227,6 +227,9 @@ export const AsciiArt = () => {
   const [focusLost, setFocusLost] = useState(0);
   const [lastActiveTimestamp, setLastActiveTimestamp] = useState<Date | null>(null);
   const [hasMovement, setHasMovement] = useState(false);
+  const [windowBlurs, setWindowBlurs] = useState(0);
+  const [sessionId] = useState(`${Date.now()}-${Math.random()}`);
+  const [lastActiveWindow, setLastActiveWindow] = useState<Date>(new Date());
   const { toast } = useToast();
 
   useEffect(() => {
@@ -266,20 +269,6 @@ export const AsciiArt = () => {
     }
     return () => clearInterval(timer);
   }, [isTimerRunning, timeRemaining, toast, selectedDuration]);
-
-  const calculateSessionQuality = () => {
-    let quality = 1.0;
-    
-    // Deduct for tab switches
-    quality -= (focusLost * 0.2); // -20% per tab switch
-    
-    // Deduct for excessive movement
-    if (hasMovement) {
-      quality -= 0.3; // -30% for excessive movement
-    }
-    
-    return Math.max(0, quality); // Don't go below 0
-  };
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -328,6 +317,95 @@ export const AsciiArt = () => {
     };
   }, [isTimerRunning, lastActiveTimestamp, toast]);
 
+  useEffect(() => {
+    if (!isTimerRunning) return;
+
+    // Track window blur events (user switching to other windows)
+    const handleWindowBlur = () => {
+      if (isTimerRunning) {
+        setWindowBlurs(prev => prev + 1);
+        toast({
+          title: "Window Switch Detected",
+          description: "Please keep this window focused during meditation.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    // Track window focus to detect potential multi-window/browser usage
+    const handleWindowFocus = () => {
+      if (isTimerRunning) {
+        const now = new Date();
+        const timeSinceLastActive = now.getTime() - lastActiveWindow.getTime();
+        
+        // If time since last active is suspiciously short (indicating multiple windows)
+        if (timeSinceLastActive < 1000) {
+          toast({
+            title: "Multiple Windows Detected",
+            description: "Please use only one window during meditation.",
+            variant: "destructive"
+          });
+        }
+        setLastActiveWindow(now);
+      }
+    };
+
+    // Store session in localStorage to detect multiple browsers
+    const checkMultipleBrowsers = () => {
+      const currentSession = {
+        id: sessionId,
+        timestamp: Date.now(),
+      };
+
+      // Store current session
+      localStorage.setItem('meditationSession', JSON.stringify(currentSession));
+
+      // Check for other sessions
+      const broadcastChannel = new BroadcastChannel('meditation_channel');
+      broadcastChannel.postMessage({ type: 'SESSION_CHECK', sessionId });
+
+      broadcastChannel.onmessage = (event) => {
+        if (event.data.type === 'SESSION_CHECK' && event.data.sessionId !== sessionId) {
+          toast({
+            title: "Multiple Browsers Detected",
+            description: "Please use only one browser window for meditation.",
+            variant: "destructive"
+          });
+          setIsTimerRunning(false); // Stop the session
+        }
+      };
+
+      return () => broadcastChannel.close();
+    };
+
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+    const cleanup = checkMultipleBrowsers();
+
+    return () => {
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
+      cleanup();
+    };
+  }, [isTimerRunning, sessionId, lastActiveWindow, toast]);
+
+  const calculateSessionQuality = () => {
+    let quality = 1.0;
+    
+    // Deduct for tab switches
+    quality -= (focusLost * 0.2); // -20% per tab switch
+    
+    // Deduct for window switches
+    quality -= (windowBlurs * 0.2); // -20% per window switch
+    
+    // Deduct for excessive movement
+    if (hasMovement) {
+      quality -= 0.3; // -30% for excessive movement
+    }
+    
+    return Math.max(0, quality); // Don't go below 0
+  };
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -344,10 +422,17 @@ export const AsciiArt = () => {
   };
 
   const startMeditation = () => {
+    // Clear any existing sessions
+    localStorage.removeItem('meditationSession');
+    
     setIsTimerRunning(true);
+    setWindowBlurs(0);
+    setFocusLost(0);
+    setHasMovement(false);
+    
     const newMessage: Message = {
       role: "agent",
-      content: `Starting ${selectedDuration}-minute meditation with ${soundOption === "silent" ? "no sound" : `${soundOption} sounds`}. Find a comfortable position and close your eyes. I'll be here when you're done.`,
+      content: `Starting ${selectedDuration}-minute meditation with ${soundOption === "silent" ? "no" : soundOption} sounds. Find a comfortable position and close your eyes. I'll be here when you're done.`,
       timestamp: new Date(),
       showMeditationStart: false
     };

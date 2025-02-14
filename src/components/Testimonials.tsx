@@ -55,16 +55,16 @@ export const Testimonials = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="bg-black/20 rounded-xl p-4"
+            className="bg-black/20 rounded-xl p-4 h-[600px] overflow-hidden"
           >
             <iframe 
               src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7294695290186432512" 
-              height="863" 
+              height="600"
               width="100%" 
               frameBorder="0" 
               allowFullScreen 
               title="Embedded LinkedIn post"
-              className="max-w-full"
+              className="max-w-full -mt-16"
             />
           </motion.div>
         </div>

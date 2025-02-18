@@ -33,7 +33,7 @@ export const Token = () => {
       image: "https://images.unsplash.com/photo-1518770660439-4636190af475"
     },
     {
-      text: "Token rewards for participation in wellness activities or referrals.",
+      text: "COMING UP! Token rewards for participation in wellness activities or referrals.",
       image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
     }
   ];

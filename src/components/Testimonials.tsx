@@ -1,5 +1,7 @@
+
 import { motion } from "framer-motion";
 import { Tweet } from 'react-tweet';
+
 export const Testimonials = () => {
   return <section className="py-16 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
       <div className="container mx-auto px-6">
@@ -32,7 +34,7 @@ export const Testimonials = () => {
           duration: 0.6,
           delay: 0.2
         }} className="bg-black/20 rounded-xl p-4">
-            <Tweet id="1884675578495635578" />
+            <Tweet id="1890440940772352257" />
           </motion.div>
           
           <motion.div initial={{

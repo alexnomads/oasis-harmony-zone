@@ -29,7 +29,7 @@ export const Token = () => {
       image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
     },
     {
-      text: "Exclusive networking opportunities within the Rose of Jericho (ROJ) community.",
+      text: "COMING UP! Exclusive networking opportunities within the Rose of Jericho (ROJ) community.",
       image: "https://images.unsplash.com/photo-1518770660439-4636190af475"
     },
     {

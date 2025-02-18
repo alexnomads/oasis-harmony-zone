@@ -25,7 +25,7 @@ export const Token = () => {
       image: "/lovable-uploads/4e55ca27-b008-4b6e-b6ce-840accb1245f.png"
     },
     {
-      text: "Priority booking for activities and services.",
+      text: "COMING UP! Priority booking for activities and services.",
       image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
     },
     {

@@ -51,7 +51,7 @@ export const ActivityTracker = () => {
     console.log("Tweet shared! Awarding extra points...");
     toast({
       title: "Bonus Points Earned! 🌟",
-      description: "Thank you for sharing! Extra points have been added to your account. You'll earn additional rewards when people join using your referral link!",
+      description: "Thanks for sharing! Extra points have been added to your account. You'll earn additional rewards when people join using your referral link!",
     });
   };
 

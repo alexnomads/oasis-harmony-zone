@@ -153,7 +153,7 @@ export const ActivityTracker = () => {
             </DialogTrigger>
             <DialogContent className="bg-black/90 border-white/10">
               <DialogHeader>
-                <DialogTitle className="text-white">Meditation History</DialogTitle>
+                <DialogTitle className="text-white">Your Meditation History</DialogTitle>
               </DialogHeader>
               <MeditationHistoryContent />
             </DialogContent>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
@@ -311,6 +310,7 @@ export const AsciiArt = () => {
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [isTimerRunning, toast]);
 
+  // Update the movement detection logic to only trigger on significant movement
   useEffect(() => {
     if (!isTimerRunning) return;
 
@@ -319,7 +319,13 @@ export const AsciiArt = () => {
         const now = new Date();
         if (lastActiveTimestamp) {
           const timeDiff = now.getTime() - lastActiveTimestamp.getTime();
-          if (timeDiff < 500) { // Excessive movement detection
+          // Only detect excessive movement (more frequent than every 500ms)
+          // This prevents false positives from subtle screen movements
+          if (timeDiff < 500 && (
+            // Consider mouse movement significant only if it's deliberate
+            event instanceof MouseEvent && 
+            (Math.abs(event.movementX) > 10 || Math.abs(event.movementY) > 10)
+          )) {
             setHasMovement(true);
             toast({
               title: "Movement Detected",
@@ -495,20 +501,13 @@ export const AsciiArt = () => {
       <AnimatePresence>
         {isTimerRunning && (
           <motion.div
-            className="absolute z-10"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              pointerEvents: 'none', // So users can click through it
-            }}
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <motion.div
-              className="relative"
+              className="relative flex items-center justify-center"
               animate={{
                 scale: [1, 1.2, 1],
               }}
@@ -520,7 +519,7 @@ export const AsciiArt = () => {
             >
               {/* Main bubble */}
               <motion.div
-                className="w-64 h-64 rounded-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange opacity-30 blur-xl"
+                className="w-80 h-80 rounded-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange opacity-30 blur-xl"
                 animate={{
                   scale: [1, 1.1, 1],
                   opacity: [0.3, 0.5, 0.3],
@@ -534,7 +533,7 @@ export const AsciiArt = () => {
               
               {/* Inner bubble */}
               <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-gradient-to-tl from-softPurple to-softOrange opacity-40 blur-md"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 rounded-full bg-gradient-to-tl from-softPurple to-softOrange opacity-40 blur-md"
                 animate={{
                   scale: [1, 1.3, 1],
                   opacity: [0.4, 0.6, 0.4],
@@ -549,10 +548,10 @@ export const AsciiArt = () => {
               
               {/* Core light */}
               <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-white opacity-70 blur-sm"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-white opacity-50 blur-sm"
                 animate={{
                   scale: [1, 1.2, 1],
-                  opacity: [0.7, 0.9, 0.7],
+                  opacity: [0.5, 0.7, 0.5],
                 }}
                 transition={{
                   duration: 2,
@@ -561,23 +560,30 @@ export const AsciiArt = () => {
                 }}
               />
               
+              {/* Timer display in center */}
+              <div className="absolute flex items-center justify-center z-10">
+                <div className="text-white text-6xl font-bold drop-shadow-lg">
+                  {formatTime(timeRemaining)}
+                </div>
+              </div>
+              
               {/* Particles */}
               <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72"
               >
-                {[...Array(12)].map((_, i) => (
+                {[...Array(16)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="absolute w-2 h-2 rounded-full bg-white opacity-70"
+                    className="absolute w-3 h-3 rounded-full bg-white opacity-70"
                     style={{
-                      top: `${50 + 35 * Math.sin(i * (Math.PI / 6))}%`,
-                      left: `${50 + 35 * Math.cos(i * (Math.PI / 6))}%`,
+                      top: `${50 + 40 * Math.sin(i * (Math.PI / 8))}%`,
+                      left: `${50 + 40 * Math.cos(i * (Math.PI / 8))}%`,
                     }}
                     animate={{
                       scale: [1, 1.5, 1],
                       opacity: [0.7, 1, 0.7],
-                      x: [0, Math.random() * 10 - 5, 0],
-                      y: [0, Math.random() * 10 - 5, 0],
+                      x: [0, Math.random() * 15 - 7.5, 0],
+                      y: [0, Math.random() * 15 - 7.5, 0],
                     }}
                     transition={{
                       duration: 3 + Math.random() * 2,

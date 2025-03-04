@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
 import { Timer, Play, Square, Volume2, VolumeX } from "lucide-react";
 import { Button } from "./ui/button";
@@ -489,7 +490,109 @@ export const AsciiArt = () => {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12">
+    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12 relative">
+      {/* Energy Bubble - only visible during meditation */}
+      <AnimatePresence>
+        {isTimerRunning && (
+          <motion.div
+            className="absolute z-10"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none', // So users can click through it
+            }}
+          >
+            <motion.div
+              className="relative"
+              animate={{
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              {/* Main bubble */}
+              <motion.div
+                className="w-64 h-64 rounded-full bg-gradient-to-br from-vibrantPurple to-vibrantOrange opacity-30 blur-xl"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              {/* Inner bubble */}
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full bg-gradient-to-tl from-softPurple to-softOrange opacity-40 blur-md"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.4, 0.6, 0.4],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              />
+              
+              {/* Core light */}
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-white opacity-70 blur-sm"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.7, 0.9, 0.7],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              {/* Particles */}
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56"
+              >
+                {[...Array(12)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 rounded-full bg-white opacity-70"
+                    style={{
+                      top: `${50 + 35 * Math.sin(i * (Math.PI / 6))}%`,
+                      left: `${50 + 35 * Math.cos(i * (Math.PI / 6))}%`,
+                    }}
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.7, 1, 0.7],
+                      x: [0, Math.random() * 10 - 5, 0],
+                      y: [0, Math.random() * 10 - 5, 0],
+                    }}
+                    transition={{
+                      duration: 3 + Math.random() * 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.2
+                    }}
+                  />
+                ))}
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 items-stretch">
           <div className="col-span-1 h-[600px]">

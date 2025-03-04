@@ -21,7 +21,7 @@ export const isSupportedNetwork = (chainId: number | null): boolean => {
   return supportedNetworks.includes(chainId);
 };
 
-// Switch to a specific network
+// Switch to a specific network - using secure practices
 export const switchNetwork = async (
   provider: ethers.providers.Web3Provider | null,
   targetChainId: number
@@ -29,9 +29,12 @@ export const switchNetwork = async (
   if (!provider || !window.ethereum) return false;
 
   try {
+    // Use ethers.utils.hexValue for secure hex conversion
+    const chainIdHex = ethers.utils.hexValue(targetChainId);
+    
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: `0x${targetChainId.toString(16)}` }],
+      params: [{ chainId: chainIdHex }],
     });
     return true;
   } catch (error: any) {
@@ -39,18 +42,14 @@ export const switchNetwork = async (
     if (error.code === 4902) {
       try {
         // Add the network (this would require network details)
-        // This is a simplified example
+        const chainIdHex = ethers.utils.hexValue(targetChainId);
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [
             {
-              chainId: `0x${targetChainId.toString(16)}`,
+              chainId: chainIdHex,
               chainName: getNetworkName(targetChainId),
-              nativeCurrency: {
-                name: 'Ether',
-                symbol: 'ETH',
-                decimals: 18,
-              },
+              nativeCurrency: getNativeCurrency(targetChainId),
               rpcUrls: [getNetworkRPC(targetChainId)],
               blockExplorerUrls: [getNetworkExplorer(targetChainId)],
             },
@@ -77,6 +76,17 @@ function getNetworkName(chainId: number): string {
     10: 'Optimism',
   };
   return networks[chainId] || 'Unknown Network';
+}
+
+function getNativeCurrency(chainId: number): { name: string; symbol: string; decimals: number } {
+  const currencies: Record<number, { name: string; symbol: string; decimals: number }> = {
+    1: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    137: { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+    56: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+    42161: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    10: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  };
+  return currencies[chainId] || { name: 'Ether', symbol: 'ETH', decimals: 18 };
 }
 
 function getNetworkRPC(chainId: number): string {

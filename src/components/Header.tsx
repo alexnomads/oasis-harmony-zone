@@ -1,5 +1,5 @@
 
-import { Menu, Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, Wallet } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { RegisterForm } from "./auth/RegisterForm";
@@ -10,10 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { formatAddress } from "@/utils/web3Utils";
 
 export const Header = () => {
   const { theme, setTheme } = useTheme();
   const [showSignIn, setShowSignIn] = useState(false);
+  const { account, connectWallet, disconnectWallet } = useWeb3();
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -87,13 +90,31 @@ export const Header = () => {
               )}
             </Button>
             <div className="relative">
-              <Button
-                variant="outline"
-                className="border-white text-white bg-transparent hover:bg-white/10"
-                onClick={() => setShowSignIn(!showSignIn)}
-              >
-                Sign In
-              </Button>
+              {account ? (
+                <Button
+                  variant="outline"
+                  className="border-white text-white bg-transparent hover:bg-white/10"
+                  onClick={() => setShowSignIn(!showSignIn)}
+                >
+                  <Wallet className="mr-2 h-4 w-4" />
+                  {formatAddress(account)}
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="border-white text-white bg-transparent hover:bg-white/10"
+                  onClick={() => {
+                    if (showSignIn) {
+                      setShowSignIn(false);
+                    } else {
+                      connectWallet();
+                    }
+                  }}
+                >
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Connect
+                </Button>
+              )}
               {showSignIn && (
                 <div className="absolute right-0 mt-2">
                   <RegisterForm />

@@ -4,9 +4,25 @@ import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const SubscriptionPlans = () => {
   const [isYearly, setIsYearly] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<null | {
+    title: string;
+    price: number;
+  }>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { account, connectWallet } = useWeb3();
+  const { toast } = useToast();
 
   const plans = [
     {
@@ -44,8 +60,40 @@ export const SubscriptionPlans = () => {
     }
   ];
 
+  const handlePurchase = async () => {
+    if (!account) {
+      connectWallet();
+      return;
+    }
+
+    if (!selectedPlan) return;
+
+    setIsProcessing(true);
+    
+    // Simulate transaction processing
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast({
+        title: "Subscription Activated",
+        description: `You've successfully subscribed to the ${selectedPlan.title}! Enjoy your ROJ experience.`,
+      });
+      
+      setSelectedPlan(null);
+    } catch (error) {
+      console.error("Subscription error:", error);
+      toast({
+        title: "Subscription Failed",
+        description: "There was an error processing your subscription. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
-    <section className="py-16 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
+    <section className="py-16 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]" id="subscription-plans">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -122,14 +170,65 @@ export const SubscriptionPlans = () => {
                       ? "bg-gradient-to-r from-[#9C27B0] to-[#FF8A00] hover:opacity-90"
                       : "bg-white/10 hover:bg-white/20"
                   } text-white`}
+                  onClick={() => {
+                    if (!account) {
+                      connectWallet();
+                    } else {
+                      setSelectedPlan({
+                        title: plan.title,
+                        price: isYearly ? plan.yearlyPrice : plan.monthlyPrice
+                      });
+                    }
+                  }}
                 >
-                  {plan.popular ? "Upgrade to Pro" : "Get Started"}
+                  {account ? (plan.popular ? "Upgrade to Pro" : "Get Started") : "Connect Wallet"}
                 </Button>
               )}
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Subscription Dialog */}
+      <Dialog open={!!selectedPlan} onOpenChange={(open) => !open && setSelectedPlan(null)}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
+          <DialogHeader>
+            <DialogTitle>Confirm Subscription</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              You're about to subscribe to the {selectedPlan?.title}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-zinc-800 p-4 rounded-lg">
+              <div className="flex justify-between mb-2">
+                <span className="text-zinc-400">Plan</span>
+                <span className="text-white">{selectedPlan?.title}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="text-zinc-400">Duration</span>
+                <span className="text-white">{isYearly ? 'Yearly' : 'Monthly'}</span>
+              </div>
+              <div className="flex justify-between mb-2">
+                <span className="text-zinc-400">Price</span>
+                <span className="text-white">${selectedPlan?.price} in $ROJ</span>
+              </div>
+              <div className="border-t border-zinc-700 my-2 pt-2 flex justify-between">
+                <span className="text-zinc-400">Total</span>
+                <span className="text-white font-bold">${selectedPlan?.price} in $ROJ</span>
+              </div>
+            </div>
+            
+            <Button
+              className="w-full bg-gradient-to-r from-[#9C27B0] to-[#FF8A00]"
+              onClick={handlePurchase}
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Processing..." : "Confirm Purchase"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

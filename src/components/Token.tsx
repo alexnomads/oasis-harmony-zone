@@ -9,6 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
+import { TokenBuyButton } from "./TokenBuyButton";
 
 export const Token = () => {
   const benefits = [
@@ -53,9 +54,13 @@ export const Token = () => {
           <h2 className="text-4xl font-bold mb-4 text-white">
             Powering the Wellness Economy
           </h2>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto">
+          <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
             Our native token enables seamless access to wellness services and rewards active community participation
           </p>
+          
+          <div className="flex justify-center mb-12">
+            <TokenBuyButton />
+          </div>
         </motion.div>
         
         <motion.div

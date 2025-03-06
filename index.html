@@ -10,16 +10,7 @@
   </head>
 
   <body>
-    <body>
-      <!-- Test commit for alexnomads -->
-      <div id="root"></div>
-      <div>
-        <button id="connect-wallet-btn">Connect Wallet</button>
-        <p id="wallet-status">Not connected</p>
-        <p id="points-display">Points: 0</p>
-      </div>
-      <!-- ... rest of your code ... -->
-    </body> 
+    <!-- Test commit for alexnomads -->
     <div id="root"></div>
     <div>
       <button id="connect-wallet-btn">Connect Wallet</button>
@@ -32,13 +23,18 @@
       async function connectWallet() {
         if (window.ethereum) {
           try {
+            console.log("Initializing ethers provider...");
             const provider = new ethers.providers.Web3Provider(window.ethereum);
+            console.log("Requesting accounts...");
             await provider.send("eth_requestAccounts", []);
+            console.log("Getting signer...");
             const signer = provider.getSigner();
+            console.log("Getting wallet address...");
             const walletAddress = await signer.getAddress();
 
             document.getElementById("wallet-status").innerText = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
 
+            console.log("Sending to backend...");
             const response = await fetch("http://localhost:3000/api/connect-wallet", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -47,10 +43,11 @@
             const data = await response.json();
             document.getElementById("points-display").innerText = `Points: ${data.points}`;
           } catch (error) {
+            console.error("Connection error:", error);
             alert("Failed to connect. Check MetaMask!");
-            console.error(error);
           }
         } else {
+          console.log("No Ethereum provider found.");
           alert("Please install MetaMask!");
         }
       }

@@ -20,8 +20,11 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // Check if ethers is available globally or try to access it via window
+      const ethers = window.ethers || (typeof ethers !== 'undefined' ? ethers : null);
+
       async function connectWallet() {
-        if (window.ethereum) {
+        if (window.ethereum && ethers) {
           try {
             console.log("Initializing ethers provider...");
             const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -47,12 +50,43 @@
             alert("Failed to connect. Check MetaMask!");
           }
         } else {
-          console.log("No Ethereum provider found.");
-          alert("Please install MetaMask!");
+          console.log("No Ethereum provider or ethers found.");
+          alert("MetaMask or ethers.js is not available! Ensure MetaMask is installed and the page is loaded correctly.");
         }
       }
 
       document.getElementById("connect-wallet-btn").addEventListener("click", connectWallet);
+    </script>
+    <!-- Code injected by live-server -->
+    <script type="text/javascript">
+      // <![CDATA[  <-- For SVG support
+      if ('WebSocket' in window) {
+        (function() {
+          function refreshCSS() {
+            var sheets = [].slice.call(document.getElementsByTagName("link"));
+            var head = document.getElementsByTagName("head")[0];
+            for (var i = 0; i < sheets.length; ++i) {
+              var elem = sheets[i];
+              head.removeChild(elem);
+              var rel = elem.rel;
+              if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+                var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+                elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+              }
+              head.appendChild(elem);
+            }
+          }
+          var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+          var address = protocol + window.location.host + window.location.pathname + '/ws';
+          var socket = new WebSocket(address);
+          socket.onmessage = function(msg) {
+            if (msg.data == 'reload') window.location.reload();
+            else if (msg.data == 'refreshcss') refreshCSS();
+          };
+          console.log('Live reload enabled.');
+        })();
+      }
+      // ]]>
     </script>
   </body>
 </html>

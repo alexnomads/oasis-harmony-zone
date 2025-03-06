@@ -3,7 +3,7 @@ import { Menu, Moon, Sun, Wallet } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { RegisterForm } from "./auth/RegisterForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,20 @@ import { formatAddress } from "@/utils/web3Utils";
 export const Header = () => {
   const { theme, setTheme } = useTheme();
   const [showSignIn, setShowSignIn] = useState(false);
-  const { account, connectWallet, disconnectWallet } = useWeb3();
+  const { account, connectWallet, disconnectWallet, balance } = useWeb3();
+  const [points, setPoints] = useState(0);
+
+  // Mock function to load points - in a real app this would come from an API
+  useEffect(() => {
+    // Simulate loading points when wallet is connected
+    if (account) {
+      // This is just a placeholder - replace with actual API call
+      const mockPoints = Math.floor(Math.random() * 1000);
+      setPoints(mockPoints);
+    } else {
+      setPoints(0);
+    }
+  }, [account]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -75,7 +88,7 @@ export const Header = () => {
             />
           </div>
 
-          {/* Right - Theme Toggle & Sign In */}
+          {/* Right - Theme Toggle, Wallet Connection & Points */}
           <div className="flex-1 flex items-center justify-end gap-2">
             <Button
               variant="ghost"
@@ -89,32 +102,36 @@ export const Header = () => {
                 <Moon className="h-5 w-5" />
               )}
             </Button>
+            
+            {/* Wallet Status and Points (visible on larger screens) */}
+            <div className="hidden md:flex flex-col items-end mr-2">
+              <span id="wallet-status" className="text-xs text-white">
+                {account ? formatAddress(account) : "Not connected"}
+              </span>
+              <span id="points-display" className="text-xs text-white">
+                Points: {points}
+              </span>
+            </div>
+            
+            {/* Connect Wallet Button */}
             <div className="relative">
-              {account ? (
-                <Button
-                  variant="outline"
-                  className="border-white text-white bg-transparent hover:bg-white/10"
-                  onClick={() => setShowSignIn(!showSignIn)}
-                >
-                  <Wallet className="mr-2 h-4 w-4" />
-                  {formatAddress(account)}
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  className="border-white text-white bg-transparent hover:bg-white/10"
-                  onClick={() => {
-                    if (showSignIn) {
-                      setShowSignIn(false);
-                    } else {
-                      connectWallet();
-                    }
-                  }}
-                >
-                  <Wallet className="mr-2 h-4 w-4" />
-                  Connect
-                </Button>
-              )}
+              <Button
+                id="connect-wallet-btn"
+                variant="outline"
+                className="border-white text-white bg-transparent hover:bg-white/10"
+                onClick={() => {
+                  if (showSignIn) {
+                    setShowSignIn(false);
+                  } else if (account) {
+                    setShowSignIn(true);
+                  } else {
+                    connectWallet();
+                  }
+                }}
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                {account ? "Connected" : "Connect Wallet"}
+              </Button>
               {showSignIn && (
                 <div className="absolute right-0 mt-2">
                   <RegisterForm />
@@ -123,6 +140,18 @@ export const Header = () => {
             </div>
           </div>
         </div>
+        
+        {/* Mobile-only Wallet Info */}
+        {account && (
+          <div className="md:hidden w-full flex justify-between text-white text-xs py-1 px-2">
+            <span id="mobile-wallet-status">
+              {formatAddress(account)}
+            </span>
+            <span id="mobile-points-display">
+              Points: {points}
+            </span>
+          </div>
+        )}
       </div>
     </header>
   );

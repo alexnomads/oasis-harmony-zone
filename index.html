@@ -11,7 +11,41 @@
 
   <body>
     <div id="root"></div>
+    <div>
+      <button id="connect-wallet-btn">Connect Wallet</button>
+      <p id="wallet-status">Not connected</p>
+      <p id="points-display">Points: 0</p>
+    </div>
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      async function connectWallet() {
+        if (window.ethereum) {
+          try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            const signer = provider.getSigner();
+            const walletAddress = await signer.getAddress();
+
+            document.getElementById("wallet-status").innerText = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+
+            const response = await fetch("http://localhost:3000/api/connect-wallet", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ wallet: walletAddress })
+            });
+            const data = await response.json();
+            document.getElementById("points-display").innerText = `Points: ${data.points}`;
+          } catch (error) {
+            alert("Failed to connect. Check MetaMask!");
+            console.error(error);
+          }
+        } else {
+          alert("Please install MetaMask!");
+        }
+      }
+
+      document.getElementById("connect-wallet-btn").addEventListener("click", connectWallet);
+    </script>
   </body>
 </html>

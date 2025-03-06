@@ -7,6 +7,8 @@
     <meta name="description" content="A Colivingvalley.com project" />
     <meta name="author" content="AlexNomads" />
     <meta property="og:image" content="/og-image.png" />
+    <!-- Load ethers.js from a CDN -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
   </head>
 
   <body>
@@ -16,77 +18,83 @@
       <button id="connect-wallet-btn">Connect Wallet</button>
       <p id="wallet-status">Not connected</p>
       <p id="points-display">Points: 0</p>
+      <!-- New button for completing meditation -->
+      <button id="complete-meditation-btn" style="display: none;">Complete Meditation</button>
     </div>
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Comment out main.tsx since it's not loading correctly -->
+    <!-- <script type="module" src="/src/main.tsx"></script> -->
     <script>
-      // Check if ethers is available globally or try to access it via window
-      const ethers = window.ethers || (typeof ethers !== 'undefined' ? ethers : null);
+      // Wait for the window to load to ensure ethers is available
+      window.addEventListener('load', function () {
+        // Use the global ethers object loaded from the CDN
+        const ethers = window.ethers;
+        let walletAddress = null; // Store the wallet address after connection
 
-      async function connectWallet() {
-        if (window.ethereum && ethers) {
+        async function connectWallet() {
+          if (window.ethereum && ethers) {
+            try {
+              console.log("Initializing ethers provider...");
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
+              console.log("Requesting accounts...");
+              await provider.send("eth_requestAccounts", []);
+              console.log("Getting signer...");
+              const signer = provider.getSigner();
+              console.log("Getting wallet address...");
+              walletAddress = await signer.getAddress();
+
+              document.getElementById("wallet-status").innerText = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+
+              console.log("Sending to backend...");
+              const response = await fetch("http://localhost:3000/api/connect-wallet", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ wallet: walletAddress })
+              });
+              const data = await response.json();
+              document.getElementById("points-display").innerText = `Points: ${data.points}`;
+
+              // Show the Complete Meditation button after successful connection
+              document.getElementById("complete-meditation-btn").style.display = "block";
+            } catch (error) {
+              console.error("Connection error:", error);
+              alert("Failed to connect. Check MetaMask!");
+            }
+          } else {
+            console.log("No Ethereum provider or ethers found.");
+            alert("MetaMask or ethers.js is not available! Ensure MetaMask is installed and the page is loaded correctly.");
+          }
+        }
+
+        async function completeMeditation() {
+          if (!walletAddress) {
+            alert("Please connect your wallet first!");
+            return;
+          }
+
           try {
-            console.log("Initializing ethers provider...");
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            console.log("Requesting accounts...");
-            await provider.send("eth_requestAccounts", []);
-            console.log("Getting signer...");
-            const signer = provider.getSigner();
-            console.log("Getting wallet address...");
-            const walletAddress = await signer.getAddress();
-
-            document.getElementById("wallet-status").innerText = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-
-            console.log("Sending to backend...");
-            const response = await fetch("http://localhost:3000/api/connect-wallet", {
+            console.log("Completing meditation for wallet:", walletAddress);
+            const response = await fetch("http://localhost:3000/api/complete-meditation", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ wallet: walletAddress })
             });
             const data = await response.json();
-            document.getElementById("points-display").innerText = `Points: ${data.points}`;
-          } catch (error) {
-            console.error("Connection error:", error);
-            alert("Failed to connect. Check MetaMask!");
-          }
-        } else {
-          console.log("No Ethereum provider or ethers found.");
-          alert("MetaMask or ethers.js is not available! Ensure MetaMask is installed and the page is loaded correctly.");
-        }
-      }
-
-      document.getElementById("connect-wallet-btn").addEventListener("click", connectWallet);
-    </script>
-    <!-- Code injected by live-server -->
-    <script type="text/javascript">
-      // <![CDATA[  <-- For SVG support
-      if ('WebSocket' in window) {
-        (function() {
-          function refreshCSS() {
-            var sheets = [].slice.call(document.getElementsByTagName("link"));
-            var head = document.getElementsByTagName("head")[0];
-            for (var i = 0; i < sheets.length; ++i) {
-              var elem = sheets[i];
-              head.removeChild(elem);
-              var rel = elem.rel;
-              if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-                var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-                elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-              }
-              head.appendChild(elem);
+            if (data.success) {
+              document.getElementById("points-display").innerText = `Points: ${data.points}`;
+              alert("Meditation completed! You earned 10 points.");
+            } else {
+              throw new Error(data.error);
             }
+          } catch (error) {
+            console.error("Error completing meditation:", error);
+            alert("Failed to complete meditation. Try again.");
           }
-          var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-          var address = protocol + window.location.host + window.location.pathname + '/ws';
-          var socket = new WebSocket(address);
-          socket.onmessage = function(msg) {
-            if (msg.data == 'reload') window.location.reload();
-            else if (msg.data == 'refreshcss') refreshCSS();
-          };
-          console.log('Live reload enabled.');
-        })();
-      }
-      // ]]>
+        }
+
+        document.getElementById("connect-wallet-btn").addEventListener("click", connectWallet);
+        document.getElementById("complete-meditation-btn").addEventListener("click", completeMeditation);
+      });
     </script>
   </body>
 </html>

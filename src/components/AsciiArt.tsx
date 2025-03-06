@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, User } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { MessageType } from "./meditation/ChatMessage";
 import { MeditationBubble } from "./meditation/MeditationBubble";
@@ -11,6 +11,8 @@ import { ChatInterface } from "./meditation/ChatInterface";
 import { MeditationSettings, SoundOption } from "./meditation/MeditationSettings";
 import { calculateSessionQuality, formatTime } from "./meditation/MeditationSessionManager";
 import getAIResponse from "./meditation/AIResponseHandler";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "./ui/button";
 
 export const AsciiArt = () => {
   const [messages, setMessages] = useState<MessageType[]>([
@@ -282,31 +284,26 @@ export const AsciiArt = () => {
       />
 
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 gap-8 items-stretch">
-          <div className="col-span-1 h-[600px]">
-            <div className="h-full bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20">
-              <div className="h-full overflow-y-auto">
-                <UserProfile />
-              </div>
-            </div>
-          </div>
-
-          <div className="col-span-1 bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
-            <div className="flex flex-col gap-4 border-b border-white/20 pb-4 mb-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <img 
-                      src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
-                      alt="Rose of Jericho"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
-                    <span className="text-white/70 text-sm">AI Wellness Agent</span>
-                  </div>
+        <div className="relative">
+          {/* Centered Chat/Meditation Interface */}
+          <div className="max-w-3xl mx-auto bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
+            <div className="flex justify-between items-center gap-3 border-b border-white/20 pb-4 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
+                    alt="Rose of Jericho"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+                <div>
+                  <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
+                  <span className="text-white/70 text-sm">AI Wellness Agent</span>
+                </div>
+              </div>
+              
+              {/* Profile Trigger Button and Timer Control */}
+              <div className="flex items-center gap-2">
                 <TimerControl
                   timeRemaining={timeRemaining}
                   isTimerRunning={isTimerRunning}
@@ -314,8 +311,25 @@ export const AsciiArt = () => {
                   resetTimer={resetTimer}
                   formatTime={formatTime}
                 />
+                
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="border-white/20 text-white hover:bg-white/10"
+                    >
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-black/90 backdrop-blur-lg border-white/20 text-white max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <UserProfile />
+                  </DialogContent>
+                </Dialog>
               </div>
+            </div>
 
+            <div className="mb-4">
               <MeditationSettings
                 selectedDuration={selectedDuration}
                 setSelectedDuration={setSelectedDuration}

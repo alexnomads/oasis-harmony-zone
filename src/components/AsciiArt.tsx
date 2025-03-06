@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
-import { Volume2, VolumeX, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { MessageType } from "./meditation/ChatMessage";
 import { MeditationBubble } from "./meditation/MeditationBubble";
@@ -276,34 +276,34 @@ export const AsciiArt = () => {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12 relative">
+    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-8 sm:py-12 relative">
       {/* Energy Bubble Component */}
       <MeditationBubble 
         isTimerRunning={isTimerRunning} 
         timeRemaining={timeRemaining} 
       />
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-3 sm:px-4">
         <div className="relative">
           {/* Centered Chat/Meditation Interface */}
-          <div className="max-w-3xl mx-auto bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
-            <div className="flex justify-between items-center gap-3 border-b border-white/20 pb-4 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
+          <div className="max-w-3xl mx-auto bg-black/20 rounded-xl backdrop-blur-sm p-4 sm:p-6 border border-white/20 h-[550px] sm:h-[600px] flex flex-col">
+            <div className="flex justify-between items-center gap-2 sm:gap-3 border-b border-white/20 pb-3 sm:pb-4 mb-3 sm:mb-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden flex-shrink-0">
                   <img 
                     src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
                     alt="Rose of Jericho"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
-                  <span className="text-white/70 text-sm">AI Wellness Agent</span>
+                <div className="min-w-0">
+                  <h3 className="text-white font-semibold text-sm sm:text-base truncate">Rose of Jericho (alpha version v0.01)</h3>
+                  <span className="text-white/70 text-xs sm:text-sm">AI Wellness Agent</span>
                 </div>
               </div>
               
               {/* Profile Trigger Button and Timer Control */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <TimerControl
                   timeRemaining={timeRemaining}
                   isTimerRunning={isTimerRunning}
@@ -317,19 +317,19 @@ export const AsciiArt = () => {
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="border-white/20 text-white hover:bg-white/10"
+                      className="border-white/20 text-white hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10"
                     >
                       <User className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-black/90 backdrop-blur-lg border-white/20 text-white max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogContent className="bg-black/90 backdrop-blur-lg border-white/20 text-white max-w-sm sm:max-w-2xl max-h-[80vh] overflow-y-auto">
                     <UserProfile />
                   </DialogContent>
                 </Dialog>
               </div>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-3 sm:mb-4">
               <MeditationSettings
                 selectedDuration={selectedDuration}
                 setSelectedDuration={setSelectedDuration}

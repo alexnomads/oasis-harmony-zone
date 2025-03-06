@@ -64,11 +64,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Type your message..."
-          className="w-full bg-white/10 rounded-full px-6 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-softPurple"
+          className="w-full bg-white/10 rounded-full px-4 pr-16 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-softPurple"
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white px-6 py-2 rounded-full text-sm hover:opacity-90 transition-opacity"
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-sm hover:opacity-90 transition-opacity"
         >
           Send
         </button>

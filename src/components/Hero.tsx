@@ -20,7 +20,7 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Video Background - Moved to top layer but with lower opacity */}
+      {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         <video
           autoPlay
@@ -37,11 +37,11 @@ export const Hero = () => {
         </video>
       </div>
 
-      {/* Gradient Overlay - Added between video and content */}
+      {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#9C27B0]/80 to-[#FF8A00]/80" />
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 py-16 text-center">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,43 +51,43 @@ export const Hero = () => {
           <img 
             src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
             alt="ROJ Logo" 
-            className="w-32 h-32 mx-auto mb-8"
+            className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-8"
           />
-          <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
+          <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-medium bg-white/10 text-white rounded-full">
             Your mental wellness comes before your crypto gains.
           </span>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 text-white">
             Rose of Jericho
           </h1>
-          <div className="text-xl md:text-2xl mb-8 text-white/90 h-[120px] flex flex-col items-center justify-center">
-            <p className="mb-2">An AI Agent that rewards you with crypto when focusing on</p>
+          <div className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-white/90 h-[80px] sm:h-[120px] flex flex-col items-center justify-center">
+            <p className="mb-2 text-sm sm:text-base md:text-xl">An AI Agent that rewards you with crypto when focusing on</p>
             <motion.div
               key={currentSlide}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-white font-semibold text-5xl md:text-7xl mb-2"
+              className="text-white font-semibold text-3xl sm:text-5xl md:text-7xl mb-2"
             >
               {slides[currentSlide]}
             </motion.div>
           </div>
-          <div className="flex justify-center gap-4 px-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4">
             <Button
-              className="bg-white/10 hover:bg-white/20 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 flex-[0.6] border border-white/20"
+              className="bg-white/10 hover:bg-white/20 text-white px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 mb-3 sm:mb-0"
             >
               Join the Waitlist
             </Button>
             <Button
               onClick={handleFollow}
-              className="bg-black/30 hover:bg-black/40 text-white px-8 py-6 text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40 flex-[0.4]"
+              className="bg-black/30 hover:bg-black/40 text-white px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
                 alt="X Logo" 
-                className="w-5 h-5 mr-2 invert"
+                className="w-4 h-4 sm:w-5 sm:h-5 mr-2 invert"
               /> 
-              Follow @ROJOasis
+              <span className="whitespace-nowrap">Follow @ROJOasis</span>
             </Button>
           </div>
         </motion.div>

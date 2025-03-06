@@ -90,3 +90,22 @@
     width: 100%;
   }
 }
+
+/* Mobile responsive utilities */
+@layer utilities {
+  .mobile-padding {
+    @apply px-4 sm:px-6;
+  }
+  
+  .mobile-container {
+    @apply w-full max-w-[95%] sm:max-w-3xl mx-auto;
+  }
+  
+  .mobile-text {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+  
+  .mobile-heading {
+    @apply text-2xl sm:text-3xl md:text-5xl;
+  }
+}

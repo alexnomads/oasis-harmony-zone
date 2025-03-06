@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
-import { Volume2, VolumeX } from "lucide-react";
+import { UserCircle, Menu, X } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { MessageType } from "./meditation/ChatMessage";
 import { MeditationBubble } from "./meditation/MeditationBubble";
@@ -32,6 +31,7 @@ export const AsciiArt = () => {
   const [windowBlurs, setWindowBlurs] = useState(0);
   const [sessionId] = useState(`${Date.now()}-${Math.random()}`);
   const [lastActiveWindow, setLastActiveWindow] = useState<Date>(new Date());
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -47,9 +47,8 @@ export const AsciiArt = () => {
     } else if (timeRemaining === 0 && isTimerRunning) {
       setIsTimerRunning(false);
       
-      // Verify session quality
       const sessionQuality = calculateSessionQuality(focusLost, windowBlurs, hasMovement);
-      const rewardEarned = sessionQuality >= 0.7; // 70% quality threshold
+      const rewardEarned = sessionQuality >= 0.7;
 
       toast({
         title: rewardEarned ? "Meditation Complete! 🎉" : "Meditation Completed with Issues",
@@ -59,7 +58,6 @@ export const AsciiArt = () => {
         variant: rewardEarned ? "default" : "destructive"
       });
 
-      // Show sharing dialog for successful meditations
       if (rewardEarned) {
         const referralCode = "ROJ123";
         const referralUrl = `https://roseofjericho.xyz/join?ref=${referralCode}`;
@@ -68,12 +66,9 @@ export const AsciiArt = () => {
           `I just finished a meditation on @ROJOasis and I feel better.\n\nGet rewards when you take care of yourself! ${referralUrl}`
         );
         
-        // Ask user if they want to share
         if (window.confirm("Would you like to share your achievement on X (Twitter) and earn referral rewards?")) {
-          // Use direct URL instead of popup
           window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
           
-          // Award extra points for sharing
           toast({
             title: "Bonus Points & Referral Link Shared! 🌟",
             description: "Thank you for sharing! You've earned bonus points and will receive additional rewards when people join using your referral link!",
@@ -112,7 +107,6 @@ export const AsciiArt = () => {
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [isTimerRunning, toast]);
 
-  // Update the movement detection logic to only trigger on significant movement
   useEffect(() => {
     if (!isTimerRunning) return;
 
@@ -121,10 +115,7 @@ export const AsciiArt = () => {
         const now = new Date();
         if (lastActiveTimestamp) {
           const timeDiff = now.getTime() - lastActiveTimestamp.getTime();
-          // Only detect excessive movement (more frequent than every 500ms)
-          // This prevents false positives from subtle screen movements
           if (timeDiff < 500 && (
-            // Consider mouse movement significant only if it's deliberate
             event instanceof MouseEvent && 
             (Math.abs(event.movementX) > 10 || Math.abs(event.movementY) > 10)
           )) {
@@ -151,7 +142,6 @@ export const AsciiArt = () => {
   useEffect(() => {
     if (!isTimerRunning) return;
 
-    // Track window blur events (user switching to other windows)
     const handleWindowBlur = () => {
       if (isTimerRunning) {
         setWindowBlurs(prev => prev + 1);
@@ -163,13 +153,11 @@ export const AsciiArt = () => {
       }
     };
 
-    // Track window focus to detect potential multi-window/browser usage
     const handleWindowFocus = () => {
       if (isTimerRunning) {
         const now = new Date();
         const timeSinceLastActive = now.getTime() - lastActiveWindow.getTime();
         
-        // If time since last active is suspiciously short (indicating multiple windows)
         if (timeSinceLastActive < 1000) {
           toast({
             title: "Multiple Windows Detected",
@@ -181,17 +169,14 @@ export const AsciiArt = () => {
       }
     };
 
-    // Store session in localStorage to detect multiple browsers
     const checkMultipleBrowsers = () => {
       const currentSession = {
         id: sessionId,
         timestamp: Date.now(),
       };
 
-      // Store current session
       localStorage.setItem('meditationSession', JSON.stringify(currentSession));
 
-      // Check for other sessions
       const broadcastChannel = new BroadcastChannel('meditation_channel');
       broadcastChannel.postMessage({ type: 'SESSION_CHECK', sessionId });
 
@@ -202,7 +187,7 @@ export const AsciiArt = () => {
             description: "Please use only one browser window for meditation.",
             variant: "destructive"
           });
-          setIsTimerRunning(false); // Stop the session
+          setIsTimerRunning(false);
         }
       };
 
@@ -230,14 +215,14 @@ export const AsciiArt = () => {
   };
 
   const startMeditation = () => {
-    // Clear any existing sessions
     localStorage.removeItem('meditationSession');
     
     setIsTimerRunning(true);
     setWindowBlurs(0);
     setFocusLost(0);
     setHasMovement(false);
-    
+    setSidebarOpen(false);
+
     const newMessage: MessageType = {
       role: "agent",
       content: `Starting ${selectedDuration}-minute meditation with ${soundOption === "silent" ? "no" : soundOption} sounds. Find a comfortable position and close your eyes. I'll be here when you're done.`,
@@ -273,49 +258,73 @@ export const AsciiArt = () => {
     }, 2000);
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12 relative">
-      {/* Energy Bubble Component */}
+    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-12 min-h-[800px] relative">
       <MeditationBubble 
         isTimerRunning={isTimerRunning} 
         timeRemaining={timeRemaining} 
       />
 
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 gap-8 items-stretch">
-          <div className="col-span-1 h-[600px]">
-            <div className="h-full bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20">
-              <div className="h-full overflow-y-auto">
-                <UserProfile />
-              </div>
+      <div className="container mx-auto px-4 relative flex">
+        <motion.div 
+          className="fixed top-0 left-0 h-full bg-black/80 backdrop-blur-sm z-40 shadow-xl overflow-y-auto"
+          initial={{ width: "0px", opacity: 0 }}
+          animate={{ 
+            width: sidebarOpen ? "350px" : "0px",
+            opacity: sidebarOpen ? 1 : 0,
+            x: sidebarOpen ? 0 : "-100%"
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <div className="p-6">
+            <div className="flex justify-end mb-4">
+              <button 
+                onClick={toggleSidebar}
+                className="p-2 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
             </div>
+            <UserProfile />
           </div>
+        </motion.div>
 
-          <div className="col-span-1 bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[600px] flex flex-col">
-            <div className="flex flex-col gap-4 border-b border-white/20 pb-4 mb-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <img 
-                      src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
-                      alt="Rose of Jericho"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
-                    <span className="text-white/70 text-sm">AI Wellness Agent</span>
-                  </div>
+        <div className="w-full">
+          <div className="max-w-3xl mx-auto bg-black/20 rounded-xl backdrop-blur-sm p-6 border border-white/20 h-[650px] flex flex-col">
+            <div className="flex items-center justify-between gap-3 border-b border-white/20 pb-4 mb-4">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={toggleSidebar} 
+                  className="p-2 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
+                >
+                  <Menu className="w-5 h-5 text-white" />
+                </button>
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
+                    alt="Rose of Jericho"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <TimerControl
-                  timeRemaining={timeRemaining}
-                  isTimerRunning={isTimerRunning}
-                  toggleTimer={toggleTimer}
-                  resetTimer={resetTimer}
-                  formatTime={formatTime}
-                />
+                <div>
+                  <h3 className="text-white font-semibold">Rose of Jericho (alpha version v0.01)</h3>
+                  <span className="text-white/70 text-sm">AI Wellness Agent</span>
+                </div>
               </div>
+              <TimerControl
+                timeRemaining={timeRemaining}
+                isTimerRunning={isTimerRunning}
+                toggleTimer={toggleTimer}
+                resetTimer={resetTimer}
+                formatTime={formatTime}
+              />
+            </div>
 
+            <div className="mb-4">
               <MeditationSettings
                 selectedDuration={selectedDuration}
                 setSelectedDuration={setSelectedDuration}
@@ -334,6 +343,16 @@ export const AsciiArt = () => {
           </div>
         </div>
       </div>
+
+      {sidebarOpen && (
+        <motion.div 
+          className="fixed inset-0 bg-black/50 z-30"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+          onClick={toggleSidebar}
+        />
+      )}
     </div>
   );
 };

@@ -36,7 +36,6 @@ export const MeditationSettings: React.FC<MeditationSettingsProps> = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="0.5">30 seconds</SelectItem>
-            <SelectItem value="0.5">45 seconds</SelectItem>
             <SelectItem value="1">1 minute</SelectItem>
             <SelectItem value="5">5 minutes</SelectItem>
             <SelectItem value="10">10 minutes</SelectItem>

@@ -10,6 +10,7 @@ import { Newsletter } from "@/components/Newsletter";
 import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 import { GetInTouch } from "@/components/GetInTouch";
 import { Testimonials } from "@/components/Testimonials";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const { scrollYProgress } = useScroll();
@@ -55,6 +56,7 @@ const Index = () => {
           <GetInTouch />
         </section>
       </main>
+      <Footer />
     </div>
   );
 };

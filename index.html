@@ -1,58 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>oasis-harmony-zone</title>
-    <meta name="description" content="A Colivingvalley.com project" />
+    <title>Rose of Jericho - Wellness in Web3</title>
+    <meta name="description" content="Rose of Jericho - AI Agent that rewards you with crypto when focusing on wellness, meditation, and fitness." />
     <meta name="author" content="AlexNomads" />
     <meta property="og:image" content="/og-image.png" />
+    <meta property="og:title" content="Rose of Jericho" />
+    <meta property="og:description" content="AI Agent that rewards you with crypto when focusing on wellness, meditation, and fitness." />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
 
   <body>
-    <!-- Test commit for alexnomads -->
     <div id="root"></div>
-    <div>
-      <button id="connect-wallet-btn">Connect Wallet</button>
-      <p id="wallet-status">Not connected</p>
-      <p id="points-display">Points: 0</p>
-    </div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      async function connectWallet() {
-        if (window.ethereum) {
-          try {
-            console.log("Initializing ethers provider...");
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            console.log("Requesting accounts...");
-            await provider.send("eth_requestAccounts", []);
-            console.log("Getting signer...");
-            const signer = provider.getSigner();
-            console.log("Getting wallet address...");
-            const walletAddress = await signer.getAddress();
-
-            document.getElementById("wallet-status").innerText = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-
-            console.log("Sending to backend...");
-            const response = await fetch("http://localhost:3000/api/connect-wallet", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ wallet: walletAddress })
-            });
-            const data = await response.json();
-            document.getElementById("points-display").innerText = `Points: ${data.points}`;
-          } catch (error) {
-            console.error("Connection error:", error);
-            alert("Failed to connect. Check MetaMask!");
-          }
-        } else {
-          console.log("No Ethereum provider found.");
-          alert("Please install MetaMask!");
-        }
-      }
-
-      document.getElementById("connect-wallet-btn").addEventListener("click", connectWallet);
-    </script>
   </body>
 </html>

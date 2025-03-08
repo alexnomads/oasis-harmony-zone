@@ -1,33 +1,40 @@
 
-import React from 'react';
-import { Header } from '@/components/Header';
-import { Hero } from '@/components/Hero';
-import { Features } from '@/components/Features';
-import { Programs } from '@/components/Programs';
-import { Testimonials } from '@/components/Testimonials';
-import { SubscriptionPlans } from '@/components/SubscriptionPlans';
-import { Token } from '@/components/Token';
-import { Newsletter } from '@/components/Newsletter';
-import { Roadmap } from '@/components/Roadmap';
-import { GetInTouch } from '@/components/GetInTouch';
-import { Footer } from '@/components/Footer';
+import { Hero } from "@/components/Hero";
+import { AsciiArt } from "@/components/AsciiArt";
+import { Programs } from "@/components/Programs";
+import { Token } from "@/components/Token";
+import { Roadmap } from "@/components/Roadmap";
+import { motion, useScroll, useSpring } from "framer-motion";
+import { Header } from "@/components/Header";
+import { Newsletter } from "@/components/Newsletter";
+import { SubscriptionPlans } from "@/components/SubscriptionPlans";
+import { GetInTouch } from "@/components/GetInTouch";
+import { Testimonials } from "@/components/Testimonials";
 
 const Index = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="relative min-h-screen bg-black">
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-softOrange origin-left z-50"
+        style={{ scaleX }}
+      />
       <Header />
-      <main className="pt-16">
+      <main className="relative">
         <section id="hero">
           <Hero />
         </section>
         <section id="ai-agent-alpha">
-          <Features />
+          <AsciiArt />
         </section>
         <section id="programs">
           <Programs />
-        </section>
-        <section id="testimonials">
-          <Testimonials />
         </section>
         <section id="subscription-plans">
           <SubscriptionPlans />
@@ -41,11 +48,13 @@ const Index = () => {
         <section id="roadmap">
           <Roadmap />
         </section>
-        <section id="contact">
+        <section id="testimonials">
+          <Testimonials />
+        </section>
+        <section>
           <GetInTouch />
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

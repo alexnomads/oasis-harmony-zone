@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SupabaseProvider } from './contexts/SupabaseContext';
@@ -14,6 +15,9 @@ import Test from './pages/Test';
 import DirectTest from './pages/DirectTest';
 import Debug from './pages/Debug';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Lazy load the Profile component
+const Profile = lazy(() => import('./pages/Profile'));
 
 const queryClient = new QueryClient();
 
@@ -45,7 +49,11 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/meditate" element={<Meditate />} />
                     <Route path="/global" element={<GlobalDashboard />} />
-                    <Route path="/profile" element={<React.lazy(() => import('./pages/Profile'))} />
+                    <Route path="/profile" element={
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <Profile />
+                      </Suspense>
+                    } />
                   </Route>
                   
                   {/* Debug Routes */}

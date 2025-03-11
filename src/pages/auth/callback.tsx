@@ -14,40 +14,55 @@ export default function AuthCallback() {
       try {
         console.log('Auth callback page loaded, URL:', window.location.href);
         
-        // Check if we have a hash fragment or query parameters in the URL
-        // This handles both email confirmation and magic link flows
-        const hasHashFragment = window.location.hash && window.location.hash.length > 0;
-        const hasQueryParams = window.location.search && window.location.search.length > 0;
+        // Process the OAuth or email confirmation callback
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          throw error;
+        }
 
-        if (hasHashFragment || hasQueryParams) {
-          console.log('Has hash or query params, processing auth...');
+        if (data?.session) {
+          console.log('Session found, verification successful');
+          setVerificationState('success');
+          toast({
+            title: 'Email verified!',
+            description: 'Your account has been verified. Welcome to Rose of Jericho!',
+          });
           
-          // This will trigger Supabase Auth to handle the confirmation
-          const { data, error } = await supabase.auth.getSession();
+          // Short delay to show success message before redirect
+          setTimeout(() => navigate('/dashboard'), 1500);
+        } else {
+          // Try to exchange code for session (specifically for email confirmation)
+          const params = new URLSearchParams(window.location.search);
+          const token = params.get('token_hash') || params.get('token');
+          const type = params.get('type');
           
-          if (error) {
-            console.error('Session error:', error);
-            throw error;
-          }
-
-          if (data?.session) {
-            console.log('Session found, verification successful');
+          console.log('Detected parameters:', { token: token ? 'present' : 'not present', type });
+          
+          if (token && type === 'email_confirmation') {
+            const { error: confirmError } = await supabase.auth.verifyOtp({
+              token_hash: token,
+              type: 'email_confirmation'
+            });
+            
+            if (confirmError) {
+              console.error('Confirmation error:', confirmError);
+              throw confirmError;
+            }
+            
             setVerificationState('success');
             toast({
               title: 'Email verified!',
-              description: 'Your account has been verified. Welcome to Rose of Jericho!',
+              description: 'Your account has been verified. Please sign in to continue.',
             });
             
-            // Short delay to show success message before redirect
-            setTimeout(() => navigate('/dashboard'), 1500);
+            // Redirect to login page after successful verification
+            setTimeout(() => navigate('/?login=true'), 1500);
           } else {
-            console.error('No session found after verification');
+            console.error('No session or valid parameters found after verification');
             throw new Error('No session found after verification');
           }
-        } else {
-          console.log('No hash or query params, redirecting to home');
-          // No query params or hash, possibly a direct visit to this route
-          navigate('/');
         }
       } catch (error) {
         console.error('Error during email confirmation:', error);

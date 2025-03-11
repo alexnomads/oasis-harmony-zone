@@ -8,17 +8,7 @@ import { supabase, getRedirectUrl } from '@/lib/supabase';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
 
-// Get the current site URL for redirects
-const getSiteUrl = () => {
-  let url = window.location.origin
-  // Handle local development with specific ports if needed
-  if (url.includes('localhost')) {
-    // You can set a specific port if needed
-    return url
-  }
-  return url
-}
-
+// Handle auth errors with appropriate messages
 const handleAuthError = (error: Error | AuthError | null) => {
   if (!error) return 'An unknown error occurred';
   

@@ -18,6 +18,11 @@ const getSiteUrl = () => {
   return 'http://localhost:5173'
 }
 
+// Set up redirect URL for authentication
+export const getRedirectUrl = () => {
+  return `${getSiteUrl()}/auth/callback`;
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
@@ -38,10 +43,4 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 })
 
-// Set up redirect URL for authentication
-export const getRedirectUrl = () => {
-  return `${getSiteUrl()}/auth/callback`;
-}
-
 // Auth helper functions with improved error handling
-

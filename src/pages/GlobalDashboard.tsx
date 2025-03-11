@@ -70,6 +70,8 @@ export default function GlobalDashboard() {
       const { data: sessionsData, error: sessionsError } = await supabase
         .rpc('get_all_completed_sessions');
 
+      let completedSessions: any[] = [];
+
       if (sessionsError) {
         console.error("Error calling RPC function:", sessionsError);
         
@@ -85,10 +87,10 @@ export default function GlobalDashboard() {
         }
         
         console.log("Fallback sessions data:", fallbackData);
-        var completedSessions = fallbackData || [];
+        completedSessions = fallbackData || [];
       } else {
         console.log("RPC sessions data:", sessionsData);
-        var completedSessions = sessionsData || [];
+        completedSessions = sessionsData || [];
       }
 
       // Count of completed sessions

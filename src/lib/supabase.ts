@@ -26,10 +26,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     flowType: 'pkce',
-    // "redirectTo" should be inside auth.options, not directly in auth
-    options: {
-      redirectTo: `${getSiteUrl()}/auth/callback`
-    }
   },
   global: {
     headers: {
@@ -42,5 +38,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     }
   }
 })
+
+// Set up redirect URL for authentication
+export const getRedirectUrl = () => {
+  return `${getSiteUrl()}/auth/callback`;
+}
 
 // Auth helper functions with improved error handling

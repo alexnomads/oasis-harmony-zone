@@ -1,8 +1,9 @@
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase, getRedirectUrl } from '@/lib/supabase';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -168,7 +169,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      const redirectUrl = `${getSiteUrl()}/auth/callback`;
+      const redirectUrl = getRedirectUrl();
       console.log('Using redirect URL for signup:', redirectUrl);
       
       const { error } = await retryOperation(() =>

@@ -26,52 +26,79 @@ export default function GlobalDashboard() {
     console.log("Fetching global stats...");
     
     try {
-      // Get total users count from auth.users table
-      const { data: authUsers, error: authUsersError } = await supabase
-        .from('auth.users')
-        .select('id');
+      // Get total users count - accessing a view that shows all users
+      // First try to get from profiles table
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('user_profiles')
+        .select('user_id', { count: 'exact' });
 
-      if (authUsersError) {
-        console.error("Error fetching auth users:", authUsersError);
+      let totalUsersCount = 0;
+      
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
         
-        // Fallback to user_points table
+        // Try user_points table as fallback
         const { data: userPointsData, error: userPointsError } = await supabase
           .from('user_points')
           .select('user_id');
           
         if (userPointsError) {
           console.error("Error fetching user points:", userPointsError);
-          throw userPointsError;
+          
+          // Last resort: try direct count query which might work depending on permissions
+          const { count, error: countError } = await supabase
+            .from('user_points')
+            .select('*', { count: 'exact', head: true });
+            
+          if (countError) {
+            console.error("Error getting count:", countError);
+            // Default to 0 if all attempts fail
+          } else {
+            totalUsersCount = count || 0;
+            console.log("Users count from count query:", totalUsersCount);
+          }
+        } else {
+          totalUsersCount = userPointsData?.length || 0;
+          console.log("Users from user_points:", userPointsData, "Count:", totalUsersCount);
         }
-        
-        console.log("Users from user_points:", userPointsData);
-        var totalUsersCount = userPointsData?.length || 0;
       } else {
-        console.log("Users from auth.users:", authUsers);
-        var totalUsersCount = authUsers?.length || 0;
+        totalUsersCount = profilesData?.length || 0;
+        console.log("Users from profiles:", profilesData, "Count:", totalUsersCount);
       }
 
-      // Get ALL completed meditation sessions
+      // Get ALL completed meditation sessions using public query
       const { data: sessionsData, error: sessionsError } = await supabase
-        .from('meditation_sessions')
-        .select('*')
-        .eq('status', 'completed');
+        .rpc('get_all_completed_sessions');
 
       if (sessionsError) {
-        console.error("Error fetching completed sessions:", sessionsError);
-        throw sessionsError;
+        console.error("Error calling RPC function:", sessionsError);
+        
+        // Fallback to direct query if RPC fails
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('meditation_sessions')
+          .select('*')
+          .eq('status', 'completed');
+          
+        if (fallbackError) {
+          console.error("Error with fallback query:", fallbackError);
+          throw fallbackError;
+        }
+        
+        console.log("Fallback sessions data:", fallbackData);
+        var completedSessions = fallbackData || [];
+      } else {
+        console.log("RPC sessions data:", sessionsData);
+        var completedSessions = sessionsData || [];
       }
 
-      console.log("Completed sessions data:", sessionsData);
-
       // Count of completed sessions
-      const totalSessions = sessionsData?.length || 0;
+      const totalSessions = completedSessions.length;
       console.log("Total completed sessions count:", totalSessions);
       
       // Calculate the total meditation time across ALL sessions
-      const totalMeditationTime = sessionsData?.reduce((sum, session) => {
+      const totalMeditationTime = completedSessions.reduce((sum, session) => {
         return sum + (session.duration || 0);
-      }, 0) || 0;
+      }, 0);
 
       console.log("Total meditation time (seconds):", totalMeditationTime);
 
@@ -89,7 +116,16 @@ export default function GlobalDashboard() {
       };
     } catch (error) {
       console.error("Error fetching global stats:", error);
-      throw error;
+      toast({
+        title: "Error loading global stats",
+        description: "There was a problem fetching the global statistics.",
+        variant: "destructive",
+      });
+      return {
+        totalUsers: 0,
+        totalSessions: 0,
+        totalMeditationTime: 0,
+      };
     }
   };
 

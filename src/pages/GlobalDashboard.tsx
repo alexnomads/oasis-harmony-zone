@@ -7,6 +7,7 @@ import { Trophy, Users, Award } from "lucide-react";
 import { formatDurationDetails } from "@/lib/utils/timeFormat";
 import { GlobalLeaderboard } from "@/components/leaderboard/GlobalLeaderboard";
 import { supabase } from "@/lib/supabase";
+import { toast } from "@/components/ui/use-toast";
 
 interface GlobalStats {
   totalUsers: number;
@@ -21,19 +22,54 @@ export default function GlobalDashboard() {
     totalMeditationTime: 0,
   });
 
+  const fetchGlobalStats = async () => {
+    console.log("Fetching global stats...");
+    
+    // Get total users count
+    const { count: usersCount, error: usersError } = await supabase
+      .from('user_points')
+      .select('*', { count: 'exact', head: true });
+
+    if (usersError) throw usersError;
+
+    // Get total sessions and meditation time
+    const { data: sessionsData, error: sessionsError } = await supabase
+      .from('meditation_sessions')
+      .select('duration')
+      .eq('status', 'completed');
+
+    if (sessionsError) throw sessionsError;
+
+    const totalSessions = sessionsData?.length || 0;
+    const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
+
+    return {
+      totalUsers: usersCount || 0,
+      totalSessions,
+      totalMeditationTime,
+    };
+  };
+
   // Set up real-time subscription for completed meditation sessions
   useEffect(() => {
     const channel = supabase
-      .channel('meditation_updates')
+      .channel('global_meditation_updates')
       .on('postgres_changes', { 
-        event: '*', 
+        event: 'INSERT', 
         schema: 'public', 
         table: 'meditation_sessions' 
       }, () => {
-        // Trigger a refetch of the stats when any change occurs in meditation_sessions
+        console.log("New meditation session detected, refetching stats...");
+        // Immediately refetch data when a new session is inserted
         refetch();
+        toast({
+          title: "New meditation session completed",
+          description: "Global stats have been updated!",
+        });
       })
       .subscribe();
+
+    console.log("Subscribed to global meditation updates");
 
     return () => {
       supabase.removeChannel(channel);
@@ -42,40 +78,14 @@ export default function GlobalDashboard() {
 
   const { data: globalStats, isLoading, refetch } = useQuery({
     queryKey: ["globalStats"],
-    queryFn: async () => {
-      console.log("Fetching global stats...");
-      
-      // Get total users count
-      const { count: usersCount, error: usersError } = await supabase
-        .from('user_points')
-        .select('*', { count: 'exact', head: true });
-
-      if (usersError) throw usersError;
-
-      // Get total sessions and meditation time
-      const { data: sessionsData, error: sessionsError } = await supabase
-        .from('meditation_sessions')
-        .select('duration')
-        .eq('status', 'completed');
-
-      if (sessionsError) throw sessionsError;
-
-      const totalSessions = sessionsData?.length || 0;
-      const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
-
-      return {
-        totalUsers: usersCount || 0,
-        totalSessions,
-        totalMeditationTime,
-      };
-    },
+    queryFn: fetchGlobalStats,
     refetchInterval: 10000, // Refetch every 10 seconds to ensure data is fresh
   });
 
   useEffect(() => {
     if (globalStats) {
-      setStats(globalStats);
       console.log("Updated global stats:", globalStats);
+      setStats(globalStats);
     }
   }, [globalStats]);
 

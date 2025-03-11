@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -11,10 +11,24 @@ import { Button } from '@/components/ui/button';
 import { Timer, Award, TrendingUp, History } from 'lucide-react';
 import { formatDurationDetails } from '@/lib/utils/timeFormat';
 import { supabase } from '@/lib/supabase';
+import { toast } from '@/components/ui/use-toast';
+
+interface UserStats {
+  totalPoints: number;
+  streak: number;
+  totalSessions: number;
+  totalMinutes: number;
+}
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState<UserStats>({
+    totalPoints: 0,
+    streak: 0,
+    totalSessions: 0,
+    totalMinutes: 0
+  });
 
   // Set up real-time subscription for the user's meditation sessions
   useEffect(() => {
@@ -23,15 +37,22 @@ export default function Dashboard() {
     const channel = supabase
       .channel(`user_meditation_${user.id}`)
       .on('postgres_changes', { 
-        event: '*', 
+        event: 'INSERT', 
         schema: 'public', 
         table: 'meditation_sessions',
         filter: `user_id=eq.${user.id}` 
       }, () => {
-        // Trigger a refetch when any change occurs in user's meditation_sessions
+        console.log("New user meditation session detected, refetching data...");
+        // Immediately refetch data when a new session is inserted
         refetch();
+        toast({
+          title: "Session completed!",
+          description: "Your dashboard has been updated with your latest session.",
+        });
       })
       .subscribe();
+
+    console.log("Subscribed to user meditation updates");
 
     return () => {
       supabase.removeChannel(channel);
@@ -59,17 +80,20 @@ export default function Dashboard() {
   useEffect(() => {
     if (userData) {
       console.log("Updated user data:", userData);
+      
+      // Calculate and update stats
+      const newStats = {
+        totalPoints: userData.points.total_points || 0,
+        streak: userData.points.meditation_streak || 0,
+        totalSessions: userData.sessions.length || 0,
+        totalMinutes: userData.sessions.reduce((acc, session) => acc + Math.floor(session.duration / 60), 0) || 0
+      };
+      
+      setStats(newStats);
     }
   }, [userData]);
 
   if (loading || loadingData) return null;
-
-  const stats = {
-    totalPoints: userData?.points.total_points || 0,
-    streak: userData?.points.meditation_streak || 0,
-    totalSessions: userData?.sessions.length || 0,
-    totalMinutes: userData?.sessions.reduce((acc, session) => acc + Math.floor(session.duration / 60), 0) || 0
-  };
 
   const recentSessions = userData?.sessions.slice(0, 5) || [];
 

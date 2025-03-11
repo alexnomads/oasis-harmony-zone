@@ -21,9 +21,30 @@ export default function GlobalDashboard() {
     totalMeditationTime: 0,
   });
 
-  const { data: globalStats, isLoading } = useQuery({
+  // Set up real-time subscription for completed meditation sessions
+  useEffect(() => {
+    const channel = supabase
+      .channel('meditation_updates')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'meditation_sessions' 
+      }, () => {
+        // Trigger a refetch of the stats when any change occurs in meditation_sessions
+        refetch();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const { data: globalStats, isLoading, refetch } = useQuery({
     queryKey: ["globalStats"],
     queryFn: async () => {
+      console.log("Fetching global stats...");
+      
       // Get total users count
       const { count: usersCount, error: usersError } = await supabase
         .from('user_points')
@@ -48,12 +69,13 @@ export default function GlobalDashboard() {
         totalMeditationTime,
       };
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 10000, // Refetch every 10 seconds to ensure data is fresh
   });
 
   useEffect(() => {
     if (globalStats) {
       setStats(globalStats);
+      console.log("Updated global stats:", globalStats);
     }
   }, [globalStats]);
 

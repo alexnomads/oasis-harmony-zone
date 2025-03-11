@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,21 +10,44 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Timer, Award, TrendingUp, History } from 'lucide-react';
 import { formatDurationDetails } from '@/lib/utils/timeFormat';
-import type { MeditationSession } from '@/types/database';
+import { supabase } from '@/lib/supabase';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  // Set up real-time subscription for the user's meditation sessions
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`user_meditation_${user.id}`)
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'meditation_sessions',
+        filter: `user_id=eq.${user.id}` 
+      }, () => {
+        // Trigger a refetch when any change occurs in user's meditation_sessions
+        refetch();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   // Fetch user data with React Query
-  const { data: userData, isLoading: loadingData } = useQuery({
+  const { data: userData, isLoading: loadingData, refetch } = useQuery({
     queryKey: ['userHistory', user?.id],
     queryFn: async () => {
       if (!user) throw new Error('No user');
+      console.log("Fetching user history...");
       return MeditationService.getUserHistory(user.id);
     },
     enabled: !!user,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 10000, // Refetch every 10 seconds to ensure data is fresh
   });
 
   useEffect(() => {
@@ -31,6 +55,12 @@ export default function Dashboard() {
       navigate('/');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (userData) {
+      console.log("Updated user data:", userData);
+    }
+  }, [userData]);
 
   if (loading || loadingData) return null;
 

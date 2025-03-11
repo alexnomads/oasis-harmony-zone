@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -14,6 +15,12 @@ interface GlobalStats {
 }
 
 export default function GlobalDashboard() {
+  const [stats, setStats] = useState<GlobalStats>({
+    totalUsers: 0,
+    totalSessions: 0,
+    totalMeditationTime: 0,
+  });
+
   const { data: globalStats, isLoading } = useQuery({
     queryKey: ["globalStats"],
     queryFn: async () => {

@@ -1,60 +1,70 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Web3Provider } from "@/contexts/Web3Context";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import Index from "./pages/Index";
-import Meditate from "./pages/Meditate";
-import Dashboard from "./pages/Dashboard";
-import GlobalDashboard from "./pages/GlobalDashboard";
-import AuthCallback from "./pages/auth/callback";
-import AuthTest from "./pages/auth/test";
-import AuthDebug from "./pages/auth/debug";
-import DirectTest from "./pages/auth/direct-test";
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { SupabaseProvider } from './contexts/SupabaseContext';
+import { Web3Provider } from './contexts/Web3Context';
+import { AuthProvider } from './contexts/AuthContext';
+import { Toaster } from '@/components/ui/toaster';
+import Index from './pages/Index';
+import Dashboard from './pages/Dashboard';
+import Meditate from './pages/Meditate';
+import GlobalDashboard from './pages/GlobalDashboard';
+import Callback from './pages/Callback';
+import Test from './pages/Test';
+import DirectTest from './pages/DirectTest';
+import Debug from './pages/Debug';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <BrowserRouter>
-        <AuthProvider>
-          <Web3Provider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/auth/test" element={<AuthTest />} />
-              <Route path="/auth/debug" element={<AuthDebug />} />
-              <Route path="/auth/direct" element={<DirectTest />} />
-              <Route path="/global-dashboard" element={<GlobalDashboard />} />
-              <Route
-                path="/meditate"
-                element={
-                  <ProtectedRoute>
-                    <Meditate />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Web3Provider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Simulate initialization process
+    setTimeout(() => {
+      setIsInitialized(true);
+    }, 500);
+  }, []);
+
+  return (
+    <div className="App">
+      <SupabaseProvider>
+        <Web3Provider>
+          <AuthProvider>
+            <QueryClientProvider client={queryClient}>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  
+                  {/* Authentication Routes */}
+                  <Route path="/auth/callback" element={<Callback />} />
+                  
+                  {/* Protected Routes */}
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/meditate" element={<Meditate />} />
+                    <Route path="/global" element={<GlobalDashboard />} />
+                    <Route path="/profile" element={<React.lazy(() => import('./pages/Profile'))} />
+                  </Route>
+                  
+                  {/* Debug Routes */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <>
+                      <Route path="/auth/test" element={<Test />} />
+                      <Route path="/auth/direct-test" element={<DirectTest />} />
+                      <Route path="/auth/debug" element={<Debug />} />
+                    </>
+                  )}
+                </Routes>
+                <Toaster />
+              </Router>
+            </QueryClientProvider>
+          </AuthProvider>
+        </Web3Provider>
+      </SupabaseProvider>
+    </div>
+  );
+}
 
 export default App;

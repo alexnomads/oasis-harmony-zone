@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { User, Mail, Calendar, Settings, Twitter, Instagram } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,7 +75,7 @@ export const UserProfile = () => {
                 </div>
               )}
               <Button 
-                className="w-full bg-black/30 hover:bg-black/40 text-white border border-white/10"
+                className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 text-white"
                 onClick={() => setIsEditDialogOpen(true)}
               >
                 <Settings className="w-4 h-4 mr-2" />

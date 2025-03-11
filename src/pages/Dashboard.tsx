@@ -41,9 +41,23 @@ export default function Dashboard() {
         schema: 'public', 
         table: 'meditation_sessions',
         filter: `user_id=eq.${user.id}` 
-      }, () => {
-        console.log("New user meditation session detected, refetching data...");
+      }, (payload) => {
+        console.log("New user meditation session detected:", payload);
         // Immediately refetch data when a new session is inserted
+        refetch();
+        toast({
+          title: "Session recorded!",
+          description: "Your dashboard has been updated with your latest session.",
+        });
+      })
+      .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'meditation_sessions',
+        filter: `user_id=eq.${user.id} AND status=eq.completed` 
+      }, (payload) => {
+        console.log("User meditation session completed:", payload);
+        // Immediately refetch data when a session status changes to completed
         refetch();
         toast({
           title: "Session completed!",
@@ -52,7 +66,7 @@ export default function Dashboard() {
       })
       .subscribe();
 
-    console.log("Subscribed to user meditation updates");
+    console.log("Subscribed to user meditation updates for user:", user.id);
 
     return () => {
       supabase.removeChannel(channel);
@@ -64,11 +78,12 @@ export default function Dashboard() {
     queryKey: ['userHistory', user?.id],
     queryFn: async () => {
       if (!user) throw new Error('No user');
-      console.log("Fetching user history...");
+      console.log("Fetching user history for:", user.id);
       return MeditationService.getUserHistory(user.id);
     },
     enabled: !!user,
-    refetchInterval: 10000, // Refetch every 10 seconds to ensure data is fresh
+    staleTime: 5000, // Consider data stale after 5 seconds
+    refetchInterval: 10000, // Poll every 10 seconds
   });
 
   useEffect(() => {
@@ -81,14 +96,23 @@ export default function Dashboard() {
     if (userData) {
       console.log("Updated user data:", userData);
       
+      // Calculate total time in seconds
+      const totalDuration = userData.sessions.reduce((acc, session) => {
+        return acc + (session.duration || 0);
+      }, 0);
+      
+      // Convert total time to minutes for display purposes
+      const totalMinutes = Math.floor(totalDuration / 60);
+      
       // Calculate and update stats
       const newStats = {
         totalPoints: userData.points.total_points || 0,
         streak: userData.points.meditation_streak || 0,
         totalSessions: userData.sessions.length || 0,
-        totalMinutes: userData.sessions.reduce((acc, session) => acc + Math.floor(session.duration / 60), 0) || 0
+        totalMinutes: totalDuration
       };
       
+      console.log("Calculated user stats:", newStats);
       setStats(newStats);
     }
   }, [userData]);
@@ -178,7 +202,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">Total Time</p>
-                    <h3 className="text-2xl font-bold">{formatDurationDetails(stats.totalMinutes * 60)}</h3>
+                    <h3 className="text-2xl font-bold">{formatDurationDetails(stats.totalMinutes)}</h3>
                   </div>
                 </div>
               </CardContent>

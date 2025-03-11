@@ -25,29 +25,40 @@ export default function GlobalDashboard() {
   const fetchGlobalStats = async () => {
     console.log("Fetching global stats...");
     
-    // Get total users count
-    const { count: usersCount, error: usersError } = await supabase
-      .from('user_points')
-      .select('*', { count: 'exact', head: true });
+    try {
+      // Get total users count
+      const { count: usersCount, error: usersError } = await supabase
+        .from('user_points')
+        .select('*', { count: 'exact', head: true });
 
-    if (usersError) throw usersError;
+      if (usersError) throw usersError;
 
-    // Get total sessions and meditation time
-    const { data: sessionsData, error: sessionsError } = await supabase
-      .from('meditation_sessions')
-      .select('duration')
-      .eq('status', 'completed');
+      // Get total sessions and meditation time
+      const { data: sessionsData, error: sessionsError } = await supabase
+        .from('meditation_sessions')
+        .select('duration')
+        .eq('status', 'completed');
 
-    if (sessionsError) throw sessionsError;
+      if (sessionsError) throw sessionsError;
 
-    const totalSessions = sessionsData?.length || 0;
-    const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
+      const totalSessions = sessionsData?.length || 0;
+      const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
 
-    return {
-      totalUsers: usersCount || 0,
-      totalSessions,
-      totalMeditationTime,
-    };
+      console.log("Global Stats Retrieved:", {
+        users: usersCount,
+        sessions: totalSessions,
+        time: totalMeditationTime
+      });
+
+      return {
+        totalUsers: usersCount || 0,
+        totalSessions,
+        totalMeditationTime,
+      };
+    } catch (error) {
+      console.error("Error fetching global stats:", error);
+      throw error;
+    }
   };
 
   // Set up real-time subscription for completed meditation sessions
@@ -58,12 +69,26 @@ export default function GlobalDashboard() {
         event: 'INSERT', 
         schema: 'public', 
         table: 'meditation_sessions' 
-      }, () => {
-        console.log("New meditation session detected, refetching stats...");
+      }, (payload) => {
+        console.log("New meditation session detected:", payload);
         // Immediately refetch data when a new session is inserted
         refetch();
         toast({
           title: "New meditation session completed",
+          description: "Global stats have been updated!",
+        });
+      })
+      .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'meditation_sessions',
+        filter: "status=eq.completed"
+      }, (payload) => {
+        console.log("Meditation session completed:", payload);
+        // Immediately refetch data when a session status changes to completed
+        refetch();
+        toast({
+          title: "Meditation session completed",
           description: "Global stats have been updated!",
         });
       })
@@ -79,7 +104,8 @@ export default function GlobalDashboard() {
   const { data: globalStats, isLoading, refetch } = useQuery({
     queryKey: ["globalStats"],
     queryFn: fetchGlobalStats,
-    refetchInterval: 10000, // Refetch every 10 seconds to ensure data is fresh
+    staleTime: 5000, // Consider data stale after 5 seconds
+    refetchInterval: 10000, // Poll every 10 seconds
   });
 
   useEffect(() => {

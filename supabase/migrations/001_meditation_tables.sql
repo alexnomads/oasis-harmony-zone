@@ -1,3 +1,4 @@
+
 -- Create an enum for meditation session status
 CREATE TYPE meditation_status AS ENUM ('in_progress', 'completed', 'cancelled');
 
@@ -91,3 +92,4 @@ CREATE POLICY "Users can read own points"
 
 -- Enable realtime for meditation_sessions
 ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
+

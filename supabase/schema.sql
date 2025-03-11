@@ -1,3 +1,4 @@
+
 -- Create meditation_sessions table
 CREATE TABLE meditation_sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -75,3 +76,4 @@ BEGIN
     END IF;
 END
 $$;
+

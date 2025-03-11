@@ -23,3 +23,4 @@ ORDER BY
 
 -- Grant appropriate permissions for the view
 GRANT SELECT ON global_leaderboard TO anon, authenticated, service_role;
+

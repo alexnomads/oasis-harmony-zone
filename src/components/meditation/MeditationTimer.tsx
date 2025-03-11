@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import { useAuth } from '@/contexts/AuthContext';
 import { Play, Pause, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { formatDurationDetails } from '@/lib/utils/timeFormat';
 import type { MeditationType } from '@/types/database';
 
 export const MeditationTimer = () => {
@@ -17,6 +18,7 @@ export const MeditationTimer = () => {
   const [meditationType] = useState<MeditationType>('mindfulness');
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -35,7 +37,18 @@ export const MeditationTimer = () => {
       const { session, userPoints } = await SessionService.completeSession(sessionId, time);
       toast({
         title: "Meditation Complete! 🎉",
-        description: `You earned ${session.points_earned} points! Total: ${userPoints.total_points}`,
+        description: (
+          <div className="space-y-2">
+            <p>You earned {session.points_earned} points! Total: {userPoints.total_points}</p>
+            <Button 
+              variant="outline" 
+              className="mt-2 w-full"
+              onClick={() => navigate('/dashboard')}
+            >
+              View Progress in Dashboard
+            </Button>
+          </div>
+        ),
       });
       setIsRunning(false);
       setSessionId(null);
@@ -46,7 +59,7 @@ export const MeditationTimer = () => {
         variant: "destructive",
       });
     }
-  }, [sessionId, time, toast]);
+  }, [sessionId, time, toast, navigate]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;

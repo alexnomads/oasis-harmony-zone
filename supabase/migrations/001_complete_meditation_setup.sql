@@ -1,4 +1,3 @@
-
 -- Create an enum for meditation session status if it doesn't exist
 DO $$ 
 BEGIN
@@ -134,7 +133,12 @@ SELECT
     COUNT(CASE WHEN ms.status = 'completed' THEN 1 END) as total_sessions,
     SUM(CASE WHEN ms.status = 'completed' THEN COALESCE(ms.duration, 0) ELSE 0 END) as total_meditation_time,
     p.email,
-    COALESCE(p.raw_user_meta_data->>'full_name', p.raw_user_meta_data->>'name', p.email) as display_name
+    COALESCE(
+        p.raw_user_meta_data->>'nickname',
+        p.raw_user_meta_data->>'full_name',
+        p.raw_user_meta_data->>'name',
+        SPLIT_PART(p.email, '@', 1)
+    ) as display_name
 FROM
     user_points up
 JOIN

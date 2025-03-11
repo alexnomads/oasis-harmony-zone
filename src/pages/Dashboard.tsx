@@ -7,6 +7,7 @@ import { MeditationService } from '@/lib/meditationService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Timer, Award, TrendingUp, History } from 'lucide-react';
+import { formatDurationDetails } from '@/lib/utils/timeFormat';
 import type { MeditationSession } from '@/types/database';
 
 export default function Dashboard() {
@@ -60,8 +61,7 @@ export default function Dashboard() {
   };
 
   const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    return `${minutes} min`;
+    return formatDurationDetails(seconds);
   };
 
   return (
@@ -136,8 +136,8 @@ export default function Dashboard() {
                     <Timer className="h-8 w-8 text-green-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-zinc-400">Total Minutes</p>
-                    <h3 className="text-2xl font-bold">{stats.totalMinutes}</h3>
+                    <p className="text-sm text-zinc-400">Total Time</p>
+                    <h3 className="text-2xl font-bold">{formatDurationDetails(stats.totalMinutes * 60)}</h3>
                   </div>
                 </div>
               </CardContent>
@@ -165,7 +165,7 @@ export default function Dashboard() {
                       </div>
                       <div className="text-right">
                         <p className="font-medium">
-                          {formatDuration(session.duration)}
+                          {formatDurationDetails(session.duration)}
                         </p>
                         <p className="text-sm text-zinc-400">
                           +{session.points_earned} points

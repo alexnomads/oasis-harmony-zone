@@ -42,6 +42,8 @@ export default function GlobalDashboard() {
       if (sessionsError) throw sessionsError;
 
       const totalSessions = sessionsData?.length || 0;
+      
+      // Calculate the AGGREGATE total meditation time of all users
       const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
 
       console.log("Global Stats Retrieved:", {
@@ -160,7 +162,7 @@ export default function GlobalDashboard() {
 
           <Card className="bg-zinc-900/50 border border-zinc-800 text-white backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Meditation Time</CardTitle>
+              <CardTitle className="text-lg font-medium">Total Meditation Time</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
@@ -168,7 +170,7 @@ export default function GlobalDashboard() {
                   <Trophy className="h-8 w-8 text-orange-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-zinc-400">Total Time</p>
+                  <p className="text-sm text-zinc-400">Collective Time</p>
                   <h3 className="text-2xl font-bold">
                     {isLoading ? "Loading..." : formatDurationDetails(stats.totalMeditationTime)}
                   </h3>

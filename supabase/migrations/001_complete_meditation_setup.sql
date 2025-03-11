@@ -55,10 +55,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create the trigger after all tables exist
+-- Create trigger to update points when session is completed
 CREATE OR REPLACE TRIGGER update_points_on_session_complete
     AFTER UPDATE ON meditation_sessions
     FOR EACH ROW
+    WHEN (NEW.status = 'completed'::meditation_status AND OLD.status = 'in_progress'::meditation_status)
     EXECUTE FUNCTION update_user_points();
 
 -- Create RLS policies
@@ -99,8 +100,8 @@ SELECT
     up.total_points,
     up.meditation_streak,
     CAST(up.last_meditation_date AS TEXT) as last_meditation_date,
-    COUNT(ms.id) as total_sessions,
-    SUM(COALESCE(ms.duration, 0)) as total_meditation_time,
+    COUNT(CASE WHEN ms.status = 'completed'::meditation_status THEN 1 END) as total_sessions,
+    SUM(CASE WHEN ms.status = 'completed'::meditation_status THEN COALESCE(ms.duration, 0) ELSE 0 END) as total_meditation_time,
     p.email,
     COALESCE(p.raw_user_meta_data->>'full_name', p.raw_user_meta_data->>'name', p.email) as display_name
 FROM
@@ -108,7 +109,7 @@ FROM
 JOIN
     auth.users p ON up.user_id = p.id
 LEFT JOIN
-    meditation_sessions ms ON up.user_id = ms.user_id AND ms.status = 'completed'
+    meditation_sessions ms ON up.user_id = ms.user_id
 GROUP BY
     up.user_id, up.total_points, up.meditation_streak, up.last_meditation_date, p.email, p.raw_user_meta_data
 ORDER BY
@@ -116,3 +117,4 @@ ORDER BY
 
 -- Grant appropriate permissions for the view
 GRANT SELECT ON global_leaderboard TO anon, authenticated, service_role;
+

@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import type { MeditationSession, UserPoints, UserProfile } from '../../types/database';
@@ -121,13 +120,11 @@ export class UserService extends BaseService {
         
       if (uploadError) throw uploadError;
       
-      const { data: { publicUrl }, error: urlError } = supabase.storage
+      const { data } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
         
-      if (urlError) throw urlError;
-      
-      return publicUrl;
+      return data.publicUrl;
     } catch (error) {
       console.error('Error uploading profile picture:', error);
       throw error;

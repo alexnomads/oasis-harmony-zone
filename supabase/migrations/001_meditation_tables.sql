@@ -92,4 +92,3 @@ CREATE POLICY "Users can read own points"
 
 -- Enable realtime for meditation_sessions
 ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
-

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -26,35 +25,23 @@ export default function GlobalDashboard() {
     console.log("Fetching global stats...");
     
     try {
-      // Get total users count from auth.users table
-      const { count: totalUsersCount, error: usersError } = await supabase
-        .from('auth.users')
-        .select('*', { count: 'exact', head: true });
+      // Get total users count from users table that has authenticated with Supabase
+      const { data: usersData, error: usersError } = await supabase
+        .from('users')
+        .select('id', { count: 'exact' });
 
       if (usersError) {
-        console.error("Error fetching total users count:", usersError);
-        
-        // Fallback: Try querying user_points table to get users count
-        const { count: fallbackUsersCount, error: fallbackError } = await supabase
-          .from('user_points')
-          .select('*', { count: 'exact', head: true });
-          
-        if (fallbackError) {
-          console.error("Error fetching fallback users count:", fallbackError);
-          throw fallbackError;
-        }
-        
-        console.log("Fallback total users count:", fallbackUsersCount);
-        var usersCount = fallbackUsersCount;
-      } else {
-        console.log("Total users count from auth.users:", totalUsersCount);
-        var usersCount = totalUsersCount;
+        console.error("Error fetching users:", usersError);
+        throw usersError;
       }
 
-      // Get ALL completed meditation sessions
+      const totalUsersCount = usersData?.length || 0;
+      console.log("Total users count:", totalUsersCount);
+
+      // Get all completed meditation sessions across ALL users
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('meditation_sessions')
-        .select('duration')
+        .select('duration, user_id')
         .eq('status', 'completed');
 
       if (sessionsError) {
@@ -62,18 +49,15 @@ export default function GlobalDashboard() {
         throw sessionsError;
       }
 
-      // Log the raw sessions data for debugging
       console.log("Raw completed sessions data:", sessionsData);
 
-      // Count of completed sessions
+      // Count of completed sessions across ALL users
       const totalSessions = sessionsData?.length || 0;
       console.log("Total completed sessions count:", totalSessions);
       
-      // Calculate the AGGREGATE total meditation time across ALL users and ALL sessions
+      // Calculate the total meditation time across ALL users
       const totalMeditationTime = sessionsData?.reduce((sum, session) => {
-        // Ensure duration is a number and not null/undefined
         const duration = session.duration || 0;
-        console.log(`Adding session duration: ${duration}`);
         return sum + duration;
       }, 0) || 0;
 
@@ -81,13 +65,13 @@ export default function GlobalDashboard() {
 
       // Log complete stats for verification
       console.log("Global Stats Retrieved:", {
-        users: usersCount || 0,
+        users: totalUsersCount,
         sessions: totalSessions,
         time: totalMeditationTime
       });
 
       return {
-        totalUsers: usersCount || 0,
+        totalUsers: totalUsersCount,
         totalSessions,
         totalMeditationTime,
       };
@@ -97,7 +81,6 @@ export default function GlobalDashboard() {
     }
   };
 
-  // Setup for real-time updates with improved error handling
   useEffect(() => {
     const channel = supabase
       .channel('global_meditation_updates')
@@ -148,7 +131,6 @@ export default function GlobalDashboard() {
     };
   }, []);
 
-  // Improve React Query configuration for better real-time updates
   const { data: globalStats, isLoading, refetch } = useQuery({
     queryKey: ["globalStats"],
     queryFn: fetchGlobalStats,
@@ -158,7 +140,6 @@ export default function GlobalDashboard() {
     retry: 3, // Retry failed queries 3 times
   });
 
-  // Optimize state management by using React Query's state directly
   useEffect(() => {
     if (globalStats) {
       console.log("Updated global stats:", globalStats);

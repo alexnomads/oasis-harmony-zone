@@ -1,5 +1,5 @@
 
-import { Menu, Moon, Sun, User, Timer, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, Moon, Sun, User, Timer, LayoutDashboard, LogOut, Globe } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { AuthForm } from "./auth/AuthForm";
@@ -81,6 +81,10 @@ export const Header = () => {
                     Your Dashboard
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem onClick={() => navigate('/global-dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                  <Globe className="mr-2 h-4 w-4" />
+                  Global Dashboard
+                </DropdownMenuItem>
                 <div className="h-px bg-gradient-to-r from-vibrantPurple to-vibrantOrange my-1 opacity-50" />
                 <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/5 focus:bg-white/5">
                   Our Programs
@@ -158,6 +162,10 @@ export const Header = () => {
                     <DropdownMenuItem onClick={() => navigate('/dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       Your Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/global-dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                      <Globe className="mr-2 h-4 w-4" />
+                      Global Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/meditate')} className="text-white hover:bg-white/5 focus:bg-white/5">
                       <Timer className="mr-2 h-4 w-4" />

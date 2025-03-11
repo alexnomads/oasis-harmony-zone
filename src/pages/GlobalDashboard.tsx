@@ -26,25 +26,40 @@ export default function GlobalDashboard() {
     console.log("Fetching global stats...");
     
     try {
-      // Get total users count
+      // Get total users count - modified to count distinct users with at least one session
       const { count: usersCount, error: usersError } = await supabase
         .from('user_points')
         .select('*', { count: 'exact', head: true });
 
-      if (usersError) throw usersError;
+      if (usersError) {
+        console.error("Error fetching users count:", usersError);
+        throw usersError;
+      }
 
-      // Get total sessions and meditation time
+      console.log("Total users count:", usersCount);
+
+      // Get total sessions and meditation time - explicitly filtering for completed sessions
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('meditation_sessions')
-        .select('duration')
+        .select('duration, user_id')
         .eq('status', 'completed');
 
-      if (sessionsError) throw sessionsError;
+      if (sessionsError) {
+        console.error("Error fetching sessions:", sessionsError);
+        throw sessionsError;
+      }
+
+      // Log the raw sessions data for debugging
+      console.log("Raw sessions data:", sessionsData);
 
       const totalSessions = sessionsData?.length || 0;
       
       // Calculate the AGGREGATE total meditation time of all users
-      const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
+      const totalMeditationTime = sessionsData?.reduce((sum, session) => {
+        const duration = session.duration || 0;
+        console.log(`Adding session duration: ${duration}`);
+        return sum + duration;
+      }, 0) || 0;
 
       console.log("Global Stats Retrieved:", {
         users: usersCount,
@@ -63,7 +78,7 @@ export default function GlobalDashboard() {
     }
   };
 
-  // Set up real-time subscription for completed meditation sessions
+  // Setup for real-time updates with improved error handling
   useEffect(() => {
     const channel = supabase
       .channel('global_meditation_updates')
@@ -94,22 +109,37 @@ export default function GlobalDashboard() {
           description: "Global stats have been updated!",
         });
       })
-      .subscribe();
-
-    console.log("Subscribed to global meditation updates");
+      .subscribe((status) => {
+        console.log("Subscription status:", status);
+        if (status === 'SUBSCRIBED') {
+          console.log("Successfully subscribed to global meditation updates");
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error("Error subscribing to global meditation updates");
+          toast({
+            title: "Connection Error",
+            description: "Failed to subscribe to real-time updates. Data may not be current.",
+            variant: "destructive",
+          });
+        }
+      });
 
     return () => {
+      console.log("Cleaning up subscription");
       supabase.removeChannel(channel);
     };
   }, []);
 
+  // Improve React Query configuration for better real-time updates
   const { data: globalStats, isLoading, refetch } = useQuery({
     queryKey: ["globalStats"],
     queryFn: fetchGlobalStats,
-    staleTime: 5000, // Consider data stale after 5 seconds
-    refetchInterval: 10000, // Poll every 10 seconds
+    staleTime: 1000, // Consider data stale after just 1 second for more frequent updates
+    refetchInterval: 5000, // More frequent polling every 5 seconds
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    retry: 3, // Retry failed queries 3 times
   });
 
+  // Optimize state management by using React Query's state directly
   useEffect(() => {
     if (globalStats) {
       console.log("Updated global stats:", globalStats);

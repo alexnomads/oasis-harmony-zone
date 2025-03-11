@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -13,22 +13,9 @@ import { formatDurationDetails } from '@/lib/utils/timeFormat';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/use-toast';
 
-interface UserStats {
-  totalPoints: number;
-  streak: number;
-  totalSessions: number;
-  totalMinutes: number;
-}
-
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState<UserStats>({
-    totalPoints: 0,
-    streak: 0,
-    totalSessions: 0,
-    totalMinutes: 0
-  });
 
   // Set up real-time subscription for the user's meditation sessions
   useEffect(() => {
@@ -64,26 +51,40 @@ export default function Dashboard() {
           description: "Your dashboard has been updated with your latest session.",
         });
       })
-      .subscribe();
-
-    console.log("Subscribed to user meditation updates for user:", user.id);
+      .subscribe((status) => {
+        console.log("User subscription status:", status);
+        if (status === 'SUBSCRIBED') {
+          console.log("Successfully subscribed to user meditation updates for user:", user.id);
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error("Error subscribing to user meditation updates");
+          toast({
+            title: "Connection Error",
+            description: "Failed to subscribe to real-time updates. Your data may not be current.",
+            variant: "destructive",
+          });
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [user]);
 
-  // Fetch user data with React Query
+  // Fetch user data with React Query - improved configuration
   const { data: userData, isLoading: loadingData, refetch } = useQuery({
     queryKey: ['userHistory', user?.id],
     queryFn: async () => {
       if (!user) throw new Error('No user');
       console.log("Fetching user history for:", user.id);
-      return MeditationService.getUserHistory(user.id);
+      const result = await MeditationService.getUserHistory(user.id);
+      console.log("User history result:", result);
+      return result;
     },
     enabled: !!user,
-    staleTime: 5000, // Consider data stale after 5 seconds
-    refetchInterval: 10000, // Poll every 10 seconds
+    staleTime: 1000, // Consider data stale after 1 second
+    refetchInterval: 5000, // Poll every 5 seconds
+    refetchOnWindowFocus: true,
+    retry: 3,
   });
 
   useEffect(() => {
@@ -92,30 +93,24 @@ export default function Dashboard() {
     }
   }, [user, loading, navigate]);
 
-  useEffect(() => {
-    if (userData) {
-      console.log("Updated user data:", userData);
-      
-      // Calculate total time in seconds
-      const totalDuration = userData.sessions.reduce((acc, session) => {
-        return acc + (session.duration || 0);
-      }, 0);
-      
-      // Convert total time to minutes for display purposes
-      const totalMinutes = Math.floor(totalDuration / 60);
-      
-      // Calculate and update stats
-      const newStats = {
-        totalPoints: userData.points.total_points || 0,
-        streak: userData.points.meditation_streak || 0,
-        totalSessions: userData.sessions.length || 0,
-        totalMinutes: totalDuration
-      };
-      
-      console.log("Calculated user stats:", newStats);
-      setStats(newStats);
-    }
-  }, [userData]);
+  // Calculate derived stats based on userData
+  const totalPoints = userData?.points?.total_points || 0;
+  const streak = userData?.points?.meditation_streak || 0;
+  const totalSessions = userData?.sessions?.length || 0;
+  
+  // Calculate total time in seconds - with proper logging
+  const totalDuration = userData?.sessions?.reduce((acc, session) => {
+    const sessionDuration = session.duration || 0;
+    console.log(`Adding user session duration: ${sessionDuration}`);
+    return acc + sessionDuration;
+  }, 0) || 0;
+  
+  console.log("Calculated user stats:", {
+    totalPoints,
+    streak,
+    totalSessions,
+    totalDuration
+  });
 
   if (loading || loadingData) return null;
 
@@ -160,7 +155,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">Total Points</p>
-                    <h3 className="text-2xl font-bold">{stats.totalPoints}</h3>
+                    <h3 className="text-2xl font-bold">{totalPoints}</h3>
                   </div>
                 </div>
               </CardContent>
@@ -174,7 +169,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">Current Streak</p>
-                    <h3 className="text-2xl font-bold">{stats.streak} days</h3>
+                    <h3 className="text-2xl font-bold">{streak} days</h3>
                   </div>
                 </div>
               </CardContent>
@@ -188,7 +183,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">Total Sessions</p>
-                    <h3 className="text-2xl font-bold">{stats.totalSessions}</h3>
+                    <h3 className="text-2xl font-bold">{totalSessions}</h3>
                   </div>
                 </div>
               </CardContent>
@@ -202,7 +197,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <p className="text-sm text-zinc-400">Total Time</p>
-                    <h3 className="text-2xl font-bold">{formatDurationDetails(stats.totalMinutes)}</h3>
+                    <h3 className="text-2xl font-bold">{formatDurationDetails(totalDuration)}</h3>
                   </div>
                 </div>
               </CardContent>

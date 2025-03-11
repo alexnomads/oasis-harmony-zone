@@ -84,6 +84,18 @@ CREATE POLICY "Users can read own points"
     FOR SELECT
     USING (auth.uid() = user_id);
 
+-- Add INSERT policy for user_points
+CREATE POLICY "Users can insert own points"
+    ON user_points
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+-- Add UPDATE policy for user_points
+CREATE POLICY "Users can update own points"
+    ON user_points
+    FOR UPDATE
+    USING (auth.uid() = user_id);
+
 -- Enable realtime for meditation_sessions
 ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
 
@@ -111,4 +123,3 @@ ORDER BY
 
 -- Grant appropriate permissions for the view
 GRANT SELECT ON global_leaderboard TO anon, authenticated, service_role;
-

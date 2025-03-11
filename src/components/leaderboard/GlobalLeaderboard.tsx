@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Medal, User, Calendar, Timer, Award } from 'lucide-react';
@@ -52,7 +51,6 @@ export const GlobalLeaderboard = () => {
   }, [toast]);
 
   const getInitials = (name: string) => {
-    // Get initials from name or email
     if (name.includes('@')) {
       return name.substring(0, 2).toUpperCase();
     }
@@ -84,6 +82,11 @@ export const GlobalLeaderboard = () => {
     }
   };
 
+  const getUsernameFromEmail = (email: string): string => {
+    if (!email || !email.includes('@')) return email;
+    return email.split('@')[0];
+  };
+
   return (
     <Card className="bg-zinc-900/50 border-zinc-800 w-full">
       <CardHeader>
@@ -112,50 +115,56 @@ export const GlobalLeaderboard = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {leaderboard.map((entry, index) => (
-              <motion.div
-                key={entry.user_id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
-              >
-                <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
-                  {index < 3 ? (
-                    <Medal className={`h-6 w-6 ${getMedalColor(index)}`} />
-                  ) : (
-                    <span className="text-zinc-500 font-medium">{index + 1}</span>
-                  )}
-                </div>
+            {leaderboard.map((entry, index) => {
+              const displayName = entry.display_name === entry.email 
+                ? getUsernameFromEmail(entry.email)
+                : entry.display_name;
                 
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(entry.display_name)}`} alt={entry.display_name} />
-                  <AvatarFallback>{getInitials(entry.display_name)}</AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{entry.display_name}</p>
-                  <div className="flex items-center gap-4 text-sm text-zinc-400">
-                    <span className="flex items-center gap-1">
-                      <Award className="h-3 w-3" />
-                      {entry.total_points} pts
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {entry.meditation_streak} day streak
-                    </span>
+              return (
+                <motion.div
+                  key={entry.user_id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
+                >
+                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
+                    {index < 3 ? (
+                      <Medal className={`h-6 w-6 ${getMedalColor(index)}`} />
+                    ) : (
+                      <span className="text-zinc-500 font-medium">{index + 1}</span>
+                    )}
                   </div>
-                </div>
-                
-                <div className="text-right flex-shrink-0">
-                  <p className="font-medium text-vibrantOrange">{entry.total_sessions} sessions</p>
-                  <p className="text-sm text-zinc-400 flex items-center justify-end gap-1">
-                    <Timer className="h-3 w-3" />
-                    {formatTime(entry.total_meditation_time)}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+                  
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}`} alt={displayName} />
+                    <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{displayName}</p>
+                    <div className="flex items-center gap-4 text-sm text-zinc-400">
+                      <span className="flex items-center gap-1">
+                        <Award className="h-3 w-3" />
+                        {entry.total_points} pts
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {entry.meditation_streak} day streak
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-medium text-vibrantOrange">{entry.total_sessions} sessions</p>
+                    <p className="text-sm text-zinc-400 flex items-center justify-end gap-1">
+                      <Timer className="h-3 w-3" />
+                      {formatTime(entry.total_meditation_time)}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </CardContent>

@@ -55,11 +55,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger to update points when a session is completed
-CREATE OR REPLACE TRIGGER update_points_on_session_complete
+-- First create the table before defining triggers
+CREATE TABLE IF NOT EXISTS meditation_sessions (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    status meditation_status NOT NULL DEFAULT 'in_progress',
+    duration INTEGER NOT NULL DEFAULT 0, -- in seconds
+    points_earned INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    completed_at TIMESTAMPTZ
+);
+
+-- Now create the trigger after the table exists and has a status column
+CREATE TRIGGER update_points_on_session_complete
     AFTER UPDATE ON meditation_sessions
     FOR EACH ROW
-    WHEN (OLD.status = 'in_progress' AND NEW.status = 'completed')
+    WHEN (NEW.status = 'completed' AND OLD.status = 'in_progress')
     EXECUTE FUNCTION update_user_points();
 
 -- Create RLS policies

@@ -21,9 +21,22 @@ CREATE TABLE user_points (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create user_profiles table
+CREATE TABLE user_profiles (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users NOT NULL UNIQUE,
+    nickname TEXT UNIQUE NOT NULL,
+    avatar_url TEXT,
+    twitter_handle TEXT,
+    instagram_handle TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable Row Level Security
 ALTER TABLE meditation_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_points ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for meditation_sessions
 CREATE POLICY "Users can view own meditation sessions"
@@ -52,6 +65,22 @@ CREATE POLICY "Users can update own points"
     FOR UPDATE
     USING (auth.uid() = user_id);
 
+-- Create policies for user_profiles
+CREATE POLICY "Users can view any profile"
+    ON user_profiles
+    FOR SELECT
+    USING (true);
+
+CREATE POLICY "Users can create own profile"
+    ON user_profiles
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own profile"
+    ON user_profiles
+    FOR UPDATE
+    USING (auth.uid() = user_id);
+
 -- Create function to initialize user_points on user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -76,4 +105,3 @@ BEGIN
     END IF;
 END
 $$;
-

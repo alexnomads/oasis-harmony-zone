@@ -1,19 +1,38 @@
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Calendar, Settings } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { User, Mail, Calendar, Settings, Twitter, Instagram } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ActivityTracker } from "./ActivityTracker";
+import { EditProfileDialog } from "./EditProfileDialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { UserService } from "@/lib/services/userService";
+import type { UserProfile as UserProfileType } from "@/types/database";
 
 export const UserProfile = () => {
-  const mockUser = {
-    name: "Siddhartha Gautama",
-    email: "buddha@enlightenment.com",
-    joinDate: "January 2024",
-    guidedMeditations: 8,
-    soundMeditations: 4,
-    rojTokens: 2000,
+  const { user } = useAuth();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [profile, setProfile] = useState<UserProfileType | null>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (user) {
+        try {
+          const userProfile = await UserService.getUserProfile(user.id);
+          setProfile(userProfile);
+        } catch (error) {
+          console.error('Error loading profile:', error);
+        }
+      }
+    };
+    
+    loadProfile();
+  }, [user]);
+
+  const handleProfileUpdate = (updatedProfile: UserProfileType) => {
+    setProfile(updatedProfile);
   };
 
   return (
@@ -24,25 +43,55 @@ export const UserProfile = () => {
             <div className="space-y-4 flex-1">
               <div className="flex items-center space-x-4 text-white/80">
                 <User className="w-5 h-5 text-softOrange flex-shrink-0" />
-                <span className="truncate">{mockUser.name}</span>
+                <span className="truncate">{profile?.nickname || user?.email?.split('@')[0]}</span>
               </div>
               <div className="flex items-center space-x-4 text-white/80">
                 <Mail className="w-5 h-5 text-softOrange flex-shrink-0" />
-                <span className="truncate">{mockUser.email}</span>
+                <span className="truncate">{user?.email}</span>
               </div>
-              <div className="flex items-center space-x-4 text-white/80">
-                <Calendar className="w-5 h-5 text-softOrange flex-shrink-0" />
-                <span className="truncate">Member since {mockUser.joinDate}</span>
-              </div>
-              <Button className="w-full bg-black/30 hover:bg-black/40 text-white border border-white/10">
+              {profile?.twitter_handle && (
+                <div className="flex items-center space-x-4 text-white/80">
+                  <Twitter className="w-5 h-5 text-softOrange flex-shrink-0" />
+                  <a
+                    href={`https://twitter.com/${profile.twitter_handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="truncate hover:text-softOrange transition-colors"
+                  >
+                    @{profile.twitter_handle}
+                  </a>
+                </div>
+              )}
+              {profile?.instagram_handle && (
+                <div className="flex items-center space-x-4 text-white/80">
+                  <Instagram className="w-5 h-5 text-softOrange flex-shrink-0" />
+                  <a
+                    href={`https://instagram.com/${profile.instagram_handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="truncate hover:text-softOrange transition-colors"
+                  >
+                    @{profile.instagram_handle}
+                  </a>
+                </div>
+              )}
+              <Button 
+                className="w-full bg-black/30 hover:bg-black/40 text-white border border-white/10"
+                onClick={() => setIsEditDialogOpen(true)}
+              >
                 <Settings className="w-4 h-4 mr-2" />
                 Edit Profile
               </Button>
             </div>
             <div className="flex-shrink-0">
               <Avatar className="w-32 h-32">
-                <AvatarImage src="/lovable-uploads/97b94475-30c2-47c1-97f3-7fc62e26dd85.png" alt="Buddha" />
-                <AvatarFallback>BU</AvatarFallback>
+                <AvatarImage 
+                  src={profile?.avatar_url || "/lovable-uploads/97b94475-30c2-47c1-97f3-7fc62e26dd85.png"} 
+                  alt={profile?.nickname || "Profile"} 
+                />
+                <AvatarFallback>
+                  {profile?.nickname?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                </AvatarFallback>
               </Avatar>
             </div>
           </div>
@@ -51,32 +100,12 @@ export const UserProfile = () => {
 
       <ActivityTracker />
 
-      <Card className="bg-black/20 border-white/10">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 bg-black/30 rounded-lg">
-              <h4 className="text-lg font-medium text-white mb-2">Guided Meditations</h4>
-              <p className="text-3xl font-bold text-softOrange">{mockUser.guidedMeditations}</p>
-            </div>
-            <div className="p-4 bg-black/30 rounded-lg">
-              <h4 className="text-lg font-medium text-white mb-2">Sound Meditations</h4>
-              <p className="text-3xl font-bold text-softOrange">{mockUser.soundMeditations}</p>
-            </div>
-            <div className="p-4 bg-black/30 rounded-lg">
-              <h4 className="text-lg font-medium text-white mb-2">$ROJ Tokens</h4>
-              <p className="text-3xl font-bold text-softOrange">${mockUser.rojTokens.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-black/30">
-              View History
-            </Button>
-            <Button className="w-full bg-softPurple hover:bg-softPurple/90">
-              Check Balance
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <EditProfileDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        currentProfile={profile}
+        onProfileUpdated={handleProfileUpdate}
+      />
     </div>
   );
 };

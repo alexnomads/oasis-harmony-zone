@@ -22,3 +22,14 @@ export interface UserPoints {
   created_at: string;
   updated_at: string;
 }
+
+export interface UserProfile {
+  id: string;
+  user_id: string;
+  nickname: string;
+  avatar_url: string | null;
+  twitter_handle: string | null;
+  instagram_handle: string | null;
+  created_at: string;
+  updated_at: string;
+}

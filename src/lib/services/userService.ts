@@ -1,7 +1,7 @@
 
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
-import type { MeditationSession, UserPoints } from '../../types/database';
+import type { MeditationSession, UserPoints, UserProfile } from '../../types/database';
 
 export class UserService extends BaseService {
   // Get user's meditation history and points
@@ -52,10 +52,85 @@ export class UserService extends BaseService {
     }
   }
   
-  // Check and update user's meditation streak
-  static async checkAndUpdateStreak(userId: string) {
-    // Implementation would go here if needed
-    // This is just a stub since it's not being called in the current code
-    return { updated: false };
+  // Get user profile
+  static async getUserProfile(userId: string): Promise<UserProfile | null> {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+        
+      if (error) {
+        if (error.message.includes('No data returned')) {
+          return null;
+        }
+        throw error;
+      }
+      
+      return data as UserProfile;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
+  }
+  
+  // Create or update user profile
+  static async upsertUserProfile(profile: Partial<UserProfile> & { user_id: string }): Promise<UserProfile> {
+    try {
+      // Check if nickname is unique (if provided)
+      if (profile.nickname) {
+        const { data: existingNickname, error: nicknameError } = await supabase
+          .from('user_profiles')
+          .select('id,user_id')
+          .eq('nickname', profile.nickname)
+          .neq('user_id', profile.user_id)
+          .single();
+          
+        if (existingNickname) {
+          throw new Error('Nickname is already taken');
+        }
+      }
+      
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .upsert({
+          ...profile,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data as UserProfile;
+    } catch (error) {
+      console.error('Error upserting user profile:', error);
+      throw error;
+    }
+  }
+  
+  // Upload profile picture
+  static async uploadProfilePicture(userId: string, file: File): Promise<string> {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${userId}/profile-picture.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+        
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl }, error: urlError } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+        
+      if (urlError) throw urlError;
+      
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      throw error;
+    }
   }
 }

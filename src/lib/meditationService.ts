@@ -1,5 +1,6 @@
 
 import { SessionService } from './services/sessionService';
+import { UserService } from './services/userService';
 import type { MeditationType } from '../types/database';
 
 export class MeditationService {
@@ -9,5 +10,10 @@ export class MeditationService {
 
   static async completeSession(sessionId: string, duration: number) {
     return SessionService.completeSession(sessionId, duration);
+  }
+  
+  // Add the missing getUserHistory method
+  static async getUserHistory(userId: string) {
+    return UserService.getUserHistory(userId);
   }
 }

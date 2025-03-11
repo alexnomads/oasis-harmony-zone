@@ -1,3 +1,4 @@
+
 export type MeditationType = 'mindfulness' | 'breathing' | 'body_scan' | 'loving_kindness';
 
 export type MeditationStatus = 'in_progress' | 'completed' | 'cancelled';

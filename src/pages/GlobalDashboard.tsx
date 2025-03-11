@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -25,23 +26,35 @@ export default function GlobalDashboard() {
     console.log("Fetching global stats...");
     
     try {
-      // Get total users count from users table that has authenticated with Supabase
-      const { data: usersData, error: usersError } = await supabase
-        .from('users')
-        .select('id', { count: 'exact' });
+      // Get total users count from auth.users table
+      const { data: authUsers, error: authUsersError } = await supabase
+        .from('auth.users')
+        .select('id');
 
-      if (usersError) {
-        console.error("Error fetching users:", usersError);
-        throw usersError;
+      if (authUsersError) {
+        console.error("Error fetching auth users:", authUsersError);
+        
+        // Fallback to user_points table
+        const { data: userPointsData, error: userPointsError } = await supabase
+          .from('user_points')
+          .select('user_id');
+          
+        if (userPointsError) {
+          console.error("Error fetching user points:", userPointsError);
+          throw userPointsError;
+        }
+        
+        console.log("Users from user_points:", userPointsData);
+        var totalUsersCount = userPointsData?.length || 0;
+      } else {
+        console.log("Users from auth.users:", authUsers);
+        var totalUsersCount = authUsers?.length || 0;
       }
 
-      const totalUsersCount = usersData?.length || 0;
-      console.log("Total users count:", totalUsersCount);
-
-      // Get all completed meditation sessions across ALL users
+      // Get ALL completed meditation sessions
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('meditation_sessions')
-        .select('duration, user_id')
+        .select('*')
         .eq('status', 'completed');
 
       if (sessionsError) {
@@ -49,19 +62,18 @@ export default function GlobalDashboard() {
         throw sessionsError;
       }
 
-      console.log("Raw completed sessions data:", sessionsData);
+      console.log("Completed sessions data:", sessionsData);
 
-      // Count of completed sessions across ALL users
+      // Count of completed sessions
       const totalSessions = sessionsData?.length || 0;
       console.log("Total completed sessions count:", totalSessions);
       
-      // Calculate the total meditation time across ALL users
+      // Calculate the total meditation time across ALL sessions
       const totalMeditationTime = sessionsData?.reduce((sum, session) => {
-        const duration = session.duration || 0;
-        return sum + duration;
+        return sum + (session.duration || 0);
       }, 0) || 0;
 
-      console.log("Aggregate total meditation time (seconds):", totalMeditationTime);
+      console.log("Total meditation time (seconds):", totalMeditationTime);
 
       // Log complete stats for verification
       console.log("Global Stats Retrieved:", {

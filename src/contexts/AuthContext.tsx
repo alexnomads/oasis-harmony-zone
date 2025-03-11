@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';

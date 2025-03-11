@@ -114,12 +114,15 @@ CREATE POLICY "Users can update own points"
     USING (auth.uid() = user_id);
 
 -- Enable realtime for meditation_sessions
+-- Using a DO block instead of BEGIN...END
+DO $$
 BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
 EXCEPTION
     WHEN duplicate_object THEN
         NULL;
-END;
+END
+$$;
 
 -- Create global leaderboard view
 CREATE OR REPLACE VIEW global_leaderboard AS

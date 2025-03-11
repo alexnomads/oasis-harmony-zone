@@ -1,16 +1,13 @@
-
-import { motion } from "framer-motion";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { User } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useNavigate } from "react-router-dom";
-import { useSupabase } from "@/contexts/SupabaseContext";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { motion } from 'framer-motion';
+import { User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
 
 const authSchema = z.object({
   email: z
@@ -21,18 +18,15 @@ const authSchema = z.object({
   password: z
     .string()
     .min(1, 'Password is required')
-    .min(6, 'Password must be at least 6 characters long')
+    .min(6, 'Password must be at least 6 characters')
     .max(72, 'Password must be less than 72 characters')
 });
 
 type AuthFormData = z.infer<typeof authSchema>;
 
-export const RegisterForm = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const { signIn, signUp } = useSupabase();
+export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const { signIn, signUp, loading } = useAuth();
   
   const {
     register,
@@ -50,40 +44,13 @@ export const RegisterForm = () => {
   const onSubmit = async (data: AuthFormData) => {
     if (loading) return;
     
-    setLoading(true);
-    try {
-      const { error } = isLogin 
-        ? await signIn(data.email, data.password)
-        : await signUp(data.email, data.password);
-
-      if (error) {
-        console.error('Auth error:', error);
-        return;
-      }
-
-      // Reset form on success
+    if (isLogin) {
+      await signIn(data.email, data.password);
+    } else {
+      await signUp(data.email, data.password);
       reset();
-      
-      // Close the form popup on successful sign-in
-      if (isLogin) {
-        const signInButton = document.querySelector('button[aria-label="Sign In"]') as HTMLButtonElement;
-        if (signInButton) {
-          signInButton.click();
-        }
-      }
-    } catch (error) {
-      console.error('Unexpected auth error:', error);
-      toast({
-        title: 'Error',
-        description: 'An unexpected error occurred. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
     }
   };
-
-
 
   return (
     <motion.div

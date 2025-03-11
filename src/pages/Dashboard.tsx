@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { MeditationService } from '@/lib/meditationService';
@@ -13,14 +14,17 @@ import type { MeditationSession } from '@/types/database';
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalPoints: 0,
-    streak: 0,
-    totalSessions: 0,
-    totalMinutes: 0
+
+  // Fetch user data with React Query
+  const { data: userData, isLoading: loadingData } = useQuery({
+    queryKey: ['userHistory', user?.id],
+    queryFn: async () => {
+      if (!user) throw new Error('No user');
+      return MeditationService.getUserHistory(user.id);
+    },
+    enabled: !!user,
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
-  const [recentSessions, setRecentSessions] = useState<MeditationSession[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -28,29 +32,16 @@ export default function Dashboard() {
     }
   }, [user, loading, navigate]);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (user) {
-        try {
-          const { sessions, points } = await MeditationService.getUserHistory(user.id);
-          setStats({
-            totalPoints: points.total_points,
-            streak: points.meditation_streak,
-            totalSessions: sessions.length,
-            totalMinutes: sessions.reduce((acc, session) => acc + Math.floor(session.duration / 60), 0)
-          });
-          setRecentSessions(sessions.slice(0, 5));
-        } catch (error) {
-          console.error('Error loading user data:', error);
-        } finally {
-          setLoadingData(false);
-        }
-      }
-    };
-    loadUserData();
-  }, [user]);
-
   if (loading || loadingData) return null;
+
+  const stats = {
+    totalPoints: userData?.points.total_points || 0,
+    streak: userData?.points.meditation_streak || 0,
+    totalSessions: userData?.sessions.length || 0,
+    totalMinutes: userData?.sessions.reduce((acc, session) => acc + Math.floor(session.duration / 60), 0) || 0
+  };
+
+  const recentSessions = userData?.sessions.slice(0, 5) || [];
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -15,13 +14,6 @@ interface GlobalStats {
 }
 
 export default function GlobalDashboard() {
-  const [stats, setStats] = useState<GlobalStats>({
-    totalUsers: 0,
-    totalSessions: 0,
-    totalMeditationTime: 0,
-  });
-
-  // Fetch global statistics directly from the database
   const { data: globalStats, isLoading } = useQuery({
     queryKey: ["globalStats"],
     queryFn: async () => {
@@ -32,7 +24,7 @@ export default function GlobalDashboard() {
 
       if (usersError) throw usersError;
 
-      // Get total sessions count and total meditation time
+      // Get total sessions and meditation time
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('meditation_sessions')
         .select('duration')
@@ -49,6 +41,7 @@ export default function GlobalDashboard() {
         totalMeditationTime,
       };
     },
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   useEffect(() => {

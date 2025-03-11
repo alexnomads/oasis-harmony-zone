@@ -9,19 +9,19 @@ export class SessionService extends BaseService {
     try {
       console.log('Starting meditation session for user:', userId, 'type:', type);
       
-      return await this.executeQuery<MeditationSession>(() => 
-        supabase
-          .from('meditation_sessions')
-          .insert([{
-            user_id: userId,
-            type,
-            status: 'in_progress' as MeditationStatus,
-            duration: 0,
-            points_earned: 0
-          }])
-          .select('*')
-          .single()
-      );
+      const result = await supabase
+        .from('meditation_sessions')
+        .insert([{
+          user_id: userId,
+          type,
+          status: 'in_progress' as MeditationStatus,
+          duration: 0,
+          points_earned: 0
+        }])
+        .select('*')
+        .single();
+        
+      return this.executeQuery<MeditationSession>(() => Promise.resolve(result));
     } catch (error) {
       console.error('Error starting meditation session:', error);
       throw error;
@@ -38,35 +38,35 @@ export class SessionService extends BaseService {
       console.log('Points calculated:', points);
 
       // Update session
-      const session = await this.executeQuery<MeditationSession>(() => 
-        supabase
-          .from('meditation_sessions')
-          .update({
-            status: 'completed' as MeditationStatus,
-            duration,
-            points_earned: points,
-            completed_at: new Date().toISOString()
-          })
-          .eq('id', sessionId)
-          .select('*')
-          .single()
-      );
+      const sessionResult = await supabase
+        .from('meditation_sessions')
+        .update({
+          status: 'completed' as MeditationStatus,
+          duration,
+          points_earned: points,
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', sessionId)
+        .select('*')
+        .single();
+      
+      const session = await this.executeQuery<MeditationSession>(() => Promise.resolve(sessionResult));
       
       console.log('Session updated successfully:', session);
 
       // Get updated user points
+      const userPointsResult = await supabase
+        .from('user_points')
+        .select('*')
+        .eq('user_id', session.user_id)
+        .single();
+      
       const userPoints = await this.executeQuery<{ 
         user_id: string;
         total_points: number;
         meditation_streak: number;
         last_meditation_date: string | null;
-      }>(() => 
-        supabase
-          .from('user_points')
-          .select('*')
-          .eq('user_id', session.user_id)
-          .single()
-      );
+      }>(() => Promise.resolve(userPointsResult));
       
       console.log('User points retrieved:', userPoints);
 

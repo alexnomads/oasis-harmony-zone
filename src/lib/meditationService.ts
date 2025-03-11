@@ -12,7 +12,6 @@ export class MeditationService {
     return SessionService.completeSession(sessionId, duration);
   }
   
-  // Add the missing getUserHistory method
   static async getUserHistory(userId: string) {
     return UserService.getUserHistory(userId);
   }

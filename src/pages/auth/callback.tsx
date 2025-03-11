@@ -43,7 +43,7 @@ export default function AuthCallback() {
           if (token && type === 'email_confirmation') {
             const { error: confirmError } = await supabase.auth.verifyOtp({
               token_hash: token,
-              type: 'email_confirmation'
+              type: 'email',  // Changed from 'email_confirmation' to 'email'
             });
             
             if (confirmError) {

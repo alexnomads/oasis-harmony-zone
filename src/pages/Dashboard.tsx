@@ -60,10 +60,6 @@ export default function Dashboard() {
     });
   };
 
-  const formatDuration = (seconds: number) => {
-    return formatDurationDetails(seconds);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white">
       <Header />

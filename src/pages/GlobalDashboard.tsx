@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Users, Award } from "lucide-react";
 import { formatDurationDetails } from "@/lib/utils/timeFormat";
 import { GlobalLeaderboard } from "@/components/leaderboard/GlobalLeaderboard";
+import { supabase } from "@/lib/supabase";
 
 interface GlobalStats {
   totalUsers: number;
@@ -20,37 +21,41 @@ export default function GlobalDashboard() {
     totalMeditationTime: 0,
   });
 
-  const { data: leaderboardData } = useQuery({
-    queryKey: ["leaderboard"],
+  // Fetch global statistics directly from the database
+  const { data: globalStats, isLoading } = useQuery({
+    queryKey: ["globalStats"],
     queryFn: async () => {
-      // We can get the global stats from the leaderboard data
-      const response = await fetch("/api/leaderboard");
-      if (!response.ok) {
-        throw new Error("Failed to fetch leaderboard data");
-      }
-      return response.json();
+      // Get total users count
+      const { count: usersCount, error: usersError } = await supabase
+        .from('user_points')
+        .select('*', { count: 'exact', head: true });
+
+      if (usersError) throw usersError;
+
+      // Get total sessions count and total meditation time
+      const { data: sessionsData, error: sessionsError } = await supabase
+        .from('meditation_sessions')
+        .select('duration')
+        .eq('status', 'completed');
+
+      if (sessionsError) throw sessionsError;
+
+      const totalSessions = sessionsData?.length || 0;
+      const totalMeditationTime = sessionsData?.reduce((sum, session) => sum + (session.duration || 0), 0) || 0;
+
+      return {
+        totalUsers: usersCount || 0,
+        totalSessions,
+        totalMeditationTime,
+      };
     },
   });
 
   useEffect(() => {
-    if (leaderboardData) {
-      // Calculate global stats from leaderboard data
-      const totalUsers = leaderboardData.length;
-      let totalSessions = 0;
-      let totalMeditationTime = 0;
-
-      leaderboardData.forEach((entry: any) => {
-        totalSessions += entry.total_sessions || 0;
-        totalMeditationTime += entry.total_meditation_time || 0;
-      });
-
-      setStats({
-        totalUsers,
-        totalSessions,
-        totalMeditationTime,
-      });
+    if (globalStats) {
+      setStats(globalStats);
     }
-  }, [leaderboardData]);
+  }, [globalStats]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
@@ -72,7 +77,7 @@ export default function GlobalDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-zinc-400">Total Users</p>
-                  <h3 className="text-2xl font-bold">{stats.totalUsers}</h3>
+                  <h3 className="text-2xl font-bold">{isLoading ? "Loading..." : stats.totalUsers}</h3>
                 </div>
               </div>
             </CardContent>
@@ -89,7 +94,7 @@ export default function GlobalDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-zinc-400">Total Sessions</p>
-                  <h3 className="text-2xl font-bold">{stats.totalSessions}</h3>
+                  <h3 className="text-2xl font-bold">{isLoading ? "Loading..." : stats.totalSessions}</h3>
                 </div>
               </div>
             </CardContent>
@@ -106,7 +111,9 @@ export default function GlobalDashboard() {
                 </div>
                 <div>
                   <p className="text-sm text-zinc-400">Total Time</p>
-                  <h3 className="text-2xl font-bold">{formatDurationDetails(stats.totalMeditationTime)}</h3>
+                  <h3 className="text-2xl font-bold">
+                    {isLoading ? "Loading..." : formatDurationDetails(stats.totalMeditationTime)}
+                  </h3>
                 </div>
               </div>
             </CardContent>

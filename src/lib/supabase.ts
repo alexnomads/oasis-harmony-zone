@@ -26,9 +26,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     flowType: 'pkce',
-    options: {
-      redirectTo: `${getSiteUrl()}/auth/callback`
-    }
+    redirectTo: `${getSiteUrl()}/auth/callback`
   },
   global: {
     headers: {
@@ -43,4 +41,3 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 // Auth helper functions with improved error handling
-

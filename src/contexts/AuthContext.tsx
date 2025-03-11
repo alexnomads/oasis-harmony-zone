@@ -170,7 +170,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
       const redirectUrl = `${getSiteUrl()}/auth/callback`;
-      console.log('Using redirect URL:', redirectUrl);
+      console.log('Using redirect URL for signup:', redirectUrl);
       
       const { error } = await retryOperation(() =>
         supabase.auth.signUp({ 

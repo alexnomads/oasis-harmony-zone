@@ -8,15 +8,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
-// Get the current site URL for redirects
+// Get the current site URL for redirects, handling both local and production environments
 const getSiteUrl = () => {
-  let url = window.location.origin
-  // Handle local development with specific ports if needed
-  if (url.includes('localhost')) {
-    // You can set a specific port if needed, e.g., 'http://localhost:5173'
-    return url
+  // For deployed Lovable apps
+  if (window.location.hostname.includes('lovable.app')) {
+    return window.location.origin
   }
-  return url
+  // For local development
+  return 'http://localhost:5173'
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -45,3 +44,4 @@ export const getRedirectUrl = () => {
 }
 
 // Auth helper functions with improved error handling
+

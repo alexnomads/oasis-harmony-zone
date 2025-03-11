@@ -26,43 +26,62 @@ export default function GlobalDashboard() {
     console.log("Fetching global stats...");
     
     try {
-      // Get total users count - modified to count distinct users with at least one session
-      const { count: usersCount, error: usersError } = await supabase
-        .from('user_points')
+      // Get total users count from auth.users table
+      const { count: totalUsersCount, error: usersError } = await supabase
+        .from('auth.users')
         .select('*', { count: 'exact', head: true });
 
       if (usersError) {
-        console.error("Error fetching users count:", usersError);
-        throw usersError;
+        console.error("Error fetching total users count:", usersError);
+        
+        // Fallback: Try querying user_points table to get users count
+        const { count: fallbackUsersCount, error: fallbackError } = await supabase
+          .from('user_points')
+          .select('*', { count: 'exact', head: true });
+          
+        if (fallbackError) {
+          console.error("Error fetching fallback users count:", fallbackError);
+          throw fallbackError;
+        }
+        
+        console.log("Fallback total users count:", fallbackUsersCount);
+        var usersCount = fallbackUsersCount;
+      } else {
+        console.log("Total users count from auth.users:", totalUsersCount);
+        var usersCount = totalUsersCount;
       }
 
-      console.log("Total users count:", usersCount);
-
-      // Get total sessions and meditation time - explicitly filtering for completed sessions
+      // Get ALL completed meditation sessions
       const { data: sessionsData, error: sessionsError } = await supabase
         .from('meditation_sessions')
-        .select('duration, user_id')
+        .select('duration')
         .eq('status', 'completed');
 
       if (sessionsError) {
-        console.error("Error fetching sessions:", sessionsError);
+        console.error("Error fetching completed sessions:", sessionsError);
         throw sessionsError;
       }
 
       // Log the raw sessions data for debugging
-      console.log("Raw sessions data:", sessionsData);
+      console.log("Raw completed sessions data:", sessionsData);
 
+      // Count of completed sessions
       const totalSessions = sessionsData?.length || 0;
+      console.log("Total completed sessions count:", totalSessions);
       
-      // Calculate the AGGREGATE total meditation time of all users
+      // Calculate the AGGREGATE total meditation time across ALL users and ALL sessions
       const totalMeditationTime = sessionsData?.reduce((sum, session) => {
+        // Ensure duration is a number and not null/undefined
         const duration = session.duration || 0;
         console.log(`Adding session duration: ${duration}`);
         return sum + duration;
       }, 0) || 0;
 
+      console.log("Aggregate total meditation time (seconds):", totalMeditationTime);
+
+      // Log complete stats for verification
       console.log("Global Stats Retrieved:", {
-        users: usersCount,
+        users: usersCount || 0,
         sessions: totalSessions,
         time: totalMeditationTime
       });

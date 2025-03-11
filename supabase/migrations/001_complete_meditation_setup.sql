@@ -1,6 +1,12 @@
 
--- Create an enum for meditation session status
-CREATE TYPE meditation_status AS ENUM ('in_progress', 'completed', 'cancelled');
+-- Create an enum for meditation session status if it doesn't exist
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'meditation_status') THEN
+        CREATE TYPE meditation_status AS ENUM ('in_progress', 'completed', 'cancelled');
+    END IF;
+END
+$$;
 
 -- Create meditation_sessions table with proper status column
 CREATE TABLE IF NOT EXISTS meditation_sessions (
@@ -52,8 +58,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Drop trigger if it exists and recreate it
+DROP TRIGGER IF EXISTS update_points_on_session_complete ON meditation_sessions;
+
 -- Create trigger to update points when session is completed
-CREATE OR REPLACE TRIGGER update_points_on_session_complete
+CREATE TRIGGER update_points_on_session_complete
     AFTER UPDATE ON meditation_sessions
     FOR EACH ROW
     WHEN (NEW.status::meditation_status = 'completed' AND OLD.status::meditation_status = 'in_progress')
@@ -62,6 +71,14 @@ CREATE OR REPLACE TRIGGER update_points_on_session_complete
 -- Enable RLS
 ALTER TABLE meditation_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_points ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can read own sessions" ON meditation_sessions;
+DROP POLICY IF EXISTS "Users can create own sessions" ON meditation_sessions;
+DROP POLICY IF EXISTS "Users can update own sessions" ON meditation_sessions;
+DROP POLICY IF EXISTS "Users can read own points" ON user_points;
+DROP POLICY IF EXISTS "Users can insert own points" ON user_points;
+DROP POLICY IF EXISTS "Users can update own points" ON user_points;
 
 -- Create RLS policies
 CREATE POLICY "Users can read own sessions"
@@ -97,7 +114,12 @@ CREATE POLICY "Users can update own points"
     USING (auth.uid() = user_id);
 
 -- Enable realtime for meditation_sessions
-ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
+EXCEPTION
+    WHEN duplicate_object THEN
+        NULL;
+END;
 
 -- Create global leaderboard view
 CREATE OR REPLACE VIEW global_leaderboard AS

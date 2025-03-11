@@ -1,9 +1,10 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
-import { MeditationService } from '@/lib/meditationService';
+import { SessionService } from '@/lib/services/sessionService';
 import { useAuth } from '@/contexts/AuthContext';
 import { Play, Pause, RefreshCw } from 'lucide-react';
 import type { MeditationType } from '@/types/database';
@@ -31,7 +32,7 @@ export const MeditationTimer = () => {
     if (!sessionId) return;
 
     try {
-      const { session, userPoints } = await MeditationService.completeSession(sessionId, time);
+      const { session, userPoints } = await SessionService.completeSession(sessionId, time);
       toast({
         title: "Meditation Complete! 🎉",
         description: `You earned ${session.points_earned} points! Total: ${userPoints.total_points}`,
@@ -41,7 +42,7 @@ export const MeditationTimer = () => {
     } catch (error) {
       toast({
         title: "Error completing session",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
     }
@@ -78,7 +79,7 @@ export const MeditationTimer = () => {
         return;
       }
 
-      const session = await MeditationService.startSession(user.id, meditationType);
+      const session = await SessionService.startSession(user.id, meditationType);
       setSessionId(session.id);
       setIsRunning(true);
       toast({
@@ -88,7 +89,7 @@ export const MeditationTimer = () => {
     } catch (error) {
       toast({
         title: "Error starting session",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
     }

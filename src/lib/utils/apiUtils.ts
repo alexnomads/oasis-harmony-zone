@@ -31,10 +31,11 @@ export const handleApiResponse = <T>(response: PostgrestResponse<T> | PostgrestS
     throw new Error(`API request failed: ${response.error.message}`);
   }
   
-  if (!response.data) {
+  if (response.data === null) {
     console.error('No data returned from API');
     throw new Error('No data returned from API');
   }
   
-  return response.data;
+  // Ensure we're returning the correct type
+  return response.data as T;
 };

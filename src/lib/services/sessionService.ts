@@ -55,7 +55,12 @@ export class SessionService extends BaseService {
       console.log('Session updated successfully:', session);
 
       // Get updated user points
-      const userPoints = await this.executeQuery(() => 
+      const userPoints = await this.executeQuery<{ 
+        user_id: string;
+        total_points: number;
+        meditation_streak: number;
+        last_meditation_date: string | null;
+      }>(() => 
         supabase
           .from('user_points')
           .select('*')

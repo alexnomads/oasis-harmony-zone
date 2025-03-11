@@ -14,12 +14,12 @@ export class BaseService {
         throw new Error(`Query failed: ${error.message}`);
       }
       
-      if (!data) {
+      if (data === null) {
         console.error('No data returned from query');
         throw new Error('No data returned from query');
       }
       
-      return data;
+      return data as T;
     } catch (error) {
       console.error('Error executing query:', error);
       throw error;

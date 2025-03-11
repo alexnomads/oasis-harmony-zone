@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
+import { TimePeriod } from "@/components/dashboard/TimeFilter";
 
 export interface GlobalStats {
   totalUsers: number;
@@ -10,7 +11,7 @@ export interface GlobalStats {
   totalMeditationTime: number;
 }
 
-export function useGlobalStats() {
+export function useGlobalStats(timePeriod: TimePeriod = "all") {
   const [stats, setStats] = useState<GlobalStats>({
     totalUsers: 0,
     totalSessions: 0,
@@ -18,7 +19,7 @@ export function useGlobalStats() {
   });
 
   const fetchGlobalStats = async () => {
-    console.log("Fetching global stats...");
+    console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
       // Get total users count using leaderboard view which has all users
@@ -35,8 +36,31 @@ export function useGlobalStats() {
       console.log("Total users from leaderboard:", totalUsersCount);
 
       // Get ALL completed meditation sessions using RPC function
-      const { data: sessionsData, error: sessionsError } = await supabase
-        .rpc('get_all_completed_sessions');
+      let query = supabase.rpc('get_all_completed_sessions');
+      
+      // Add date filtering based on the selected time period
+      if (timePeriod !== "all") {
+        const now = new Date();
+        let startDate = new Date();
+        
+        switch(timePeriod) {
+          case "week":
+            startDate.setDate(now.getDate() - 7);
+            break;
+          case "month":
+            startDate.setMonth(now.getMonth() - 1);
+            break;
+          case "year":
+            startDate.setFullYear(now.getFullYear() - 1);
+            break;
+        }
+        
+        query = supabase.rpc('get_filtered_completed_sessions', { 
+          start_date: startDate.toISOString() 
+        });
+      }
+      
+      const { data: sessionsData, error: sessionsError } = await query;
 
       let completedSessions: any[] = [];
 
@@ -44,9 +68,31 @@ export function useGlobalStats() {
         console.error("Error calling RPC function:", sessionsError);
         
         // Try to query the global leaderboard for aggregate data instead
-        const { data: aggregateData, error: aggregateError } = await supabase
+        let aggregateQuery = supabase
           .from('global_leaderboard')
           .select('total_sessions, total_meditation_time');
+          
+        if (timePeriod !== "all") {
+          const now = new Date();
+          let startDate = new Date();
+          
+          switch(timePeriod) {
+            case "week":
+              startDate.setDate(now.getDate() - 7);
+              break;
+            case "month":
+              startDate.setMonth(now.getMonth() - 1);
+              break;
+            case "year":
+              startDate.setFullYear(now.getFullYear() - 1);
+              break;
+          }
+          
+          // Note: filtering by leaderboard data may require additional backend work
+          console.log("Using fallback without time filtering due to limitations");
+        }
+        
+        const { data: aggregateData, error: aggregateError } = await aggregateQuery;
           
         if (aggregateError) {
           console.error("Error with aggregate query:", aggregateError);
@@ -101,7 +147,7 @@ export function useGlobalStats() {
   };
 
   const { data: globalStats, isLoading, refetch } = useQuery({
-    queryKey: ["globalStats"],
+    queryKey: ["globalStats", timePeriod],
     queryFn: fetchGlobalStats,
     staleTime: 1000, // Consider data stale after just 1 second for more frequent updates
     refetchInterval: 5000, // More frequent polling every 5 seconds

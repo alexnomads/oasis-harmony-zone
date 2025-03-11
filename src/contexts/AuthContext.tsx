@@ -8,6 +8,17 @@ import { supabase } from '@/lib/supabase';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
 
+// Get the current site URL for redirects
+const getSiteUrl = () => {
+  let url = window.location.origin
+  // Handle local development with specific ports if needed
+  if (url.includes('localhost')) {
+    // You can set a specific port if needed
+    return url
+  }
+  return url
+}
+
 const handleAuthError = (error: Error | AuthError | null) => {
   if (!error) return 'An unknown error occurred';
   
@@ -158,12 +169,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
+      const redirectUrl = `${getSiteUrl()}/auth/callback`;
+      console.log('Using redirect URL:', redirectUrl);
+      
       const { error } = await retryOperation(() =>
         supabase.auth.signUp({ 
           email, 
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: redirectUrl,
           },
         })
       );

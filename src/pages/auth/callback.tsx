@@ -12,20 +12,26 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
+        console.log('Auth callback page loaded, URL:', window.location.href);
+        
         // Check if we have a hash fragment or query parameters in the URL
         // This handles both email confirmation and magic link flows
         const hasHashFragment = window.location.hash && window.location.hash.length > 0;
         const hasQueryParams = window.location.search && window.location.search.length > 0;
 
         if (hasHashFragment || hasQueryParams) {
+          console.log('Has hash or query params, processing auth...');
+          
           // This will trigger Supabase Auth to handle the confirmation
           const { data, error } = await supabase.auth.getSession();
           
           if (error) {
+            console.error('Session error:', error);
             throw error;
           }
 
           if (data?.session) {
+            console.log('Session found, verification successful');
             setVerificationState('success');
             toast({
               title: 'Email verified!',
@@ -35,9 +41,11 @@ export default function AuthCallback() {
             // Short delay to show success message before redirect
             setTimeout(() => navigate('/dashboard'), 1500);
           } else {
+            console.error('No session found after verification');
             throw new Error('No session found after verification');
           }
         } else {
+          console.log('No hash or query params, redirecting to home');
           // No query params or hash, possibly a direct visit to this route
           navigate('/');
         }

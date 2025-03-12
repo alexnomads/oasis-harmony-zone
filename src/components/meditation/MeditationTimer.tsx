@@ -41,7 +41,10 @@ export const MeditationTimer = () => {
     if (!sessionId) return;
     
     // Create the share text
-    const shareText = `I just completed a meditation session and earned points on @ROJOasis! Join us on my mindfulness journey and potentially earn crypto on https://oasis-harmony-zone.lovable.app`;
+    const shareText = `I just completed a meditation session & earned points on @ROJOasis! 
+Start you mindfulness journey and earn crypto on 
+
+🧘🏼‍♂️🌹 https://oasis-harmony-zone.lovable.app`;
     
     // Open Twitter share dialog
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
@@ -82,7 +85,7 @@ export const MeditationTimer = () => {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-zinc-900/90 border-zinc-800 backdrop-blur-sm overflow-hidden">
+    <Card className="w-full max-w-4xl mx-auto bg-zinc-900/90 border-zinc-800 backdrop-blur-sm overflow-hidden">
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
       <CardHeader>
         <CardTitle className="text-2xl text-white text-center">Meditation Timer</CardTitle>

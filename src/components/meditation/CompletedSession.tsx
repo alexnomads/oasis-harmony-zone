@@ -23,16 +23,16 @@ export const CompletedSession = ({
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="text-center space-y-8"
+      className="text-center space-y-10 py-4"
     >
-      <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-vibrantPurple to-vibrantOrange">
+      <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-vibrantPurple to-vibrantOrange">
         Meditation Complete!
       </div>
-      <div className="space-y-3">
-        <p className="text-xl text-white">You earned {pointsEarned} points</p>
-        <p className="text-xl text-white">Your total: {totalPoints} points</p>
+      <div className="space-y-4">
+        <p className="text-2xl text-white">You earned {pointsEarned} points</p>
+        <p className="text-2xl text-white">Your total: {totalPoints} points</p>
       </div>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div className="flex flex-col sm:flex-row gap-5 justify-center">
         <Button
           variant="outline"
           className="sm:flex-1 bg-white/5 border-zinc-700 hover:bg-white/10 text-white py-6"

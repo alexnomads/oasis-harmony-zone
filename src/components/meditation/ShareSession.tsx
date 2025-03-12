@@ -22,7 +22,10 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
       
       // First open the sharing window to ensure user gets sharing functionality
       // even if the database update fails
-      const shareText = `I just completed a meditation session and earned points on @ROJOasis! Join us on my mindfulness journey and potentially earn crypto on https://oasis-harmony-zone.lovable.app`;
+      const shareText = `I just completed a meditation session & earned points on @ROJOasis! 
+Start you mindfulness journey and earn crypto on 
+
+🧘🏼‍♂️🌹 https://oasis-harmony-zone.lovable.app`;
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
       window.open(shareUrl, '_blank', 'width=550,height=420');
       

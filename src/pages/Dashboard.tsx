@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { MeditationService } from '@/lib/meditationService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Timer, Award, TrendingUp, History } from 'lucide-react';
+import { Timer, Award, TrendingUp, History, Globe } from 'lucide-react';
 import { formatDurationDetails } from '@/lib/utils/timeFormat';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/use-toast';
@@ -17,7 +16,6 @@ export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Set up real-time subscription for the user's meditation sessions
   useEffect(() => {
     if (!user) return;
 
@@ -30,7 +28,6 @@ export default function Dashboard() {
         filter: `user_id=eq.${user.id}` 
       }, (payload) => {
         console.log("New user meditation session detected:", payload);
-        // Immediately refetch data when a new session is inserted
         refetch();
         toast({
           title: "Session recorded!",
@@ -44,7 +41,6 @@ export default function Dashboard() {
         filter: `user_id=eq.${user.id} AND status=eq.completed` 
       }, (payload) => {
         console.log("User meditation session completed:", payload);
-        // Immediately refetch data when a session status changes to completed
         refetch();
         toast({
           title: "Session completed!",
@@ -70,7 +66,6 @@ export default function Dashboard() {
     };
   }, [user]);
 
-  // Fetch user data with React Query - improved configuration
   const { data: userData, isLoading: loadingData, refetch } = useQuery({
     queryKey: ['userHistory', user?.id],
     queryFn: async () => {
@@ -81,8 +76,8 @@ export default function Dashboard() {
       return result;
     },
     enabled: !!user,
-    staleTime: 1000, // Consider data stale after 1 second
-    refetchInterval: 5000, // Poll every 5 seconds
+    staleTime: 1000,
+    refetchInterval: 5000,
     refetchOnWindowFocus: true,
     retry: 3,
   });
@@ -93,12 +88,10 @@ export default function Dashboard() {
     }
   }, [user, loading, navigate]);
 
-  // Calculate derived stats based on userData
   const totalPoints = userData?.points?.total_points || 0;
   const streak = userData?.points?.meditation_streak || 0;
   const totalSessions = userData?.sessions?.length || 0;
   
-  // Calculate total time in seconds - with proper logging
   const totalDuration = userData?.sessions?.reduce((acc, session) => {
     const sessionDuration = session.duration || 0;
     console.log(`Adding user session duration: ${sessionDuration}`);
@@ -136,16 +129,25 @@ export default function Dashboard() {
         >
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">Your Journey</h1>
-            <Button
-              onClick={() => navigate('/meditate')}
-              className="bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
-            >
-              <Timer className="mr-2 h-5 w-5" />
-              Start Meditating
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                onClick={() => navigate('/meditate')}
+                className="bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
+              >
+                <Timer className="mr-2 h-5 w-5" />
+                Start Meditating
+              </Button>
+              <Button
+                onClick={() => navigate('/global-dashboard')}
+                variant="outline"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <Globe className="mr-2 h-5 w-5" />
+                Global Dashboard
+              </Button>
+            </div>
           </div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="bg-zinc-900/50 border-zinc-800">
               <CardContent className="pt-6">
@@ -204,7 +206,6 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Recent Sessions */}
           <Card className="bg-zinc-900/50 border-zinc-800">
             <CardHeader>
               <CardTitle>Recent Sessions</CardTitle>

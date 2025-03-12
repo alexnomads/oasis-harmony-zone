@@ -23,21 +23,31 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
       // First ensure schema is updated
       console.log("Initiating share process for session:", sessionId);
       
-      // Award extra point for sharing
-      const { userPoints } = await SessionService.awardSharingPoint(sessionId);
-      setTotalPoints(userPoints.total_points);
-      
-      // Create the share text
+      // Create the share text first
       const shareText = `I just completed a meditation session and earned points on Zen Garden! Join me on my mindfulness journey: https://yourdomain.com`;
       
       // Open Twitter share dialog
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
       window.open(shareUrl, '_blank', 'width=550,height=420');
       
-      toast({
-        title: "Thanks for sharing!",
-        description: `You earned an extra point! Total: ${userPoints.total_points}`,
-      });
+      // Award extra point for sharing
+      try {
+        const { userPoints } = await SessionService.awardSharingPoint(sessionId);
+        setTotalPoints(userPoints.total_points);
+        
+        toast({
+          title: "Thanks for sharing!",
+          description: `You earned an extra point! Total: ${userPoints.total_points}`,
+        });
+      } catch (error) {
+        console.error('Error awarding points:', error);
+        // Still consider this a partial success since the share window opened
+        toast({
+          title: "Shared successfully!",
+          description: "There was an issue awarding points. Please try again later.",
+          variant: "default",
+        });
+      }
     } catch (error) {
       console.error('Error sharing session:', error);
       toast({

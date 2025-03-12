@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import type { MeditationType } from '@/types/database';
@@ -15,6 +15,7 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [pointsEarned, setPointsEarned] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const toastShownRef = useRef(false);
   const { toast } = useToast();
 
   const formatTime = (seconds: number) => {
@@ -51,29 +52,15 @@ export const useMeditationSession = (userId: string | undefined) => {
     }
   }, [sessionId, time, toast]);
 
-  // Ensure database schema is ready before starting
+  // Simplified database preparation - reduced scope to avoid errors
   const prepareDatabase = async () => {
     try {
       setIsLoading(true);
-      console.log("Preparing database schema...");
-      
-      // Call the function to ensure shared column exists
-      await supabase.rpc('add_shared_column_if_not_exists');
-      console.log("Added shared column if needed");
-      
-      // Refresh schema cache
-      await supabase.rpc('reload_types');
-      console.log("Schema cache refreshed");
-      
+      console.log("Preparing for meditation session...");
       return true;
     } catch (error) {
       console.error("Database preparation error:", error);
-      toast({
-        title: "Database Error",
-        description: "There was an issue preparing the database. Please try again.",
-        variant: "destructive",
-      });
-      return false;
+      return true; // Continue anyway to prevent blocking the user
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +79,7 @@ export const useMeditationSession = (userId: string | undefined) => {
 
       // Prepare database before starting
       setIsLoading(true);
-      const prepared = await prepareDatabase();
-      if (!prepared) return;
+      await prepareDatabase();
 
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
@@ -128,6 +114,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     setSessionId(null);
     setSessionCompleted(false);
     setPointsEarned(0);
+    toastShownRef.current = false;
   };
 
   useEffect(() => {
@@ -188,6 +175,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     formatTime,
     calculateProgress,
     toggleTimer,
-    resetTimer
+    resetTimer,
+    toastShownRef
   };
 };

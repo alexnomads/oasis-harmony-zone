@@ -1,8 +1,8 @@
 
-import { Trophy, Award, Users } from "lucide-react";
-import { StatCard } from "./StatCard";
-import { formatDurationDetails } from "@/lib/utils/timeFormat";
 import { GlobalStats } from "@/hooks/use-global-stats";
+import { ActiveMeditatorsCard } from "./stats/ActiveMeditatorsCard";
+import { MeditationSessionsCard } from "./stats/MeditationSessionsCard";
+import { TotalMeditationTimeCard } from "./stats/TotalMeditationTimeCard";
 
 interface GlobalStatsSectionProps {
   stats: GlobalStats;
@@ -12,28 +12,19 @@ interface GlobalStatsSectionProps {
 export function GlobalStatsSection({ stats, isLoading }: GlobalStatsSectionProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <StatCard
-        title="Active Meditators"
-        subtitle="Registered Users"
-        value={stats.totalUsers}
-        isLoading={isLoading}
-        icon={<Users className="h-8 w-8 text-purple-500" />}
+      <ActiveMeditatorsCard 
+        totalUsers={stats.totalUsers} 
+        isLoading={isLoading} 
       />
 
-      <StatCard
-        title="Meditation Sessions"
-        subtitle="Total Sessions"
-        value={stats.totalSessions}
-        isLoading={isLoading}
-        icon={<Award className="h-8 w-8 text-green-500" />}
+      <MeditationSessionsCard 
+        totalSessions={stats.totalSessions} 
+        isLoading={isLoading} 
       />
 
-      <StatCard
-        title="Total Meditation Time"
-        subtitle="Collective Time"
-        value={formatDurationDetails(stats.totalMeditationTime)}
-        isLoading={isLoading}
-        icon={<Trophy className="h-8 w-8 text-orange-500" />}
+      <TotalMeditationTimeCard 
+        totalMeditationTime={stats.totalMeditationTime} 
+        isLoading={isLoading} 
       />
     </div>
   );

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -21,17 +22,18 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
-      // Get total registered users count from the users table
-      const { count: totalUsersCount, error: usersError } = await supabase
-        .from('users')
-        .select('*', { count: 'exact', head: true });
+      // Get total users count from the global leaderboard view instead of users table
+      const { data: leaderboardData, error: leaderboardError } = await supabase
+        .from('global_leaderboard')
+        .select('user_id');
         
-      if (usersError) {
-        console.error("Error fetching users count:", usersError);
-        throw usersError;
+      if (leaderboardError) {
+        console.error("Error fetching leaderboard data:", leaderboardError);
+        throw leaderboardError;
       }
       
-      console.log("Total users count:", totalUsersCount);
+      const totalUsersCount = leaderboardData?.length || 0;
+      console.log("Total users count from leaderboard:", totalUsersCount);
       
       let completedSessions: any[] = [];
       
@@ -93,7 +95,7 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
       console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Sessions: ${completedSessions.length}, Time: ${totalMeditationTime}`);
 
       return {
-        totalUsers: totalUsersCount || 0,
+        totalUsers: totalUsersCount,
         totalSessions: completedSessions.length,
         totalMeditationTime,
       };

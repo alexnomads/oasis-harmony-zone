@@ -1,7 +1,12 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import type { MeditationType } from '@/types/database';
+
+// Gong sound URLs - using publicly available sounds
+const START_GONG_SOUND = "https://assets.mixkit.co/active_storage/sfx/1514/1514-preview.mp3";
+const END_GONG_SOUND = "https://assets.mixkit.co/active_storage/sfx/2774/2774-preview.mp3";
 
 export const useMeditationSession = (userId: string | undefined) => {
   const [isRunning, setIsRunning] = useState(false);
@@ -14,7 +19,40 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const toastShownRef = useRef(false);
+  const startSoundRef = useRef<HTMLAudioElement | null>(null);
+  const endSoundRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+
+  // Initialize audio elements
+  useEffect(() => {
+    startSoundRef.current = new Audio(START_GONG_SOUND);
+    endSoundRef.current = new Audio(END_GONG_SOUND);
+    
+    return () => {
+      // Clean up audio elements when component unmounts
+      if (startSoundRef.current) {
+        startSoundRef.current.pause();
+        startSoundRef.current = null;
+      }
+      if (endSoundRef.current) {
+        endSoundRef.current.pause();
+        endSoundRef.current = null;
+      }
+    };
+  }, []);
+
+  // Function to play a sound
+  const playSound = useCallback((soundRef: React.RefObject<HTMLAudioElement | null>) => {
+    if (soundRef.current) {
+      // Reset the audio to start
+      soundRef.current.currentTime = 0;
+      
+      // Play the sound
+      soundRef.current.play().catch(err => {
+        console.error("Error playing sound:", err);
+      });
+    }
+  }, []);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -30,6 +68,9 @@ export const useMeditationSession = (userId: string | undefined) => {
     if (!sessionId) return;
 
     try {
+      // Play end gong sound
+      playSound(endSoundRef);
+      
       const { session, userPoints } = await SessionService.completeSession(sessionId, time);
       setPointsEarned(session.points_earned);
       setTotalPoints(userPoints.total_points);
@@ -48,7 +89,7 @@ export const useMeditationSession = (userId: string | undefined) => {
         variant: "destructive",
       });
     }
-  }, [sessionId, time, toast]);
+  }, [sessionId, time, toast, playSound]);
 
   const startMeditation = async () => {
     try {
@@ -66,6 +107,9 @@ export const useMeditationSession = (userId: string | undefined) => {
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
       setIsRunning(true);
+      
+      // Play start gong sound
+      playSound(startSoundRef);
       
       toast({
         title: "Meditation Started",

@@ -1,5 +1,5 @@
 
-import { Play, Pause, RotateCcw, Loader2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Loader2, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface TimerControlsProps {
@@ -47,6 +47,12 @@ export const TimerControls = ({
       >
         <RotateCcw className="mr-2 h-4 w-4" /> Reset
       </Button>
+
+      <div className="ml-1 flex items-center text-zinc-500 text-xs">
+        <Volume2 className="h-4 w-4 mr-1" />
+        <span className="hidden sm:inline">Gong sound at start/end</span>
+        <span className="sm:hidden">Gong</span>
+      </div>
     </div>
   );
 };

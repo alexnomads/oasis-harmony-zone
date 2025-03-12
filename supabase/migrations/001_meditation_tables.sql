@@ -1,6 +1,12 @@
 
--- Create an enum for meditation session status
-CREATE TYPE meditation_status AS ENUM ('in_progress', 'completed', 'cancelled');
+-- Create an enum for meditation session status (only if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'meditation_status') THEN
+        CREATE TYPE meditation_status AS ENUM ('in_progress', 'completed', 'cancelled');
+    END IF;
+END
+$$;
 
 -- Create meditation_sessions table
 CREATE TABLE IF NOT EXISTS meditation_sessions (
@@ -57,7 +63,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger to update points when a session is completed
-CREATE OR REPLACE TRIGGER update_points_on_session_complete
+DROP TRIGGER IF EXISTS update_points_on_session_complete ON meditation_sessions;
+
+CREATE TRIGGER update_points_on_session_complete
     AFTER UPDATE ON meditation_sessions
     FOR EACH ROW
     WHEN (OLD.status = 'in_progress' AND NEW.status = 'completed')
@@ -66,6 +74,12 @@ CREATE OR REPLACE TRIGGER update_points_on_session_complete
 -- Create RLS policies
 ALTER TABLE meditation_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_points ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can read own sessions" ON meditation_sessions;
+DROP POLICY IF EXISTS "Users can create own sessions" ON meditation_sessions;
+DROP POLICY IF EXISTS "Users can update own sessions" ON meditation_sessions;
+DROP POLICY IF EXISTS "Users can read own points" ON user_points;
 
 -- Users can only read their own sessions
 CREATE POLICY "Users can read own sessions"
@@ -92,4 +106,11 @@ CREATE POLICY "Users can read own points"
     USING (auth.uid() = user_id);
 
 -- Enable realtime for meditation_sessions
-ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE meditation_sessions;
+EXCEPTION
+    WHEN duplicate_object THEN
+        NULL;
+END
+$$;

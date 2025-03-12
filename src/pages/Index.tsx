@@ -1,6 +1,5 @@
 
 import { Hero } from "@/components/Hero";
-import { AsciiArt } from "@/components/AsciiArt";
 import { Programs } from "@/components/Programs";
 import { Token } from "@/components/Token";
 import { Roadmap } from "@/components/Roadmap";
@@ -30,9 +29,6 @@ const Index = () => {
       <main className="relative">
         <section id="hero">
           <Hero />
-        </section>
-        <section id="ai-agent-alpha">
-          <AsciiArt />
         </section>
         <section id="programs">
           <Programs />

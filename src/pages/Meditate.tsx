@@ -1,8 +1,10 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { MeditationTimer } from '@/components/meditation/MeditationTimer';
+import { SimpleChatInterface } from '@/components/meditation/SimpleChatInterface';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,7 @@ export default function Meditate() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white">
       <Header />
-      <div className="container mx-auto px-4 pt-24 pb-8">
+      <div className="container mx-auto px-4 pt-24 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -52,7 +54,7 @@ export default function Meditate() {
             </Card>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 mb-12">
             {user ? (
               <MeditationTimer />
             ) : (
@@ -73,6 +75,23 @@ export default function Meditate() {
               </Card>
             )}
           </div>
+          
+          {/* Rose of Jericho AI Wellness Agent */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-8"
+          >
+            <h2 className="text-2xl font-semibold text-center mb-6">
+              Chat with Rose of Jericho
+            </h2>
+            <p className="text-center text-white/70 max-w-2xl mx-auto mb-8">
+              Our AI Wellness Agent can guide you through meditation techniques, answer questions about mindfulness, 
+              and provide personalized wellness recommendations.
+            </p>
+            <SimpleChatInterface />
+          </motion.div>
         </motion.div>
       </div>
     </div>

@@ -33,9 +33,12 @@ export const formatDuration = (seconds: number) => {
   
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
+  const remainingSeconds = Math.floor(sec % 60);
   
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-  return `${minutes}m`;
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0 || hours > 0) parts.push(`${minutes}m`);
+  parts.push(`${remainingSeconds}s`);
+  
+  return parts.join(' ');
 };

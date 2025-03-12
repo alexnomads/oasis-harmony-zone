@@ -21,7 +21,7 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
-      // Get total registered users count from auth.users
+      // Get total registered users count from users table
       const { count: totalUsersCount, error: usersError } = await supabase
         .from('users')
         .select('*', { count: 'exact', head: true });
@@ -31,7 +31,7 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         throw usersError;
       }
       
-      console.log("Total users count from auth.users:", totalUsersCount);
+      console.log("Total users count:", totalUsersCount);
       
       let completedSessions: any[] = [];
       

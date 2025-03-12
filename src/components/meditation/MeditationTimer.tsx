@@ -58,10 +58,10 @@ Start you mindfulness journey and earn crypto on
     toast({
       title: "Meditation Complete! 🎉",
       description: (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p>You earned {pointsEarned} points! Total: {totalPoints}</p>
-          <p className="text-sm text-muted-foreground mt-1">Share on X to earn an additional point!</p>
-          <div className="flex gap-2 mt-2">
+          <p className="text-sm text-muted-foreground">Share on X to earn an additional point!</p>
+          <div className="flex gap-2 mt-3">
             <Button 
               variant="outline" 
               className="flex-1"

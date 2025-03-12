@@ -109,12 +109,13 @@ export const Header = () => {
             </DropdownMenu>
           </div>
 
-          {/* Center - Logo */}
+          {/* Center - Logo with homepage navigation */}
           <div className="flex-1 flex justify-center">
             <img 
               src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
               alt="Rose of Jericho" 
-              className="h-8 w-auto"
+              className="h-8 w-auto cursor-pointer"
+              onClick={() => navigate('/')}
             />
           </div>
 

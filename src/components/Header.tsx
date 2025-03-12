@@ -1,4 +1,3 @@
-
 import { Menu, Moon, Sun, User, Timer, LayoutDashboard, LogOut, Globe } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
@@ -22,7 +21,6 @@ export const Header = () => {
   const navigate = useNavigate();
   const [points, setPoints] = useState(0);
 
-  // Load user points from Supabase
   useEffect(() => {
     const loadUserPoints = async () => {
       if (user) {
@@ -43,7 +41,7 @@ export const Header = () => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const headerOffset = 96; // Account for fixed header height
+      const headerOffset = 96;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -59,7 +57,6 @@ export const Header = () => {
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Left - Burger Menu */}
           <div className="flex-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -100,7 +97,7 @@ export const Header = () => {
                   Testimonials
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="text-white hover:bg-white/5 focus:bg-white/5">
-                  Newsletter
+                  Contact Us
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/5 focus:bg-white/5">
                   Roadmap
@@ -109,7 +106,6 @@ export const Header = () => {
             </DropdownMenu>
           </div>
 
-          {/* Center - Logo with homepage navigation */}
           <div className="flex-1 flex justify-center">
             <img 
               src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
@@ -119,7 +115,6 @@ export const Header = () => {
             />
           </div>
 
-          {/* Right - Theme Toggle, Wallet Connection & Points */}
           <div className="flex-1 flex items-center justify-end gap-2">
             <Button
               variant="ghost"
@@ -134,7 +129,6 @@ export const Header = () => {
               )}
             </Button>
             
-            {/* User Status and Points (visible on larger screens) */}
             {user && (
               <div className="hidden md:flex flex-col items-end mr-2">
                 <span id="user-status" className="text-xs text-white">
@@ -146,7 +140,6 @@ export const Header = () => {
               </div>
             )}
             
-            {/* User Menu */}
             <div className="relative">
               {user ? (
                 <DropdownMenu>
@@ -204,7 +197,6 @@ export const Header = () => {
           </div>
         </div>
         
-        {/* Mobile-only User Info */}
         {user && (
           <div className="md:hidden w-full flex justify-between text-white text-xs py-1 px-2">
             <span id="mobile-user-status">

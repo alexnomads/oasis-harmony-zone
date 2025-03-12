@@ -119,7 +119,7 @@ export const Programs = () => {
                   
                   {program.title === "Community Sessions" && (
                     <Button 
-                      className="w-full bg-white/10 hover:bg-white/20 text-white"
+                      className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
                       onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />

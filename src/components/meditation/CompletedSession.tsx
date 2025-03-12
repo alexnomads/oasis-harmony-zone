@@ -1,8 +1,8 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ShareSession } from './ShareSession';
 
 interface CompletedSessionProps {
   pointsEarned: number;
@@ -45,7 +45,7 @@ export const CompletedSession = ({
           className="sm:flex-1 bg-gradient-to-r from-vibrantPurple to-vibrantOrange border-none text-white hover:opacity-90"
           onClick={handleShare}
         >
-          <Share2 className="mr-2 h-4 w-4" /> Share on X & Earn Points
+          Share on X & Earn Points
         </Button>
         <Button
           variant="outline"

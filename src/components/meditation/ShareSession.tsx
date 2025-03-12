@@ -20,17 +20,13 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
     try {
       setIsSharing(true);
       
-      // First ensure schema is updated
-      console.log("Initiating share process for session:", sessionId);
-      
-      // Create the share text first
+      // First open the sharing window to ensure user gets sharing functionality
+      // even if the database update fails
       const shareText = `I just completed a meditation session and earned points on Zen Garden! Join me on my mindfulness journey: https://yourdomain.com`;
-      
-      // Open Twitter share dialog
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
       window.open(shareUrl, '_blank', 'width=550,height=420');
       
-      // Award extra point for sharing
+      // Then try to award the point
       try {
         const { userPoints } = await SessionService.awardSharingPoint(sessionId);
         setTotalPoints(userPoints.total_points);
@@ -41,10 +37,10 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
         });
       } catch (error) {
         console.error('Error awarding points:', error);
-        // Still consider this a partial success since the share window opened
+        // Still consider this a success since the share window opened
         toast({
           title: "Shared successfully!",
-          description: "There was an issue awarding points. Please try again later.",
+          description: "There was an issue awarding points, but your session was shared.",
           variant: "default",
         });
       }
@@ -52,7 +48,7 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
       console.error('Error sharing session:', error);
       toast({
         title: "Error sharing session",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description: "Could not share your session. Please try again.",
         variant: "destructive",
       });
     } finally {

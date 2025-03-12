@@ -1,9 +1,7 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import type { MeditationType } from '@/types/database';
-import { supabase } from '@/lib/supabase';
 
 export const useMeditationSession = (userId: string | undefined) => {
   const [isRunning, setIsRunning] = useState(false);
@@ -52,20 +50,6 @@ export const useMeditationSession = (userId: string | undefined) => {
     }
   }, [sessionId, time, toast]);
 
-  // Simplified database preparation - reduced scope to avoid errors
-  const prepareDatabase = async () => {
-    try {
-      setIsLoading(true);
-      console.log("Preparing for meditation session...");
-      return true;
-    } catch (error) {
-      console.error("Database preparation error:", error);
-      return true; // Continue anyway to prevent blocking the user
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const startMeditation = async () => {
     try {
       if (!userId) {
@@ -77,13 +61,12 @@ export const useMeditationSession = (userId: string | undefined) => {
         return;
       }
 
-      // Prepare database before starting
       setIsLoading(true);
-      await prepareDatabase();
-
+      
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
       setIsRunning(true);
+      
       toast({
         title: "Meditation Started",
         description: "Find a comfortable position and focus on your breath",
@@ -124,7 +107,6 @@ export const useMeditationSession = (userId: string | undefined) => {
       interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime + 1;
-          // Only trigger completion when time is >= selectedDuration (instead of >)
           if (newTime === selectedDuration) {
             setIsRunning(false);
             handleComplete();

@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export type TimePeriod = "all" | "week" | "month" | "year";
+export type TimePeriod = "all" | "day" | "week" | "month" | "year";
 
 interface TimeFilterProps {
   timePeriod: TimePeriod;
@@ -27,6 +27,7 @@ export function TimeFilter({ timePeriod, onChange }: TimeFilterProps) {
         </SelectTrigger>
         <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
           <SelectItem value="all">All Time</SelectItem>
+          <SelectItem value="day">Today</SelectItem>
           <SelectItem value="week">Last Week</SelectItem>
           <SelectItem value="month">Last Month</SelectItem>
           <SelectItem value="year">Last Year</SelectItem>

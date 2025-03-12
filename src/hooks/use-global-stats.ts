@@ -44,6 +44,10 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         let startDate = new Date();
         
         switch(timePeriod) {
+          case "day":
+            // Set to the beginning of today
+            startDate.setHours(0, 0, 0, 0);
+            break;
           case "week":
             startDate.setDate(now.getDate() - 7);
             break;
@@ -77,6 +81,10 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
           let startDate = new Date();
           
           switch(timePeriod) {
+            case "day":
+              // Set to the beginning of today
+              startDate.setHours(0, 0, 0, 0);
+              break;
             case "week":
               startDate.setDate(now.getDate() - 7);
               break;

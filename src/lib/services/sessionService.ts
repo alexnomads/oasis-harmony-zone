@@ -76,4 +76,59 @@ export class SessionService extends BaseService {
       throw error;
     }
   }
+
+  // Award an additional point for sharing a meditation session
+  static async awardSharingPoint(sessionId: string) {
+    try {
+      console.log('Awarding sharing point for session:', sessionId);
+      
+      // Get the session to check if it's valid and to get the user ID
+      const sessionResult = await supabase
+        .from('meditation_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .single();
+      
+      const session = await this.executeQuery<MeditationSession>(() => Promise.resolve(sessionResult));
+      
+      if (session.status !== 'completed') {
+        throw new Error('Cannot award sharing points for incomplete sessions');
+      }
+      
+      // Update session with additional point for sharing
+      const updatedSessionResult = await supabase
+        .from('meditation_sessions')
+        .update({
+          points_earned: session.points_earned + 1,
+          shared: true
+        })
+        .eq('id', sessionId)
+        .select('*')
+        .single();
+      
+      const updatedSession = await this.executeQuery<MeditationSession>(() => Promise.resolve(updatedSessionResult));
+      console.log('Session updated with sharing point:', updatedSession);
+      
+      // Get updated user points
+      const userPointsResult = await supabase
+        .from('user_points')
+        .select('*')
+        .eq('user_id', session.user_id)
+        .single();
+      
+      const userPoints = await this.executeQuery<{ 
+        user_id: string;
+        total_points: number;
+        meditation_streak: number;
+        last_meditation_date: string | null;
+      }>(() => Promise.resolve(userPointsResult));
+      
+      console.log('User points after sharing:', userPoints);
+      
+      return { session: updatedSession, userPoints };
+    } catch (error) {
+      console.error('Error awarding sharing point:', error);
+      throw error;
+    }
+  }
 }

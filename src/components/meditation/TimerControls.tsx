@@ -50,8 +50,8 @@ export const TimerControls = ({
 
       <div className="ml-1 flex items-center text-zinc-500 text-xs">
         <Volume2 className="h-4 w-4 mr-1" />
-        <span className="hidden sm:inline">Gong sound at start/end</span>
-        <span className="sm:hidden">Gong</span>
+        <span className="hidden sm:inline">Calming bell sounds</span>
+        <span className="sm:hidden">Bells</span>
       </div>
     </div>
   );

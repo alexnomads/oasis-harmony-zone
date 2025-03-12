@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
@@ -14,7 +15,28 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const toastShownRef = useRef(false);
+  const startSoundRef = useRef<HTMLAudioElement | null>(null);
+  const endSoundRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+
+  // Initialize audio elements
+  useEffect(() => {
+    startSoundRef.current = new Audio('/meditation-start.mp3');
+    endSoundRef.current = new Audio('/meditation-end.mp3');
+    
+    // Set volume to be gentle
+    if (startSoundRef.current) startSoundRef.current.volume = 0.4;
+    if (endSoundRef.current) endSoundRef.current.volume = 0.4;
+    
+    // Preload the sounds
+    startSoundRef.current?.load();
+    endSoundRef.current?.load();
+    
+    return () => {
+      startSoundRef.current = null;
+      endSoundRef.current = null;
+    };
+  }, []);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -28,6 +50,17 @@ export const useMeditationSession = (userId: string | undefined) => {
 
   const handleComplete = useCallback(async () => {
     if (!sessionId) return;
+
+    // Play end sound
+    try {
+      if (endSoundRef.current) {
+        endSoundRef.current.play().catch(error => {
+          console.error("Error playing end sound:", error);
+        });
+      }
+    } catch (e) {
+      console.error("Error playing end sound:", e);
+    }
 
     try {
       const { session, userPoints } = await SessionService.completeSession(sessionId, time);
@@ -66,6 +99,17 @@ export const useMeditationSession = (userId: string | undefined) => {
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
       setIsRunning(true);
+      
+      // Play start sound
+      try {
+        if (startSoundRef.current) {
+          startSoundRef.current.play().catch(error => {
+            console.error("Error playing start sound:", error);
+          });
+        }
+      } catch (e) {
+        console.error("Error playing start sound:", e);
+      }
       
       toast({
         title: "Meditation Started",

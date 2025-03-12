@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -14,7 +13,44 @@ export default function AuthCallback() {
       try {
         console.log('Auth callback page loaded, URL:', window.location.href);
         
-        // Process the OAuth or email confirmation callback
+        const params = new URLSearchParams(window.location.search);
+        const token_hash = params.get('token_hash');
+        const type = params.get('type');
+        const error_description = params.get('error_description');
+        
+        console.log('Detected parameters:', { 
+          token_hash: token_hash ? 'present' : 'not present', 
+          type, 
+          error_description 
+        });
+        
+        if (error_description) {
+          throw new Error(error_description);
+        }
+        
+        if (token_hash && type === 'email_confirmation') {
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: 'email',
+          });
+          
+          if (error) {
+            console.error('Verification error:', error);
+            throw error;
+          }
+          
+          console.log('Email verification successful', data);
+          
+          setVerificationState('success');
+          toast({
+            title: 'Email verified!',
+            description: 'Your account has been verified. Please sign in to continue.',
+          });
+          
+          setTimeout(() => navigate('/?login=true'), 1500);
+          return;
+        }
+        
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -26,54 +62,24 @@ export default function AuthCallback() {
           console.log('Session found, verification successful');
           setVerificationState('success');
           toast({
-            title: 'Email verified!',
-            description: 'Your account has been verified. Welcome to Rose of Jericho!',
+            title: 'Authentication successful!',
+            description: 'Welcome to Rose of Jericho!',
           });
           
-          // Short delay to show success message before redirect
           setTimeout(() => navigate('/dashboard'), 1500);
         } else {
-          // Try to exchange code for session (specifically for email confirmation)
-          const params = new URLSearchParams(window.location.search);
-          const token = params.get('token_hash') || params.get('token');
-          const type = params.get('type');
-          
-          console.log('Detected parameters:', { token: token ? 'present' : 'not present', type });
-          
-          if (token && type === 'email_confirmation') {
-            const { error: confirmError } = await supabase.auth.verifyOtp({
-              token_hash: token,
-              type: 'email',  // Changed from 'email_confirmation' to 'email'
-            });
-            
-            if (confirmError) {
-              console.error('Confirmation error:', confirmError);
-              throw confirmError;
-            }
-            
-            setVerificationState('success');
-            toast({
-              title: 'Email verified!',
-              description: 'Your account has been verified. Please sign in to continue.',
-            });
-            
-            // Redirect to login page after successful verification
-            setTimeout(() => navigate('/?login=true'), 1500);
-          } else {
-            console.error('No session or valid parameters found after verification');
-            throw new Error('No session found after verification');
-          }
+          console.error('No session or valid parameters found');
+          throw new Error('Invalid or expired verification link');
         }
       } catch (error) {
-        console.error('Error during email confirmation:', error);
+        console.error('Error during authentication callback:', error);
         setVerificationState('error');
         toast({
           title: 'Verification failed',
-          description: 'There was a problem verifying your email. Please try again.',
+          description: error instanceof Error ? error.message : 'There was a problem verifying your email. Please try again.',
           variant: 'destructive',
         });
         
-        // Short delay to show error message before redirect
         setTimeout(() => navigate('/'), 2000);
       }
     };

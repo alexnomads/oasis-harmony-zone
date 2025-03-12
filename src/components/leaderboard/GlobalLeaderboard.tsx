@@ -121,7 +121,7 @@ export const GlobalLeaderboard = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 shadow-sm"
+                className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10 shadow-sm hover:bg-white/10 transition-colors duration-200"
               >
                 <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
                   {index < 3 ? (
@@ -136,9 +136,9 @@ export const GlobalLeaderboard = () => {
                   <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
                 </Avatar>
                 
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate text-lg">{displayName}</p>
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-400">
+                <div className="flex-1 min-w-0 ml-1">
+                  <p className="font-semibold text-base sm:text-lg">{displayName}</p>
+                  <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-zinc-400">
                     <span className="flex items-center gap-1">
                       <Award className="h-3 w-3" />
                       {entry.total_points} pts
@@ -151,8 +151,8 @@ export const GlobalLeaderboard = () => {
                 </div>
                 
                 <div className="text-right flex-shrink-0">
-                  <p className="font-medium text-vibrantOrange text-lg">{entry.total_sessions} sessions</p>
-                  <p className="text-sm text-zinc-400 flex items-center justify-end gap-1">
+                  <p className="font-medium text-vibrantOrange text-base sm:text-lg whitespace-nowrap">{entry.total_sessions} sessions</p>
+                  <p className="text-xs sm:text-sm text-zinc-400 flex items-center justify-end gap-1 whitespace-nowrap">
                     <Timer className="h-3 w-3" />
                     {formatDuration(entry.total_meditation_time)}
                   </p>

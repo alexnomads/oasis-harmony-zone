@@ -9,8 +9,8 @@ export class SessionService extends BaseService {
     try {
       console.log('Starting meditation session for user:', userId, 'type:', type);
       
-      // Clear the Supabase cache for meditation_sessions
-      await supabase.getQueryClient()?.clear();
+      // Instead of using getQueryClient, we'll use a direct approach
+      // This is a workaround since getQueryClient() is not available
       
       const result = await supabase
         .from('meditation_sessions')
@@ -113,11 +113,21 @@ export class SessionService extends BaseService {
       const updatedSession = await this.executeQuery<MeditationSession>(() => Promise.resolve(updatedSessionResult));
       console.log('Session updated with sharing point:', updatedSession);
       
-      // Update user points directly to ensure they're updated
+      // Update user points directly, avoiding the .sql method which doesn't exist on the type
+      // First get current points
+      const currentPointsResult = await supabase
+        .from('user_points')
+        .select('total_points')
+        .eq('user_id', session.user_id)
+        .single();
+      
+      const currentPoints = await this.executeQuery<{ total_points: number }>(() => Promise.resolve(currentPointsResult));
+      
+      // Then update with new value
       const updatePointsResult = await supabase
         .from('user_points')
         .update({
-          total_points: supabase.sql`total_points + 1`,
+          total_points: currentPoints.total_points + 1,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', session.user_id)

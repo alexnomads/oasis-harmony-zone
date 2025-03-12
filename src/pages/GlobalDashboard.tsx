@@ -13,6 +13,7 @@ export default function GlobalDashboard() {
 
   // Handle time period change
   const handleTimeChange = (newTimePeriod: TimePeriod) => {
+    console.log(`Time period changed from ${timePeriod} to ${newTimePeriod}`);
     setTimePeriod(newTimePeriod);
   };
 

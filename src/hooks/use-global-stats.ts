@@ -22,26 +22,12 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
-      // Get total users count using leaderboard view which has all users
-      const { data: leaderboardData, error: leaderboardError } = await supabase
-        .from('global_leaderboard')
-        .select('user_id');
+      let startDate: Date | null = null;
+      const now = new Date();
       
-      if (leaderboardError) {
-        console.error("Error fetching leaderboard:", leaderboardError);
-        throw leaderboardError;
-      }
-      
-      const totalUsersCount = leaderboardData?.length || 0;
-      console.log("Total users from leaderboard:", totalUsersCount);
-
-      // Get ALL completed meditation sessions using RPC function
-      let query = supabase.rpc('get_all_completed_sessions');
-      
-      // Add date filtering based on the selected time period
+      // Set the appropriate start date based on the selected time period
       if (timePeriod !== "all") {
-        const now = new Date();
-        let startDate = new Date();
+        startDate = new Date();
         
         switch(timePeriod) {
           case "day":
@@ -59,84 +45,92 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
             break;
         }
         
-        query = supabase.rpc('get_filtered_completed_sessions', { 
-          start_date: startDate.toISOString() 
-        });
+        console.log(`Using start date: ${startDate.toISOString()} for period: ${timePeriod}`);
       }
       
-      const { data: sessionsData, error: sessionsError } = await query;
-
+      let totalUsersCount = 0;
       let completedSessions: any[] = [];
-
-      if (sessionsError) {
-        console.error("Error calling RPC function:", sessionsError);
-        
-        // Try to query the global leaderboard for aggregate data instead
-        let aggregateQuery = supabase
+      
+      // Handle users count based on time period
+      if (timePeriod === "all") {
+        // Get total users count using leaderboard view which has all users
+        const { data: leaderboardData, error: leaderboardError } = await supabase
           .from('global_leaderboard')
-          .select('total_sessions, total_meditation_time');
-          
-        if (timePeriod !== "all") {
-          const now = new Date();
-          let startDate = new Date();
-          
-          switch(timePeriod) {
-            case "day":
-              // Set to the beginning of today
-              startDate.setHours(0, 0, 0, 0);
-              break;
-            case "week":
-              startDate.setDate(now.getDate() - 7);
-              break;
-            case "month":
-              startDate.setMonth(now.getMonth() - 1);
-              break;
-            case "year":
-              startDate.setFullYear(now.getFullYear() - 1);
-              break;
-          }
-          
-          // Note: filtering by leaderboard data may require additional backend work
-          console.log("Using fallback without time filtering due to limitations");
+          .select('user_id');
+        
+        if (leaderboardError) {
+          console.error("Error fetching leaderboard:", leaderboardError);
+          throw leaderboardError;
         }
         
-        const { data: aggregateData, error: aggregateError } = await aggregateQuery;
+        totalUsersCount = leaderboardData?.length || 0;
+        console.log("Total users from leaderboard (all time):", totalUsersCount);
+      } else if (startDate) {
+        // Get users who have meditated in the selected time period
+        const { data: activeUsers, error: activeUsersError } = await supabase
+          .rpc('get_users_by_meditation_period', { 
+            start_date: startDate.toISOString() 
+          });
           
-        if (aggregateError) {
-          console.error("Error with aggregate query:", aggregateError);
-          throw aggregateError;
+        if (activeUsersError) {
+          console.error("Error fetching active users:", activeUsersError);
+          // Fallback to leaderboard data
+          const { data: leaderboardData } = await supabase
+            .from('global_leaderboard')
+            .select('user_id');
+            
+          totalUsersCount = leaderboardData?.length || 0;
+          console.log("Fallback: Total users from leaderboard:", totalUsersCount);
+        } else {
+          totalUsersCount = activeUsers?.length || 0;
+          console.log(`Active users for period ${timePeriod}:`, totalUsersCount);
+        }
+      }
+      
+      // Get meditation sessions based on time period
+      if (timePeriod === "all") {
+        // Get ALL completed meditation sessions
+        const { data: sessionsData, error: sessionsError } = await supabase
+          .rpc('get_all_completed_sessions');
+          
+        if (sessionsError) {
+          console.error("Error calling RPC function:", sessionsError);
+          throw sessionsError;
         }
         
-        // Calculate total sessions and meditation time from aggregate data
-        const totalSessions = aggregateData.reduce((sum, entry) => sum + (entry.total_sessions || 0), 0);
-        const totalMeditationTime = aggregateData.reduce((sum, entry) => sum + (entry.total_meditation_time || 0), 0);
-        
-        console.log("Aggregate stats calculated:", { totalSessions, totalMeditationTime });
-        
-        return {
-          totalUsers: totalUsersCount,
-          totalSessions,
-          totalMeditationTime,
-        };
-      } else {
-        console.log("RPC sessions data:", sessionsData);
         completedSessions = sessionsData || [];
+        console.log("All time sessions count:", completedSessions.length);
+      } else if (startDate) {
+        // Get filtered sessions for the selected time period
+        const { data: filteredSessions, error: filteredError } = await supabase
+          .rpc('get_filtered_completed_sessions', { 
+            start_date: startDate.toISOString() 
+          });
+          
+        if (filteredError) {
+          console.error("Error fetching filtered sessions:", filteredError);
+          // Fallback to unfiltered data if there's an error
+          const { data: fallbackData } = await supabase
+            .rpc('get_all_completed_sessions');
+            
+          completedSessions = fallbackData || [];
+          console.log("Fallback: Using all sessions due to filtering error");
+        } else {
+          completedSessions = filteredSessions || [];
+          console.log(`Filtered sessions for period ${timePeriod}:`, completedSessions.length);
+        }
       }
 
-      // Count of completed sessions
-      const totalSessions = completedSessions.length;
-      console.log("Total completed sessions count:", totalSessions);
-      
-      // Calculate the total meditation time across ALL sessions
+      // Calculate the total meditation time across sessions
       const totalMeditationTime = completedSessions.reduce((sum, session) => {
         return sum + (session.duration || 0);
       }, 0);
 
-      console.log("Total meditation time (seconds):", totalMeditationTime);
+      console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Sessions: ${completedSessions.length}, Time: ${totalMeditationTime}`);
 
       return {
         totalUsers: totalUsersCount,
-        totalSessions,
+        totalSessions: completedSessions.length,
         totalMeditationTime,
       };
     } catch (error) {

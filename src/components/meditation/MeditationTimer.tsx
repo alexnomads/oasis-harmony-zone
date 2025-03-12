@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Share2 } from 'lucide-react';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { DurationSelector } from './DurationSelector';
 import { TimerDisplay } from './TimerDisplay';
@@ -16,6 +16,7 @@ export const MeditationTimer = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const toastShownRef = useRef(false);
   
   const {
     isRunning,
@@ -69,10 +70,13 @@ export const MeditationTimer = () => {
         </div>
       ),
     });
+    
+    // Mark toast as shown
+    toastShownRef.current = true;
   };
 
   // Show success toast when session is completed
-  if (sessionCompleted && pointsEarned > 0 && !toast.current) {
+  if (sessionCompleted && pointsEarned > 0 && !toastShownRef.current) {
     showSuccessToast();
   }
 

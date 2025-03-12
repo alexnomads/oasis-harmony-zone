@@ -1,5 +1,5 @@
 
-import { Trophy, Users, Award } from "lucide-react";
+import { Trophy, Award } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { formatDurationDetails } from "@/lib/utils/timeFormat";
 import { GlobalStats } from "@/hooks/use-global-stats";
@@ -11,15 +11,7 @@ interface GlobalStatsSectionProps {
 
 export function GlobalStatsSection({ stats, isLoading }: GlobalStatsSectionProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <StatCard
-        title="Active Meditators"
-        subtitle="Total Registered Users"
-        value={stats.totalUsers}
-        isLoading={isLoading}
-        icon={<Users className="h-8 w-8 text-violet-500" />}
-      />
-
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
       <StatCard
         title="Meditation Sessions"
         subtitle="Total Sessions"

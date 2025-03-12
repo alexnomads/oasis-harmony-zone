@@ -25,7 +25,7 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
       const shareText = `I just completed a meditation session & earned points on @ROJOasis! 
 Start you mindfulness journey and earn crypto on 
 
-🧘🏼‍♂️🌹 https://oasis-harmony-zone.lovable.app`;
+🧘🏼‍♂️🌹 roseofjericho.lovable.app`;
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
       window.open(shareUrl, '_blank', 'width=550,height=420');
       

@@ -81,6 +81,30 @@ export const MeditationTimer = () => {
     return () => clearInterval(interval);
   }, [isRunning, selectedDuration, handleComplete]);
 
+  useEffect(() => {
+    if (isRunning) {
+      const handleInteraction = () => {
+        toast({
+          title: "Movement Detected",
+          description: "Please remain still during meditation. Moving or switching windows may affect your points.",
+          variant: "destructive",
+        });
+      };
+
+      window.addEventListener('mousemove', handleInteraction);
+      window.addEventListener('blur', handleInteraction);
+      window.addEventListener('touchstart', handleInteraction);
+      window.addEventListener('touchmove', handleInteraction);
+
+      return () => {
+        window.removeEventListener('mousemove', handleInteraction);
+        window.removeEventListener('blur', handleInteraction);
+        window.removeEventListener('touchstart', handleInteraction);
+        window.removeEventListener('touchmove', handleInteraction);
+      };
+    }
+  }, [isRunning, toast]);
+
   const startMeditation = async () => {
     try {
       if (!user) {

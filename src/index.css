@@ -89,6 +89,17 @@
     background: transparent;
     width: 100%;
   }
+  
+  /* Add padding to top of content to account for fixed header */
+  main {
+    padding-top: 96px; /* Base padding for desktop */
+  }
+  
+  @media (max-width: 640px) {
+    main {
+      padding-top: 80px; /* Reduced padding for mobile */
+    }
+  }
 }
 
 /* Mobile responsive utilities */

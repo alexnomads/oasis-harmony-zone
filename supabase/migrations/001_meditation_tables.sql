@@ -1,3 +1,4 @@
+
 -- Create an enum for meditation session status
 CREATE TYPE meditation_status AS ENUM ('in_progress', 'completed', 'cancelled');
 

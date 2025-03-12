@@ -9,6 +9,9 @@ export class SessionService extends BaseService {
     try {
       console.log('Starting meditation session for user:', userId, 'type:', type);
       
+      // Clear the Supabase cache for meditation_sessions
+      await supabase.getQueryClient()?.clear();
+      
       const result = await supabase
         .from('meditation_sessions')
         .insert([{
@@ -110,11 +113,15 @@ export class SessionService extends BaseService {
       const updatedSession = await this.executeQuery<MeditationSession>(() => Promise.resolve(updatedSessionResult));
       console.log('Session updated with sharing point:', updatedSession);
       
-      // Get updated user points
-      const userPointsResult = await supabase
+      // Update user points directly to ensure they're updated
+      const updatePointsResult = await supabase
         .from('user_points')
-        .select('*')
+        .update({
+          total_points: supabase.sql`total_points + 1`,
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', session.user_id)
+        .select('*')
         .single();
       
       const userPoints = await this.executeQuery<{ 
@@ -122,7 +129,7 @@ export class SessionService extends BaseService {
         total_points: number;
         meditation_streak: number;
         last_meditation_date: string | null;
-      }>(() => Promise.resolve(userPointsResult));
+      }>(() => Promise.resolve(updatePointsResult));
       
       console.log('User points after sharing:', userPoints);
       

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -22,21 +21,19 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
-      let totalUsersCount = 0;
+      // Always get the total number of users who have ever meditated
+      const { data: allUsers, error: usersError } = await supabase
+        .rpc('get_all_meditation_users');
+        
+      if (usersError) {
+        console.error("Error fetching all users:", usersError);
+        throw usersError;
+      }
+      
+      const totalUsersCount = allUsers?.length || 0;
       let completedSessions: any[] = [];
       
       if (timePeriod === "all") {
-        // Get all users who have ever completed a meditation
-        const { data: allUsers, error: usersError } = await supabase
-          .rpc('get_all_meditation_users');
-          
-        if (usersError) {
-          console.error("Error fetching all users:", usersError);
-          throw usersError;
-        }
-        
-        totalUsersCount = allUsers?.length || 0;
-        
         // Get ALL completed meditation sessions
         const { data: allSessions, error: sessionsError } = await supabase
           .rpc('get_all_completed_sessions');
@@ -48,7 +45,6 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         
         completedSessions = allSessions || [];
       } else {
-        // This is for time periods other than "all"
         let startDate: Date | null = null;
         const now = new Date();
         
@@ -57,7 +53,6 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         
         switch(timePeriod) {
           case "day":
-            // Set to the beginning of today
             startDate.setHours(0, 0, 0, 0);
             break;
           case "week":
@@ -73,26 +68,6 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         
         console.log(`Using start date: ${startDate.toISOString()} for period: ${timePeriod}`);
         
-        // Get users who have meditated in the selected time period
-        const { data: activeUsers, error: activeUsersError } = await supabase
-          .rpc('get_users_by_meditation_period', { 
-            start_date: startDate.toISOString() 
-          });
-          
-        if (activeUsersError) {
-          console.error("Error fetching active users:", activeUsersError);
-          // Fallback to leaderboard data
-          const { data: leaderboardData } = await supabase
-            .from('global_leaderboard')
-            .select('user_id');
-            
-          totalUsersCount = leaderboardData?.length || 0;
-          console.log("Fallback: Total users from leaderboard:", totalUsersCount);
-        } else {
-          totalUsersCount = activeUsers?.length || 0;
-          console.log(`Active users for period ${timePeriod}:`, totalUsersCount);
-        }
-        
         // Get filtered sessions for the selected time period
         const { data: filteredSessions, error: filteredError } = await supabase
           .rpc('get_filtered_completed_sessions', { 
@@ -101,16 +76,11 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
           
         if (filteredError) {
           console.error("Error fetching filtered sessions:", filteredError);
-          // Fallback to unfiltered data if there's an error
-          const { data: fallbackData } = await supabase
-            .rpc('get_all_completed_sessions');
-            
-          completedSessions = fallbackData || [];
-          console.log("Fallback: Using all sessions due to filtering error");
-        } else {
-          completedSessions = filteredSessions || [];
-          console.log(`Filtered sessions for period ${timePeriod}:`, completedSessions.length);
+          throw filteredError;
         }
+        
+        completedSessions = filteredSessions || [];
+        console.log(`Filtered sessions for period ${timePeriod}:`, completedSessions.length);
       }
 
       // Calculate total meditation time

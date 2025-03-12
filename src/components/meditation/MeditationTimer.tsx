@@ -44,7 +44,7 @@ export const MeditationTimer = () => {
     const shareText = `I just completed a meditation session & earned points on @ROJOasis! 
 Start you mindfulness journey and earn crypto on 
 
-🧘🏼‍♂️🌹 roseofjericho.lovable.app`;
+🧘🏼‍♂️🌹 https://oasis-harmony-zone.lovable.app`;
     
     // Open Twitter share dialog
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -11,75 +12,81 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        console.log('Auth callback page loaded, URL:', window.location.href);
-        
         const params = new URLSearchParams(window.location.search);
         const token_hash = params.get('token_hash');
         const type = params.get('type');
         const error_description = params.get('error_description');
         
-        console.log('Detected parameters:', { 
-          token_hash: token_hash ? 'present' : 'not present', 
-          type, 
-          error_description 
+        console.log('Auth callback triggered with:', {
+          token_hash: token_hash ? 'present' : 'not present',
+          type,
+          error_description,
+          full_url: window.location.href
         });
-        
+
         if (error_description) {
           throw new Error(error_description);
         }
-        
-        if (token_hash && type === 'email_confirmation') {
+
+        // Handle email confirmation
+        if (token_hash) {
+          if (type !== 'email_confirmation' && type !== 'email') {
+            throw new Error('Invalid verification type');
+          }
+
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash,
             type: 'email',
           });
-          
+
+          console.log('Verification attempt result:', { data, error });
+
           if (error) {
-            console.error('Verification error:', error);
             throw error;
           }
-          
-          console.log('Email verification successful', data);
-          
+
           setVerificationState('success');
           toast({
             title: 'Email verified!',
             description: 'Your account has been verified. Please sign in to continue.',
           });
-          
+
           setTimeout(() => navigate('/?login=true'), 1500);
           return;
         }
-        
-        const { data, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Session error:', error);
-          throw error;
+
+        // If no token_hash, check for session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          throw sessionError;
         }
 
-        if (data?.session) {
-          console.log('Session found, verification successful');
+        if (session) {
           setVerificationState('success');
           toast({
             title: 'Authentication successful!',
             description: 'Welcome to Rose of Jericho!',
           });
-          
           setTimeout(() => navigate('/dashboard'), 1500);
         } else {
-          console.error('No session or valid parameters found');
-          throw new Error('Invalid or expired verification link');
+          throw new Error('No valid verification token found');
         }
+
       } catch (error) {
-        console.error('Error during authentication callback:', error);
+        console.error('Verification error details:', error);
         setVerificationState('error');
+        
+        const errorMessage = error instanceof Error 
+          ? error.message
+          : 'Invalid or expired verification link';
+        
         toast({
           title: 'Verification failed',
-          description: error instanceof Error ? error.message : 'There was a problem verifying your email. Please try again.',
+          description: errorMessage,
           variant: 'destructive',
         });
-        
+
         setTimeout(() => navigate('/'), 2000);
       }
     };

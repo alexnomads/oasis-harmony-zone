@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS meditation_sessions (
     status meditation_status NOT NULL DEFAULT 'in_progress',
     duration INTEGER NOT NULL DEFAULT 0, -- in seconds
     points_earned INTEGER NOT NULL DEFAULT 0,
+    shared BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMPTZ
 );

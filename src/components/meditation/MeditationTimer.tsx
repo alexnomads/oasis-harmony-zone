@@ -264,7 +264,7 @@ export const MeditationTimer = () => {
                 className="sm:flex-1 bg-gradient-to-r from-vibrantPurple to-vibrantOrange border-none text-white hover:opacity-90"
                 onClick={handleShare}
               >
-                <Share2 className="mr-2 h-4 w-4" /> Share on X & Earn Point
+                <Share2 className="mr-2 h-4 w-4" /> Share on X & Earn Points
               </Button>
               <Button
                 variant="outline"

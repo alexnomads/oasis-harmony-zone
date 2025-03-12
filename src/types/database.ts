@@ -10,6 +10,7 @@ export interface MeditationSession {
   status: MeditationStatus;
   duration: number;
   points_earned: number;
+  shared?: boolean;
   created_at: string;
   completed_at?: string;
 }

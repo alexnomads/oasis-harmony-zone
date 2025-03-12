@@ -16,7 +16,8 @@ export class SessionService extends BaseService {
           type,
           status: 'in_progress' as MeditationStatus,
           duration: 0,
-          points_earned: 0
+          points_earned: 0,
+          shared: false
         }])
         .select('*')
         .single();

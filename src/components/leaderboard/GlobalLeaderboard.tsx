@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Medal, User, Calendar, Timer, Award } from 'lucide-react';
@@ -6,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
+import { formatDuration } from '@/lib/utils/timeFormat';
 
 type LeaderboardEntry = {
   user_id: string;
@@ -159,7 +161,7 @@ export const GlobalLeaderboard = () => {
                     <p className="font-medium text-vibrantOrange">{entry.total_sessions} sessions</p>
                     <p className="text-sm text-zinc-400 flex items-center justify-end gap-1">
                       <Timer className="h-3 w-3" />
-                      {formatTime(entry.total_meditation_time)}
+                      {formatDuration(entry.total_meditation_time)}
                     </p>
                   </div>
                 </motion.div>

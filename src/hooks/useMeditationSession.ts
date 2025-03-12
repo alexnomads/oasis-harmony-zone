@@ -17,17 +17,52 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [pointsEarned, setPointsEarned] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [soundsReady, setSoundsReady] = useState(false);
   const toastShownRef = useRef(false);
   const startSoundRef = useRef<HTMLAudioElement | null>(null);
   const endSoundRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    startSoundRef.current = new Audio(START_GONG_SOUND);
-    endSoundRef.current = new Audio(END_GONG_SOUND);
+    // Create new audio elements
+    startSoundRef.current = new Audio();
+    endSoundRef.current = new Audio();
     
+    // Set sources
+    if (startSoundRef.current) startSoundRef.current.src = START_GONG_SOUND;
+    if (endSoundRef.current) endSoundRef.current.src = END_GONG_SOUND;
+    
+    // Set volume
     if (startSoundRef.current) startSoundRef.current.volume = 0.6;
     if (endSoundRef.current) endSoundRef.current.volume = 0.6;
+    
+    // Preload the sounds
+    const preloadSounds = async () => {
+      try {
+        if (startSoundRef.current) {
+          startSoundRef.current.load();
+          await startSoundRef.current.play();
+          startSoundRef.current.pause();
+          startSoundRef.current.currentTime = 0;
+        }
+        
+        if (endSoundRef.current) {
+          endSoundRef.current.load();
+          await endSoundRef.current.play();
+          endSoundRef.current.pause();
+          endSoundRef.current.currentTime = 0;
+        }
+        
+        console.log("Meditation sounds preloaded successfully");
+        setSoundsReady(true);
+      } catch (err) {
+        console.error("Error preloading sounds:", err);
+        // We'll still set sounds as ready to avoid blocking meditation functionality
+        setSoundsReady(true);
+      }
+    };
+    
+    preloadSounds();
     
     return () => {
       if (startSoundRef.current) {
@@ -43,12 +78,30 @@ export const useMeditationSession = (userId: string | undefined) => {
 
   const playSound = useCallback((soundRef: React.RefObject<HTMLAudioElement | null>) => {
     if (soundRef.current) {
+      console.log("Attempting to play sound...");
       soundRef.current.currentTime = 0;
-      soundRef.current.play().catch(err => {
-        console.error("Error playing sound:", err);
-      });
+      
+      // Create a promise to check if sound plays
+      const playPromise = soundRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("Sound playing successfully");
+          })
+          .catch(err => {
+            console.error("Error playing sound:", err);
+            // Try one more time with user interaction
+            toast({
+              title: "Sound Error",
+              description: "Click anywhere to enable meditation sounds",
+            });
+          });
+      }
+    } else {
+      console.error("Sound reference is null");
     }
-  }, []);
+  }, [toast]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -64,6 +117,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     if (!sessionId) return;
 
     try {
+      console.log("Playing end meditation sound");
       playSound(endSoundRef);
       
       const { session, userPoints } = await SessionService.completeSession(sessionId, time);
@@ -103,6 +157,7 @@ export const useMeditationSession = (userId: string | undefined) => {
       setSessionId(session.id);
       setIsRunning(true);
       
+      console.log("Playing start meditation sound");
       playSound(startSoundRef);
       
       toast({
@@ -192,6 +247,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     totalPoints,
     setTotalPoints,
     isLoading,
+    soundsReady,
     formatTime,
     calculateProgress,
     toggleTimer,

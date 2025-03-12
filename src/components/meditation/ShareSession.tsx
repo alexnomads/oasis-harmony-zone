@@ -1,7 +1,6 @@
 
 import { Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import { useState } from 'react';
@@ -13,7 +12,6 @@ interface ShareSessionProps {
 
 export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isSharing, setIsSharing] = useState(false);
 
   const handleShare = async () => {
@@ -21,6 +19,9 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
     
     try {
       setIsSharing(true);
+      
+      // First ensure schema is updated
+      console.log("Initiating share process for session:", sessionId);
       
       // Award extra point for sharing
       const { userPoints } = await SessionService.awardSharingPoint(sessionId);

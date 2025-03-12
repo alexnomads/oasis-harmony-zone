@@ -7,34 +7,30 @@ export class SessionService extends BaseService {
   // Ensure schema is up to date before any operation
   private static async ensureSchema() {
     try {
-      // First check if the shared column exists
-      const { data: columns } = await supabase
+      console.log('Ensuring schema is up to date...');
+      
+      // Call the function we created in Supabase to add the shared column if it doesn't exist
+      await supabase.rpc('add_shared_column_if_not_exists');
+      console.log('Added shared column if needed');
+      
+      // Force schema cache refresh
+      await supabase.rpc('reload_types');
+      console.log('Schema cache refreshed');
+      
+      // Verify the column exists by trying to query it
+      const { data, error } = await supabase
         .from('meditation_sessions')
         .select('shared')
         .limit(1);
       
-      // If we got here without error, column exists
-      console.log('Shared column exists:', columns);
-      
-      // Reload types to refresh schema cache
-      await supabase.rpc('reload_types');
-      console.log('Schema cache refreshed');
-    } catch (error) {
-      console.error('Error checking schema, attempting to fix:', error);
-      
-      // Try to alter the table to add the shared column if it doesn't exist
-      try {
-        // This is done via RPC because direct SQL is restricted in JS clients
-        await supabase.rpc('add_shared_column_if_not_exists');
-        console.log('Added shared column if needed');
-        
-        // Reload types again
-        await supabase.rpc('reload_types');
-        console.log('Schema cache refreshed after fix');
-      } catch (fixError) {
-        console.error('Failed to fix schema:', fixError);
-        throw new Error('Failed to ensure schema consistency. Please contact support.');
+      if (error) {
+        throw new Error(`Column verification failed: ${error.message}`);
       }
+      
+      console.log('Shared column verified:', data);
+    } catch (error) {
+      console.error('Schema verification error:', error);
+      throw new Error('Failed to ensure schema consistency. Please try again or contact support.');
     }
   }
 

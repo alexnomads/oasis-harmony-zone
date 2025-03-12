@@ -28,6 +28,7 @@ export const MeditationTimer = () => {
     pointsEarned,
     totalPoints,
     setTotalPoints,
+    isLoading,
     formatTime,
     calculateProgress,
     toggleTimer,
@@ -113,6 +114,7 @@ export const MeditationTimer = () => {
               isRunning={isRunning}
               toggleTimer={toggleTimer}
               resetTimer={resetTimer}
+              isLoading={isLoading}
             />
           </>
         )}

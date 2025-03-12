@@ -14,6 +14,7 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const formatTime = (seconds: number) => {
@@ -50,13 +51,31 @@ export const useMeditationSession = (userId: string | undefined) => {
     }
   }, [sessionId, time, toast]);
 
-  // Force schema refresh before starting session
-  const ensureSchemaReady = async () => {
+  // Ensure database schema is ready before starting
+  const prepareDatabase = async () => {
     try {
-      console.log("Ensuring schema is ready before starting session");
+      setIsLoading(true);
+      console.log("Preparing database schema...");
+      
+      // Call the function to ensure shared column exists
+      await supabase.rpc('add_shared_column_if_not_exists');
+      console.log("Added shared column if needed");
+      
+      // Refresh schema cache
       await supabase.rpc('reload_types');
+      console.log("Schema cache refreshed");
+      
+      return true;
     } catch (error) {
-      console.error("Schema refresh error:", error);
+      console.error("Database preparation error:", error);
+      toast({
+        title: "Database Error",
+        description: "There was an issue preparing the database. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,8 +90,10 @@ export const useMeditationSession = (userId: string | undefined) => {
         return;
       }
 
-      // Ensure schema is ready
-      await ensureSchemaReady();
+      // Prepare database before starting
+      setIsLoading(true);
+      const prepared = await prepareDatabase();
+      if (!prepared) return;
 
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
@@ -88,6 +109,8 @@ export const useMeditationSession = (userId: string | undefined) => {
         description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -161,6 +184,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     pointsEarned,
     totalPoints,
     setTotalPoints,
+    isLoading,
     formatTime,
     calculateProgress,
     toggleTimer,

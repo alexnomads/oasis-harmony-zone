@@ -22,16 +22,18 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
-      // Get total count from the users table directly to ensure we get ALL users
-      const { count: totalUsersCount, error: countError } = await supabase
+      // Get total count from the user_points table directly
+      const { data: userPointsData, error: userPointsError } = await supabase
         .from('user_points')
-        .select('*', { count: 'exact', head: true });
+        .select('user_id');
         
-      if (countError) {
-        console.error("Error fetching total users count:", countError);
-        throw countError;
+      if (userPointsError) {
+        console.error("Error fetching user points data:", userPointsError);
+        throw userPointsError;
       }
       
+      // Use the length of the returned array to get the total count
+      const totalUsersCount = userPointsData?.length || 0;
       console.log("Total users count from user_points table:", totalUsersCount);
       
       let completedSessions: any[] = [];
@@ -94,7 +96,7 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
       console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Sessions: ${completedSessions.length}, Time: ${totalMeditationTime}`);
 
       return {
-        totalUsers: totalUsersCount || 0,
+        totalUsers: totalUsersCount,
         totalSessions: completedSessions.length,
         totalMeditationTime,
       };

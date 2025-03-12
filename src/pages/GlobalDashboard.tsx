@@ -20,12 +20,12 @@ export default function GlobalDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
       <RealTimeUpdates refetch={refetch} />
       <Header />
-      <div className="container mx-auto px-4 pt-32 pb-16">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-          <h1 className="text-4xl font-bold text-center md:text-left bg-clip-text text-transparent bg-gradient-to-r from-vibrantPurple to-vibrantOrange">
+      <div className="container mx-auto px-4 pt-20 pb-16 sm:pt-32">
+        <div className="flex flex-col space-y-4 sm:space-y-6 mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-center sm:text-left bg-clip-text text-transparent bg-gradient-to-r from-vibrantPurple to-vibrantOrange">
             Global Meditation Dashboard
           </h1>
-          <div className="mt-4 md:mt-0 self-center md:self-auto">
+          <div className="self-center sm:self-end">
             <TimeFilter timePeriod={timePeriod} onChange={handleTimeChange} />
           </div>
         </div>

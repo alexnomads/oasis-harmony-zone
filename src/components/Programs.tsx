@@ -1,10 +1,15 @@
 
 import { motion } from "framer-motion";
-import { Dumbbell, Brain, Users, MessageSquare } from "lucide-react";
-import { Card, CardContent } from "./ui/card";
+import { Dumbbell, Brain, Users, MessageSquare, Play, LogIn } from "lucide-react";
+import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "./ui/badge";
 
 export const Programs = () => {
+  const { user } = useAuth();
+  
   const programs = [
     {
       title: "Guided Meditation",
@@ -26,7 +31,8 @@ export const Programs = () => {
         "Energy boost",
         "Stress relief",
         "Better sleep"
-      ]
+      ],
+      comingSoon: true
     },
     {
       title: "Community Sessions",
@@ -69,7 +75,7 @@ export const Programs = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="h-full"
             >
-              <Card className="bg-black/20 border-white/10 h-full">
+              <Card className="bg-black/20 border-white/10 h-full flex flex-col">
                 <CardContent className="p-6 flex flex-col h-full">
                   <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
@@ -81,16 +87,46 @@ export const Programs = () => {
                       </li>
                     ))}
                   </ul>
+                </CardContent>
+                <CardFooter className="px-6 pb-6 pt-0">
+                  {program.title === "Guided Meditation" && (
+                    user ? (
+                      <Button 
+                        className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
+                        asChild
+                      >
+                        <Link to="/meditate">
+                          <Play className="w-4 h-4 mr-2" />
+                          Meditate Now
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="w-full bg-white/10 hover:bg-white/20 text-white"
+                        onClick={() => window.location.href = "/?login=true"}
+                      >
+                        <LogIn className="w-4 h-4 mr-2" />
+                        Log In
+                      </Button>
+                    )
+                  )}
+                  
+                  {program.comingSoon && (
+                    <Badge variant="outline" className="w-full justify-center py-2 text-white border-white/20 bg-black/30">
+                      COMING SOON
+                    </Badge>
+                  )}
+                  
                   {program.title === "Community Sessions" && (
                     <Button 
-                      className="w-full bg-white/10 hover:bg-white/20 text-white mt-4"
+                      className="w-full bg-white/10 hover:bg-white/20 text-white"
                       onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Join Our Telegram Group
                     </Button>
                   )}
-                </CardContent>
+                </CardFooter>
               </Card>
             </motion.div>
           ))}

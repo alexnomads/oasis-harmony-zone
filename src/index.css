@@ -92,12 +92,12 @@
   
   /* Add padding to top of content to account for fixed header */
   main {
-    padding-top: 67px; /* Reduced by 30% from 96px */
+    padding-top: 27px; /* Reduced by 60% from 67px */
   }
   
   @media (max-width: 640px) {
     main {
-      padding-top: 56px; /* Reduced by 30% from 80px */
+      padding-top: 22px; /* Reduced by 60% from 56px */
     }
   }
 }

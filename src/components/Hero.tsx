@@ -40,7 +40,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-11 sm:pt-14">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-5 sm:pt-6">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         <video

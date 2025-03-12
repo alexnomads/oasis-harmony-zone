@@ -4,13 +4,47 @@ import { BaseService } from './baseService';
 import type { MeditationSession, MeditationType, MeditationStatus } from '../../types/database';
 
 export class SessionService extends BaseService {
+  // Ensure schema is up to date before any operation
+  private static async ensureSchema() {
+    try {
+      // First check if the shared column exists
+      const { data: columns } = await supabase
+        .from('meditation_sessions')
+        .select('shared')
+        .limit(1);
+      
+      // If we got here without error, column exists
+      console.log('Shared column exists:', columns);
+      
+      // Reload types to refresh schema cache
+      await supabase.rpc('reload_types');
+      console.log('Schema cache refreshed');
+    } catch (error) {
+      console.error('Error checking schema, attempting to fix:', error);
+      
+      // Try to alter the table to add the shared column if it doesn't exist
+      try {
+        // This is done via RPC because direct SQL is restricted in JS clients
+        await supabase.rpc('add_shared_column_if_not_exists');
+        console.log('Added shared column if needed');
+        
+        // Reload types again
+        await supabase.rpc('reload_types');
+        console.log('Schema cache refreshed after fix');
+      } catch (fixError) {
+        console.error('Failed to fix schema:', fixError);
+        throw new Error('Failed to ensure schema consistency. Please contact support.');
+      }
+    }
+  }
+
   // Start a new meditation session
   static async startSession(userId: string, type: MeditationType): Promise<MeditationSession> {
     try {
       console.log('Starting meditation session for user:', userId, 'type:', type);
       
-      // Refresh the schema cache to ensure all columns are recognized
-      await supabase.rpc('reload_types');
+      // Ensure schema is up to date before operations
+      await this.ensureSchema();
       
       const result = await supabase
         .from('meditation_sessions')
@@ -36,6 +70,9 @@ export class SessionService extends BaseService {
   static async completeSession(sessionId: string, duration: number) {
     try {
       console.log('Completing session:', sessionId, 'duration:', duration);
+      
+      // Ensure schema is up to date
+      await this.ensureSchema();
       
       // Calculate points (1 point per minute, minimum 1 point for completing any session)
       const points = Math.max(1, Math.floor(duration / 60));
@@ -85,6 +122,9 @@ export class SessionService extends BaseService {
   static async awardSharingPoint(sessionId: string) {
     try {
       console.log('Awarding sharing point for session:', sessionId);
+      
+      // Ensure schema is up to date
+      await this.ensureSchema();
       
       // Get the session to check if it's valid and to get the user ID
       const sessionResult = await supabase

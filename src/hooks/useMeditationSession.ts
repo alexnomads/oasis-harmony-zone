@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import type { MeditationType } from '@/types/database';
+import { supabase } from '@/lib/supabase';
 
 export const useMeditationSession = (userId: string | undefined) => {
   const [isRunning, setIsRunning] = useState(false);
@@ -49,6 +50,16 @@ export const useMeditationSession = (userId: string | undefined) => {
     }
   }, [sessionId, time, toast]);
 
+  // Force schema refresh before starting session
+  const ensureSchemaReady = async () => {
+    try {
+      console.log("Ensuring schema is ready before starting session");
+      await supabase.rpc('reload_types');
+    } catch (error) {
+      console.error("Schema refresh error:", error);
+    }
+  };
+
   const startMeditation = async () => {
     try {
       if (!userId) {
@@ -60,6 +71,9 @@ export const useMeditationSession = (userId: string | undefined) => {
         return;
       }
 
+      // Ensure schema is ready
+      await ensureSchemaReady();
+
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
       setIsRunning(true);
@@ -68,6 +82,7 @@ export const useMeditationSession = (userId: string | undefined) => {
         description: "Find a comfortable position and focus on your breath",
       });
     } catch (error) {
+      console.error("Failed to start meditation:", error);
       toast({
         title: "Error starting session",
         description: error instanceof Error ? error.message : "An unknown error occurred",

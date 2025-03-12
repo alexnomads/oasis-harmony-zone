@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Clock } from "lucide-react";
 
 export const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -97,7 +98,14 @@ export const Hero = () => {
               onClick={handleMainButtonClick}
               className="bg-white/10 hover:bg-white/20 text-white px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 mb-3 sm:mb-0"
             >
-              {user ? "Meditate Now" : "Join the Waitlist"}
+              {user ? (
+                <>
+                  <Clock className="mr-2" size={20} />
+                  Meditate Now
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
             <Button
               onClick={handleFollow}

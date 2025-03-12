@@ -92,12 +92,12 @@
   
   /* Add padding to top of content to account for fixed header */
   main {
-    padding-top: 96px; /* Base padding for desktop */
+    padding-top: 67px; /* Reduced by 30% from 96px */
   }
   
   @media (max-width: 640px) {
     main {
-      padding-top: 80px; /* Reduced padding for mobile */
+      padding-top: 56px; /* Reduced by 30% from 80px */
     }
   }
 }

@@ -40,7 +40,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16 sm:pt-20">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-11 sm:pt-14">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         <video
@@ -123,7 +123,7 @@ export const Hero = () => {
       </div>
 
       {/* Reduced bottom margin for mobile */}
-      <div className="h-10 sm:h-24 md:h-32"></div>
+      <div className="h-7 sm:h-17 md:h-22"></div>
     </section>
   );
 };

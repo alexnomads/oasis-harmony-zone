@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -21,16 +22,18 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     console.log(`Fetching global stats for period: ${timePeriod}...`);
     
     try {
-      // Always get the total number of users who have ever meditated
-      const { data: allUsers, error: usersError } = await supabase
-        .rpc('get_all_meditation_users');
+      // Get total count from the users table directly to ensure we get ALL users
+      const { count: totalUsersCount, error: countError } = await supabase
+        .from('user_points')
+        .select('*', { count: 'exact', head: true });
         
-      if (usersError) {
-        console.error("Error fetching all users:", usersError);
-        throw usersError;
+      if (countError) {
+        console.error("Error fetching total users count:", countError);
+        throw countError;
       }
       
-      const totalUsersCount = allUsers?.length || 0;
+      console.log("Total users count from user_points table:", totalUsersCount);
+      
       let completedSessions: any[] = [];
       
       if (timePeriod === "all") {
@@ -91,7 +94,7 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
       console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Sessions: ${completedSessions.length}, Time: ${totalMeditationTime}`);
 
       return {
-        totalUsers: totalUsersCount,
+        totalUsers: totalUsersCount || 0,
         totalSessions: completedSessions.length,
         totalMeditationTime,
       };

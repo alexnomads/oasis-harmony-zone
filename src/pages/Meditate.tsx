@@ -29,32 +29,8 @@ export default function Meditate() {
             Begin Your Meditation Journey
           </h1>
           
-          <div className="grid gap-8 md:grid-cols-2">
-            <Card className="bg-zinc-900/50 border-zinc-800">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Today's Focus</h2>
-                <p className="text-zinc-400">
-                  Take a moment to breathe, center yourself, and let go of any tension.
-                  Remember, every session brings you closer to inner peace and earns you
-                  rewards in our community.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-zinc-900/50 border-zinc-800">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Benefits</h2>
-                <ul className="space-y-2 text-zinc-400">
-                  <li>• Earn points for each minute of meditation</li>
-                  <li>• Build your daily streak</li>
-                  <li>• Track your progress</li>
-                  <li>• Unlock achievements</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="mt-8 mb-12">
+          {/* Meditation Timer Section - Now First */}
+          <div className="mb-8">
             {user ? (
               <MeditationTimer />
             ) : (
@@ -74,6 +50,43 @@ export default function Meditate() {
                 </CardContent>
               </Card>
             )}
+          </div>
+          
+          {/* Info Cards - Now displayed in a better layout for mobile */}
+          <div className="grid gap-6 sm:gap-8 mb-12">
+            <motion.h2 
+              className="text-2xl font-semibold text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Meditation Guidance
+            </motion.h2>
+            
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">Today's Focus</h2>
+                  <p className="text-zinc-400">
+                    Take a moment to breathe, center yourself, and let go of any tension.
+                    Remember, every session brings you closer to inner peace and earns you
+                    rewards in our community.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">Benefits</h2>
+                  <ul className="space-y-2 text-zinc-400">
+                    <li>• Earn points for each minute of meditation</li>
+                    <li>• Build your daily streak</li>
+                    <li>• Track your progress</li>
+                    <li>• Unlock achievements</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
           </div>
           
           {/* Rose of Jericho AI Wellness Agent */}

@@ -288,8 +288,7 @@ export default function Dashboard() {
                       <p className="mt-2 text-sm">Start your journey today!</p>
                       <Button
                         onClick={() => navigate('/meditate')}
-                        variant="outline"
-                        className="mt-6 border-zinc-700 hover:bg-zinc-800"
+                        className="mt-6 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
                       >
                         Begin Meditation
                       </Button>

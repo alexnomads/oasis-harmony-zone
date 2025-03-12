@@ -20,7 +20,7 @@ export default function GlobalDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
       <RealTimeUpdates refetch={refetch} />
       <Header />
-      <div className="container mx-auto px-4 pt-28 pb-16 sm:pt-40">
+      <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="flex flex-col space-y-4 sm:space-y-6 mb-6 sm:mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-center sm:text-left bg-clip-text text-transparent bg-gradient-to-r from-vibrantPurple to-vibrantOrange">
             Global Meditation Dashboard

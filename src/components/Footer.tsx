@@ -1,5 +1,5 @@
 
-import { Github } from "lucide-react";
+import { Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 
@@ -49,6 +49,12 @@ export const Footer = () => {
               <li className="hover:text-white transition-colors">
                 <a href="#roadmap">Roadmap</a>
               </li>
+              <li className="hover:text-white transition-colors">
+                <a href="#newsletter">Contact Us</a>
+              </li>
+              <li className="hover:text-white transition-colors">
+                <a href="#testimonials">Testimonials</a>
+              </li>
             </ul>
           </div>
           
@@ -56,14 +62,6 @@ export const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Connect With Us</h3>
             <div className="flex space-x-3 mb-4">
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="border-white/10 text-white hover:bg-white/10"
-                onClick={() => window.open('https://github.com', '_blank')}
-              >
-                <Github className="h-4 w-4" />
-              </Button>
               <Button 
                 variant="outline" 
                 size="icon"
@@ -76,10 +74,15 @@ export const Footer = () => {
                   className="h-4 w-4 invert"
                 />
               </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="border-white/10 text-white hover:bg-white/10"
+                onClick={() => window.open('https://www.linkedin.com/showcase/roseofjericho/', '_blank')}
+              >
+                <Linkedin className="h-4 w-4" />
+              </Button>
             </div>
-            <p className="text-white/70 text-sm">
-              Contact: <a href="mailto:contact@rojtoken.com" className="hover:text-white">contact@rojtoken.com</a>
-            </p>
             <p className="text-white/50 text-xs mt-4">
               © {currentYear} Rose of Jericho. All rights reserved.
             </p>

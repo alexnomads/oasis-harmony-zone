@@ -2,10 +2,14 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = ["Wellness🧠", "Meditation🧘🏼‍♂️", "Fitness🏋️"];
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -16,6 +20,22 @@ export const Hero = () => {
 
   const handleFollow = () => {
     window.open('https://x.com/ROJOasis', '_blank');
+  };
+
+  const handleMainButtonClick = () => {
+    if (user) {
+      // If user is logged in, navigate to meditation page
+      navigate('/meditate');
+    } else {
+      // If user is not logged in, show sign in dialog
+      // This assumes there's a sign in component at the top right
+      const signInButton = document.querySelector('[aria-label="Sign In"]');
+      if (signInButton) {
+        (signInButton as HTMLButtonElement).click();
+      } else {
+        navigate('/');
+      }
+    }
   };
 
   return (
@@ -74,9 +94,10 @@ export const Hero = () => {
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4">
             <Button
+              onClick={handleMainButtonClick}
               className="bg-white/10 hover:bg-white/20 text-white px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 mb-3 sm:mb-0"
             >
-              Join the Waitlist
+              {user ? "Meditate Now" : "Join the Waitlist"}
             </Button>
             <Button
               onClick={handleFollow}

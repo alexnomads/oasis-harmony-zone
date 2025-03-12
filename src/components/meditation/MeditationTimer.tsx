@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -68,10 +69,10 @@ export const MeditationTimer = () => {
       interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime + 1;
-          if (newTime >= selectedDuration) {
+          // Only trigger completion when time is >= selectedDuration (instead of >)
+          if (newTime === selectedDuration) {
             setIsRunning(false);
             handleComplete();
-            return prevTime;
           }
           return newTime;
         });

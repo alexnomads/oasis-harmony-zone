@@ -8,9 +8,63 @@ export const Roadmap = () => {
     {
       title: "Phase 1",
       items: [
-        "Concept validation and community building.",
-        "Development of ROJ token and smart contracts.",
-        "Strategic partnerships with wellness brands and crypto projects."
+        {
+          title: "Meditation Timer System",
+          subitems: [
+            "Interactive timer with start/pause functionality",
+            "Duration selection options",
+            "Visual progress tracking",
+            "Session completion tracking and rewards"
+          ]
+        },
+        {
+          title: "Points & Rewards System",
+          subitems: [
+            "Point earning based on meditation duration",
+            "Bonus points for sharing sessions",
+            "Meditation streaks tracking",
+            "Total points accumulation"
+          ]
+        },
+        {
+          title: "User Dashboard",
+          subitems: [
+            "Personal meditation statistics",
+            "Progress tracking",
+            "Activity history visualization"
+          ]
+        },
+        {
+          title: "Global Leaderboard",
+          subitems: [
+            "Rankings based on total points",
+            "Display of user meditation statistics",
+            "View of most active meditators"
+          ]
+        },
+        {
+          title: "Social Sharing",
+          subitems: [
+            "Twitter/X integration for sharing meditation accomplishments",
+            "Bonus point earning for social shares"
+          ]
+        },
+        {
+          title: "User Authentication",
+          subitems: [
+            "Secure login/signup system",
+            "Protected routes for authenticated users",
+            "User profile management"
+          ]
+        },
+        {
+          title: "Global Dashboard",
+          subitems: [
+            "Community-wide meditation statistics",
+            "Real-time activity updates",
+            "Time-filtered analytics"
+          ]
+        }
       ]
     },
     {
@@ -81,9 +135,22 @@ export const Roadmap = () => {
                     </div>
                   )}
                   <ul className="space-y-2">
-                    {phase.items.map((item, itemIndex) => (
+                    {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
                       <li key={itemIndex} className="text-sm sm:text-base text-white/80">
-                        {item}
+                        {typeof item === 'string' ? (
+                          item
+                        ) : (
+                          <div className="mb-3">
+                            <p className="font-medium text-white mb-1">{itemIndex + 1}. {item.title}</p>
+                            <ul className="pl-5 space-y-1">
+                              {item.subitems.map((subitem, subIndex) => (
+                                <li key={subIndex} className="text-sm list-disc text-white/80">
+                                  {subitem}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -116,9 +183,22 @@ export const Roadmap = () => {
                     </div>
                   )}
                   <ul className="space-y-3">
-                    {phase.items.map((item, itemIndex) => (
+                    {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
                       <li key={itemIndex} className="text-base text-white/80">
-                        {item}
+                        {typeof item === 'string' ? (
+                          item
+                        ) : (
+                          <div className="mb-4">
+                            <p className="font-medium text-white mb-2">{itemIndex + 1}. {item.title}</p>
+                            <ul className="pl-6 space-y-1.5">
+                              {item.subitems.map((subitem, subIndex) => (
+                                <li key={subIndex} className="text-sm list-disc text-white/80">
+                                  {subitem}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>

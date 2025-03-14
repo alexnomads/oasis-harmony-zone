@@ -44,3 +44,26 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 // Auth helper functions with improved error handling
+export const signInWithGoogle = async () => {
+  try {
+    const redirectUrl = getRedirectUrl();
+    console.log('Using redirect URL for Google sign-in:', redirectUrl);
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      }
+    });
+    
+    return { data, error };
+  } catch (error) {
+    console.error('Error signing in with Google:', error);
+    return { data: null, error };
+  }
+};
+

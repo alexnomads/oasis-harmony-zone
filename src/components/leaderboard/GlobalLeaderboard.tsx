@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Medal, User, Calendar, Timer, Award } from 'lucide-react';
+import { Medal, User, Timer, Award, Flame } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -190,7 +190,7 @@ export const GlobalLeaderboard = () => {
                         {entry.total_points} pts
                       </span>
                       <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
+                        <Flame className="h-3 w-3 text-orange-500" />
                         {entry.meditation_streak} day streak
                       </span>
                     </div>
@@ -208,6 +208,7 @@ export const GlobalLeaderboard = () => {
             })}
           </div>
           
+          {/* Pagination component */}
           {totalPages > 1 && (
             <Pagination className="mt-6">
               <PaginationContent>

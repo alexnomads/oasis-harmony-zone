@@ -27,8 +27,8 @@ export const SubscriptionPlans = () => {
   const plans = [
     {
       title: "Basic Plan",
-      monthlyPrice: 20,
-      yearlyPrice: 192, // 20% discount
+      price: 0,
+      period: "forever",
       features: [
         "Access to AI Wellness Agent",
         "Basic wellness analytics",
@@ -38,8 +38,8 @@ export const SubscriptionPlans = () => {
     },
     {
       title: "Pro Plan",
-      monthlyPrice: 50,
-      yearlyPrice: 480, // 20% discount
+      monthlyPrice: 20,
+      yearlyPrice: 192, // 20% discount
       features: [
         "Enhanced AI features",
         "Advanced analytics",
@@ -137,7 +137,15 @@ export const SubscriptionPlans = () => {
                 </div>
               )}
               <h3 className="text-2xl font-bold text-white mb-2">{plan.title}</h3>
-              {!plan.custom ? (
+              
+              {plan.title === "Basic Plan" ? (
+                <div className="text-3xl font-bold text-white mb-4">
+                  FREE
+                  <span className="text-lg font-normal text-white/60">
+                    /forever
+                  </span>
+                </div>
+              ) : !plan.custom ? (
                 <div className="text-3xl font-bold text-white mb-4">
                   ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
                   <span className="text-lg font-normal text-white/60">
@@ -149,7 +157,11 @@ export const SubscriptionPlans = () => {
                   Custom
                 </div>
               )}
-              <p className="text-white/60 mb-2">Pay in $ROJ tokens</p>
+              
+              {plan.title !== "Basic Plan" && (
+                <p className="text-white/60 mb-2">Pay in $ROJ tokens</p>
+              )}
+              
               <ul className="text-white/80 text-left space-y-4 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature}>✓ {feature}</li>
@@ -174,14 +186,20 @@ export const SubscriptionPlans = () => {
                     if (!account) {
                       connectWallet();
                     } else {
-                      setSelectedPlan({
-                        title: plan.title,
-                        price: isYearly ? plan.yearlyPrice : plan.monthlyPrice
-                      });
+                      if (plan.title !== "Basic Plan") {
+                        setSelectedPlan({
+                          title: plan.title,
+                          price: isYearly ? plan.yearlyPrice : plan.monthlyPrice
+                        });
+                      }
                     }
                   }}
                 >
-                  {account ? (plan.popular ? "Upgrade to Pro" : "Get Started") : "Connect Wallet"}
+                  {account ? 
+                    (plan.title === "Basic Plan" ? 
+                      "Get Started" : 
+                      (plan.popular ? "Upgrade to Pro" : "Get Started")) : 
+                    "Connect Wallet"}
                 </Button>
               )}
             </motion.div>

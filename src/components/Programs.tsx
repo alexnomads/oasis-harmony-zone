@@ -97,7 +97,7 @@ export const Programs = () => {
                       >
                         <Link to="/meditate">
                           <Play className="w-4 h-4 mr-2" />
-                          Meditate Now
+                          Meditate & Accrue Points Now
                         </Link>
                       </Button>
                     ) : (

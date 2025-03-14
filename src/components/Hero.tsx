@@ -100,7 +100,7 @@ export const Hero = () => {
               {user ? (
                 <>
                   <Clock className="mr-2" size={20} />
-                  Meditate Now
+                  Meditate & Accrue Points Now
                 </>
               ) : (
                 "Sign In"

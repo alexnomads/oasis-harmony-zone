@@ -108,7 +108,7 @@ export const PlanCard = ({ plan, isYearly, index, onSelectPlan }: PlanCardProps)
             {user ? (
               <>
                 <Clock className="mr-2" size={20} />
-                Meditate Now
+                Meditate & Accrue Points Now
               </>
             ) : (
               account ? "Get Started" : "Connect Wallet"

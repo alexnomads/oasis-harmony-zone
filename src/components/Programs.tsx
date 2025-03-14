@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Badge } from "./ui/badge";
+import { TokenBuyButton } from "@/components/TokenBuyButton";
 
 export const Programs = () => {
   const { user } = useAuth();
@@ -111,10 +111,8 @@ export const Programs = () => {
                     )
                   )}
                   
-                  {program.comingSoon && (
-                    <Badge variant="outline" className="w-full justify-center py-2 text-white border-white/20 bg-black/30">
-                      COMING SOON
-                    </Badge>
+                  {program.title === "Fitness Programs" && (
+                    <TokenBuyButton />
                   )}
                   
                   {program.title === "Community Sessions" && (

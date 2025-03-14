@@ -58,8 +58,8 @@ export const Hero = () => {
         </video>
       </div>
 
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#9C27B0]/80 to-[#FF8A00]/80" />
+      {/* Gradient Overlay - Adjusted to match body gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#9C27B0]/90 to-[#FF8A00]/90" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 text-center">

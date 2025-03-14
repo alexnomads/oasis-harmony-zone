@@ -20,7 +20,7 @@ const Index = () => {
   });
 
   return (
-    <div className="relative min-h-screen bg-black">
+    <div className="relative min-h-screen">
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-softOrange origin-left z-50"
         style={{ scaleX }}

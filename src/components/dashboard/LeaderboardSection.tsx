@@ -12,7 +12,7 @@ export function LeaderboardSection() {
           <span>Global Leaderboard</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-3 sm:px-6">
+      <CardContent className="px-3 sm:px-6 pb-6">
         <GlobalLeaderboard />
       </CardContent>
     </Card>

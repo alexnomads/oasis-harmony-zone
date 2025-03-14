@@ -76,10 +76,8 @@ export const Roadmap = () => {
                 <CardContent className="p-4">
                   <h3 className="text-xl font-bold mb-4 text-softOrange">{phase.title}</h3>
                   {index === 0 && (
-                    <div className="mb-4 overflow-hidden rounded-lg">
-                      <div className="tweet-embed" data-theme="dark">
-                        <Tweet id="1886840995259592951" />
-                      </div>
+                    <div className="mb-4 tweet-container">
+                      <Tweet id="1886840995259592951" />
                     </div>
                   )}
                   <ul className="space-y-2">
@@ -113,10 +111,8 @@ export const Roadmap = () => {
                 <CardContent className="p-6">
                   <h3 className="text-2xl font-bold mb-4 text-softOrange">{phase.title}</h3>
                   {index === 0 && (
-                    <div className="mb-6 overflow-hidden rounded-lg">
-                      <div className="tweet-embed" data-theme="dark">
-                        <Tweet id="1886840995259592951" />
-                      </div>
+                    <div className="mb-6 tweet-container">
+                      <Tweet id="1886840995259592951" />
                     </div>
                   )}
                   <ul className="space-y-3">

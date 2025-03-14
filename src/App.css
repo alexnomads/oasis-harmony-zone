@@ -44,25 +44,30 @@
 }
 
 /* Tweet embed styling */
-.tweet-embed {
+.tweet-container {
   width: 100%;
   max-width: 550px;
   margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
-/* Ensure tweet media displays properly */
-.tweet-embed img {
+/* Force tweet content to be visible on dark backgrounds */
+.tweet-container :is(div, span, p) {
+  color: #fff !important;
+}
+
+/* Properly display tweet images */
+.tweet-container img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* Force dark theme for tweets */
-.tweet-embed[data-theme="dark"] {
-  --tweet-bg: transparent;
-  --tweet-text: #fff;
-  --tweet-link: #1d9bf0;
-  color-scheme: dark;
+/* Apply styling to tweet links */
+.tweet-container a {
+  color: #1d9bf0 !important;
 }
 
 /* Mobile responsive adjustments */
@@ -76,7 +81,7 @@
     padding: 1em;
   }
   
-  .tweet-embed {
+  .tweet-container {
     max-width: 100%;
   }
 }

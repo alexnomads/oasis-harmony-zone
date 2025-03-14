@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { supabase, getRedirectUrl, signInWithGoogle } from '@/lib/supabase';
+import { supabase, getRedirectUrl } from '@/lib/supabase';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -58,7 +58,6 @@ type AuthState = {
 type AuthContextType = AuthState & {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -156,27 +155,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
-      const { error } = await signInWithGoogle();
-      
-      if (error) throw error;
-      
-      // No navigation needed here as OAuth redirect will happen
-    } catch (error) {
-      const message = handleAuthError(error as Error | AuthError);
-      setState(prev => ({ ...prev, error: message }));
-      toast({
-        title: 'Google Sign In Failed',
-        description: message,
-        variant: 'destructive',
-      });
-      setState(prev => ({ ...prev, loading: false }));
-    }
-  };
-
   const signUp = async (email: string, password: string) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
@@ -241,7 +219,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ...state,
         signIn,
         signUp,
-        signInWithGoogle: handleGoogleSignIn,
         signOut,
       }}
     >

@@ -2,14 +2,13 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthError, AuthChangeEvent } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { supabase, signInWithGoogle } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface SupabaseContextType {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -18,7 +17,6 @@ const SupabaseContext = createContext<SupabaseContextType>({
   loading: true,
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
-  signInWithGoogle: async () => ({ error: null }),
   signOut: async () => {},
 });
 
@@ -183,41 +181,6 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    if (loading) return { error: null };
-    
-    try {
-      setLoading(true);
-      const { data, error } = await signInWithGoogle();
-      
-      if (error) {
-        toast({
-          title: 'Google Sign In Failed',
-          description: error.message || 'Failed to sign in with Google',
-          variant: 'destructive',
-        });
-        return { error };
-      }
-      
-      return { error: null };
-    } catch (error) {
-      console.error('Unexpected error during Google sign in:', error);
-      toast({
-        title: 'Connection Error',
-        description: 'Having trouble connecting to the server. Please try again.',
-        variant: 'destructive',
-      });
-      return { 
-        error: { 
-          message: 'Connection error',
-          status: 503
-        } as AuthError 
-      };
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const signOut = async () => {
     if (loading) return;
 
@@ -249,7 +212,6 @@ export const SupabaseProvider = ({ children }: { children: React.ReactNode }) =>
         loading,
         signIn,
         signUp,
-        signInWithGoogle: handleGoogleSignIn,
         signOut
       }}
     >

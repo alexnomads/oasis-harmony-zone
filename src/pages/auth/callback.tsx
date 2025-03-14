@@ -10,21 +10,19 @@ export default function AuthCallback() {
   const [verificationState, setVerificationState] = useState<'loading' | 'success' | 'error'>('loading');
 
   useEffect(() => {
-    const handleAuthRedirect = async () => {
+    const handleEmailConfirmation = async () => {
       try {
         const params = new URLSearchParams(window.location.search);
         const token_hash = params.get('token_hash');
         const type = params.get('type');
         const error_description = params.get('error_description');
         const next_url = params.get('next') || '/dashboard';
-        const provider = params.get('provider');
         
         // Debug info for verification process
         console.log('Auth callback parameters:', {
           token_hash: token_hash ? 'present' : 'not present',
           type,
           error_description,
-          provider,
           next_url,
           full_url: window.location.href,
           timestamp: new Date().toISOString()
@@ -34,30 +32,6 @@ export default function AuthCallback() {
         if (error_description) {
           console.error('URL contains error:', error_description);
           throw new Error(error_description);
-        }
-
-        // For OAuth (Google sign-in)
-        if (provider === 'google') {
-          // The session should already be established by Supabase's automatic handling
-          // Just need to check if it exists and redirect appropriately
-          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-          
-          if (sessionError) throw sessionError;
-          
-          if (session) {
-            console.log('Google auth successful, session established');
-            setVerificationState('success');
-            toast({
-              title: 'Google Sign-In Successful!',
-              description: 'You have been signed in with Google.',
-            });
-            
-            // Redirect to dashboard
-            setTimeout(() => navigate('/dashboard'), 1500);
-            return;
-          } else {
-            throw new Error('Failed to establish session after Google sign-in');
-          }
         }
 
         // Handle email verification
@@ -145,7 +119,7 @@ export default function AuthCallback() {
       }
     };
 
-    handleAuthRedirect();
+    handleEmailConfirmation();
   }, [navigate, toast]);
 
   return (
@@ -154,7 +128,7 @@ export default function AuthCallback() {
         {verificationState === 'loading' && (
           <>
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto mb-4" />
-            <h1 className="text-2xl font-bold mb-2">Completing authentication...</h1>
+            <h1 className="text-2xl font-bold mb-2">Verifying your email...</h1>
             <p className="text-zinc-400">Please wait while we confirm your account.</p>
           </>
         )}
@@ -162,18 +136,18 @@ export default function AuthCallback() {
         {verificationState === 'success' && (
           <>
             <div className="text-green-500 text-5xl mb-4">✓</div>
-            <h1 className="text-2xl font-bold mb-2">Authentication Successful!</h1>
-            <p className="text-zinc-400 mb-4">You have been successfully authenticated.</p>
-            <p className="text-zinc-400">Redirecting you now...</p>
+            <h1 className="text-2xl font-bold mb-2">Email Verified!</h1>
+            <p className="text-zinc-400 mb-4">Your account has been successfully verified.</p>
+            <p className="text-zinc-400">Redirecting you to sign in...</p>
           </>
         )}
         
         {verificationState === 'error' && (
           <>
             <div className="text-red-500 text-5xl mb-4">✗</div>
-            <h1 className="text-2xl font-bold mb-2">Authentication Failed</h1>
-            <p className="text-zinc-400 mb-4">There was a problem with the authentication process.</p>
-            <p className="text-zinc-400">Please try signing in again. If the problem persists, contact support.</p>
+            <h1 className="text-2xl font-bold mb-2">Verification Failed</h1>
+            <p className="text-zinc-400 mb-4">There was a problem verifying your email.</p>
+            <p className="text-zinc-400">Please try signing up again. If the problem persists, contact support.</p>
           </>
         )}
       </div>

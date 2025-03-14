@@ -48,7 +48,7 @@ export const Hero = () => {
           loop
           muted
           playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover opacity-40"
         >
           <source
             src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4"
@@ -58,8 +58,7 @@ export const Hero = () => {
         </video>
       </div>
 
-      {/* Gradient Overlay - Adjusted to match body gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#9C27B0]/90 to-[#FF8A00]/90" />
+      {/* No need for additional gradient overlay since we're using body's gradient */}
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 text-center">

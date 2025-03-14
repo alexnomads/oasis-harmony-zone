@@ -1,11 +1,12 @@
-
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
+import { Clock, MessageSquare } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,8 @@ export const SubscriptionPlans = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { account, connectWallet } = useWeb3();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const plans = [
     {
@@ -89,6 +92,16 @@ export const SubscriptionPlans = () => {
       });
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleBasicPlanClick = () => {
+    if (user) {
+      navigate('/meditate');
+    } else {
+      if (!account) {
+        connectWallet();
+      }
     }
   };
 
@@ -175,6 +188,20 @@ export const SubscriptionPlans = () => {
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Contact Us
                 </Button>
+              ) : plan.title === "Basic Plan" ? (
+                <Button 
+                  className="w-full bg-white/10 hover:bg-white/20 text-white"
+                  onClick={handleBasicPlanClick}
+                >
+                  {user ? (
+                    <>
+                      <Clock className="mr-2" size={20} />
+                      Meditate Now
+                    </>
+                  ) : (
+                    account ? "Get Started" : "Connect Wallet"
+                  )}
+                </Button>
               ) : (
                 <Button 
                   className={`w-full ${
@@ -186,20 +213,14 @@ export const SubscriptionPlans = () => {
                     if (!account) {
                       connectWallet();
                     } else {
-                      if (plan.title !== "Basic Plan") {
-                        setSelectedPlan({
-                          title: plan.title,
-                          price: isYearly ? plan.yearlyPrice : plan.monthlyPrice
-                        });
-                      }
+                      setSelectedPlan({
+                        title: plan.title,
+                        price: isYearly ? plan.yearlyPrice : plan.monthlyPrice
+                      });
                     }
                   }}
                 >
-                  {account ? 
-                    (plan.title === "Basic Plan" ? 
-                      "Get Started" : 
-                      (plan.popular ? "Upgrade to Pro" : "Get Started")) : 
-                    "Connect Wallet"}
+                  {account ? (plan.popular ? "Upgrade to Pro" : "Get Started") : "Connect Wallet"}
                 </Button>
               )}
             </motion.div>

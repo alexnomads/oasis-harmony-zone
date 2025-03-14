@@ -43,6 +43,28 @@
   color: #888;
 }
 
+/* Tweet embed styling */
+.tweet-embed {
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+/* Ensure tweet media displays properly */
+.tweet-embed img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Force dark theme for tweets */
+.tweet-embed[data-theme="dark"] {
+  --tweet-bg: transparent;
+  --tweet-text: #fff;
+  --tweet-link: #1d9bf0;
+  color-scheme: dark;
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
   .container {
@@ -52,5 +74,9 @@
   
   .card {
     padding: 1em;
+  }
+  
+  .tweet-embed {
+    max-width: 100%;
   }
 }

@@ -51,6 +51,8 @@
   border-radius: 12px;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Force tweet content to be visible on dark backgrounds */
@@ -63,11 +65,27 @@
   max-width: 100%;
   height: auto;
   display: block;
+  border-radius: 6px;
 }
 
 /* Apply styling to tweet links */
 .tweet-container a {
   color: #1d9bf0 !important;
+}
+
+/* Roadmap carousel custom styling */
+.roadmap-carousel .embla__viewport {
+  overflow: hidden;
+}
+
+.roadmap-carousel .embla__slide {
+  flex: 0 0 100%;
+}
+
+@media (min-width: 768px) {
+  .roadmap-carousel .embla__slide {
+    flex: 0 0 50%;
+  }
 }
 
 /* Mobile responsive adjustments */

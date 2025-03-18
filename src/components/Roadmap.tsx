@@ -3,6 +3,14 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Tweet } from 'react-tweet';
 import { CheckCircle2 } from "lucide-react";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from "./ui/carousel";
+import { Badge } from "./ui/badge";
 
 export const Roadmap = () => {
   const phases = [
@@ -127,113 +135,70 @@ export const Roadmap = () => {
           </p>
         </motion.div>
         
-        {/* Mobile Roadmap (Vertical Timeline) */}
-        <div className="md:hidden relative max-w-md mx-auto">
-          <div className="absolute left-4 top-0 bottom-0 w-1 bg-white/20" />
-          {phases.map((phase, index) => (
-            <motion.div
-              key={phase.title}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="relative mb-10 last:mb-0 pl-10"
-            >
-              <div className="absolute left-4 top-0 transform -translate-x-1/2">
-                <div className="w-4 h-4 rounded-full bg-softOrange" />
-              </div>
-              <Card className="bg-black/20 border-white/10 overflow-hidden">
-                <CardContent className="p-4">
-                  <div className="flex items-center mb-4">
-                    <h3 className="text-xl font-bold text-softOrange">{phase.title}</h3>
-                    {phase.completed && (
-                      <CheckCircle2 className="ml-2 text-green-400 h-5 w-5" />
-                    )}
-                  </div>
-                  {index === 0 && (
-                    <div className="mb-4 tweet-container">
-                      <Tweet id="1886840995259592951" />
-                    </div>
-                  )}
-                  <ul className="space-y-2">
-                    {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
-                      <li key={itemIndex} className="text-sm sm:text-base text-white/80">
-                        {typeof item === 'string' ? (
-                          item
-                        ) : (
-                          <div className="mb-3">
-                            <p className="font-medium text-white mb-1">{itemIndex + 1}. {item.title}</p>
-                            <ul className="pl-5 space-y-1">
-                              {item.subitems.map((subitem, subIndex) => (
-                                <li key={subIndex} className="text-sm list-disc text-white/80">
-                                  {subitem}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+        {/* Tweet Highlight */}
+        <div className="mb-10 max-w-md mx-auto">
+          <div className="tweet-container">
+            <Tweet id="1886840995259592951" />
+          </div>
         </div>
         
-        {/* Desktop Roadmap (Horizontal Timeline) */}
-        <div className="hidden md:block relative max-w-4xl mx-auto">
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-white/20" />
-          {phases.map((phase, index) => (
-            <motion.div
-              key={phase.title}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="relative mb-16 last:mb-0"
-            >
-              <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-4 h-4 rounded-full bg-softOrange" />
-              </div>
-              <Card className={`w-[calc(50%-20px)] ${index % 2 === 0 ? 'mr-[calc(50%+20px)]' : 'ml-[calc(50%+20px)]'} bg-black/20 border-white/10`}>
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <h3 className="text-2xl font-bold text-softOrange">{phase.title}</h3>
-                    {phase.completed && (
-                      <CheckCircle2 className="ml-2 text-green-400 h-6 w-6" />
-                    )}
-                  </div>
-                  {index === 0 && (
-                    <div className="mb-6 tweet-container">
-                      <Tweet id="1886840995259592951" />
+        {/* Roadmap Carousel */}
+        <Carousel className="max-w-4xl mx-auto">
+          <CarouselContent>
+            {phases.map((phase, index) => (
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
+                <Card className="h-full bg-black/20 border-white/10">
+                  <CardContent className="p-6 h-full">
+                    <div className="flex items-center mb-4 gap-2">
+                      <h3 className="text-2xl font-bold text-softOrange">{phase.title}</h3>
+                      {phase.completed && (
+                        <Badge variant="outline" className="text-green-400 border-green-400">
+                          <CheckCircle2 className="mr-1 h-4 w-4" /> Completed
+                        </Badge>
+                      )}
                     </div>
-                  )}
-                  <ul className="space-y-3">
-                    {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
-                      <li key={itemIndex} className="text-base text-white/80">
-                        {typeof item === 'string' ? (
-                          item
-                        ) : (
-                          <div className="mb-4">
-                            <p className="font-medium text-white mb-2">{itemIndex + 1}. {item.title}</p>
-                            <ul className="pl-6 space-y-1.5">
-                              {item.subitems.map((subitem, subIndex) => (
-                                <li key={subIndex} className="text-sm list-disc text-white/80">
-                                  {subitem}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </motion.div>
+                    
+                    <div className="space-y-4 overflow-auto pr-2" style={{ maxHeight: '70vh' }}>
+                      {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
+                        <div key={itemIndex} className="text-base text-white/80">
+                          {typeof item === 'string' ? (
+                            <p className="text-white">{item}</p>
+                          ) : (
+                            <div className="mb-4">
+                              <p className="font-medium text-white mb-2 border-l-2 border-softOrange pl-3">
+                                {item.title}
+                              </p>
+                              <ul className="pl-5 space-y-2">
+                                {item.subitems.map((subitem, subIndex) => (
+                                  <li key={subIndex} className="text-sm list-disc text-white/80">
+                                    {subitem}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0 bg-black/30 text-white hover:bg-black/50 border-white/20" />
+          <CarouselNext className="right-0 bg-black/30 text-white hover:bg-black/50 border-white/20" />
+        </Carousel>
+        
+        {/* Phase Indicators */}
+        <div className="flex justify-center mt-6 gap-2">
+          {phases.map((phase, index) => (
+            <div key={index} className="flex items-center gap-1">
+              <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-green-400' : 'bg-white/30'}`} />
+              <span className="text-xs text-white/70">{phase.title}</span>
+            </div>
           ))}
         </div>
       </div>
     </section>
   );
 };
-

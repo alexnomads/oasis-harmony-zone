@@ -45,6 +45,7 @@ export const Roadmap = () => {
   const phases = [
     {
       title: "Phase 0",
+      completed: true,
       items: [
         "Our journey begins with a vision to transform wellness in the crypto space.",
         "Building a community-driven platform for meditation and mindfulness."
@@ -188,7 +189,7 @@ export const Roadmap = () => {
               <div 
                 className={`w-3 h-3 rounded-full ${
                   phase.completed 
-                    ? 'bg-green-400' 
+                    ? (index === 0 ? 'bg-green-400' : 'bg-green-400') 
                     : activePhase === index 
                       ? 'bg-softOrange' 
                       : 'bg-white/30'
@@ -207,16 +208,16 @@ export const Roadmap = () => {
         </div>
         
         <Carousel 
-          className="max-w-4xl mx-auto relative"
+          className="max-w-5xl mx-auto relative"
           setApi={setApi}
           opts={{
-            align: isMobile ? "start" : "center",
+            align: "start",
             loop: true
           }}
         >
           <CarouselContent className="px-4">
             {phases.map((phase, index) => (
-              <CarouselItem key={index} className={isMobile ? "w-[90vw] max-w-[400px]" : "md:basis-1/2 lg:basis-1/2"}>
+              <CarouselItem key={index} className="w-full">
                 <Card className="h-full bg-black/20 border-white/10">
                   <CardContent className="p-6 h-full">
                     <div className="flex items-center mb-4 gap-2">
@@ -229,12 +230,12 @@ export const Roadmap = () => {
                     </div>
                     
                     {index === 0 && (
-                      <div className="mb-6 tweet-container">
+                      <div className="mb-6 tweet-container w-full max-w-full">
                         <Tweet id="1886840995259592951" />
                       </div>
                     )}
                     
-                    <div className="space-y-4 overflow-auto pr-2 roadmap-content" style={{ maxHeight: isMobile ? '50vh' : '70vh' }}>
+                    <div className="space-y-4 overflow-auto pr-2 roadmap-content" style={{ maxHeight: isMobile ? '50vh' : '60vh' }}>
                       {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
                         <div key={itemIndex} className="text-base text-white/80">
                           {typeof item === 'string' ? (

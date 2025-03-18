@@ -46,7 +46,7 @@
 /* Tweet embed styling */
 .tweet-container {
   width: 100%;
-  max-width: 550px;
+  max-width: 100%;
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
@@ -73,9 +73,17 @@
   color: #1d9bf0 !important;
 }
 
+/* Make sure embedded content is visible */
+.tweet-container iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 10px auto !important;
+  border-radius: 6px !important;
+}
+
 /* Roadmap carousel custom styling */
 .roadmap-carousel .embla__viewport {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .roadmap-carousel .embla__slide {
@@ -84,7 +92,7 @@
 
 @media (min-width: 768px) {
   .roadmap-carousel .embla__slide {
-    flex: 0 0 50%;
+    flex: 0 0 100%;
   }
 }
 

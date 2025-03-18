@@ -75,7 +75,7 @@ export const Roadmap = () => {
         {
           title: "Subscription Plans",
           subitems: [
-            "Three-tier subscription model: Basic Plan (free), Pro Plan (paid subscription with monthly/yearly options), Enterprise Plan (custom pricing)",
+            "3-tier subscription model: Basic Plan (free), Pro Plan (paid subscription with monthly/yearly options), Enterprise Plan (custom pricing)",
             "Plan comparison with feature highlights",
             "20% discount for yearly subscriptions"
           ]

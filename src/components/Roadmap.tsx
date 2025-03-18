@@ -11,8 +11,11 @@ import {
   CarouselPrevious
 } from "./ui/carousel";
 import { Badge } from "./ui/badge";
+import { useState } from "react";
 
 export const Roadmap = () => {
+  const [activePhase, setActivePhase] = useState(0);
+  
   const phases = [
     {
       title: "Phase 1",
@@ -83,7 +86,10 @@ export const Roadmap = () => {
         {
           title: "Subscription Plans",
           subitems: [
-            "3-tier subscription model: Basic Plan (free), Pro Plan (paid subscription with monthly/yearly options), Enterprise Plan (custom pricing)",
+            "Three-tier subscription model:",
+            "Basic Plan (free)",
+            "Pro Plan (paid subscription with monthly/yearly options)",
+            "Enterprise Plan (custom pricing)",
             "Plan comparison with feature highlights",
             "20% discount for yearly subscriptions"
           ]
@@ -142,8 +148,29 @@ export const Roadmap = () => {
           </div>
         </div>
         
+        {/* Phase Indicators - Moved above the carousel */}
+        <div className="flex justify-center mb-6 gap-4">
+          {phases.map((phase, index) => (
+            <div 
+              key={index} 
+              onClick={() => setActivePhase(index)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all duration-300 ${
+                activePhase === index ? 'bg-white/20 shadow-lg' : 'bg-white/5 hover:bg-white/10'
+              }`}
+            >
+              <div className={`w-3 h-3 rounded-full ${phase.completed ? 'bg-green-400' : activePhase === index ? 'bg-softOrange' : 'bg-white/30'}`} />
+              <span className={`text-sm font-medium ${activePhase === index ? 'text-white' : 'text-white/70'}`}>{phase.title}</span>
+              {phase.completed && <CheckCircle2 className="h-4 w-4 text-green-400" />}
+            </div>
+          ))}
+        </div>
+        
         {/* Roadmap Carousel */}
-        <Carousel className="max-w-4xl mx-auto">
+        <Carousel 
+          className="max-w-4xl mx-auto" 
+          onSelect={(index) => setActivePhase(index)}
+          defaultIndex={activePhase}
+        >
           <CarouselContent>
             {phases.map((phase, index) => (
               <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
@@ -185,19 +212,9 @@ export const Roadmap = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-0 bg-black/30 text-white hover:bg-black/50 border-white/20" />
-          <CarouselNext className="right-0 bg-black/30 text-white hover:bg-black/50 border-white/20" />
+          <CarouselPrevious className="left-0 bg-gradient-to-r from-vibrantPurple to-softPurple text-white hover:from-vibrantPurple/90 hover:to-softPurple/90 border-none shadow-md" />
+          <CarouselNext className="right-0 bg-gradient-to-l from-vibrantOrange to-softOrange text-white hover:from-vibrantOrange/90 hover:to-softOrange/90 border-none shadow-md" />
         </Carousel>
-        
-        {/* Phase Indicators */}
-        <div className="flex justify-center mt-6 gap-2">
-          {phases.map((phase, index) => (
-            <div key={index} className="flex items-center gap-1">
-              <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-green-400' : 'bg-white/30'}`} />
-              <span className="text-xs text-white/70">{phase.title}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

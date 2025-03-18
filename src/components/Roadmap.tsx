@@ -2,11 +2,13 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Tweet } from 'react-tweet';
+import { CheckCircle2 } from "lucide-react";
 
 export const Roadmap = () => {
   const phases = [
     {
       title: "Phase 1",
+      completed: true,
       items: [
         {
           title: "Meditation Timer System",
@@ -70,17 +72,30 @@ export const Roadmap = () => {
     {
       title: "Phase 2",
       items: [
-        "Launch of the first Rose of Jericho (ROJ) pop-up at a major crypto conference.",
-        "Initial token sale and distribution.",
-        "Collect feedback for improvements."
+        {
+          title: "Subscription Plans",
+          subitems: [
+            "Three-tier subscription model: Basic Plan (free), Pro Plan (paid subscription with monthly/yearly options), Enterprise Plan (custom pricing)",
+            "Plan comparison with feature highlights",
+            "20% discount for yearly subscriptions"
+          ]
+        },
+        {
+          title: "Web3 Integration",
+          subitems: [
+            "Wallet connection functionality",
+            "Token ($ROJ) payment system for subscriptions",
+            "Blockchain-based reward tracking"
+          ]
+        }
       ]
     },
     {
       title: "Phase 3",
       items: [
-        "Expansion to additional conferences globally.",
-        "Development of a digital platform for ongoing engagement.",
-        "Introduce staking mechanisms and token rewards for wellness activities."
+        "Launch of the first Rose of Jericho (ROJ) pop-up at a major crypto conference.",
+        "Initial token sale and distribution.",
+        "Collect feedback for improvements."
       ]
     },
     {
@@ -128,7 +143,12 @@ export const Roadmap = () => {
               </div>
               <Card className="bg-black/20 border-white/10 overflow-hidden">
                 <CardContent className="p-4">
-                  <h3 className="text-xl font-bold mb-4 text-softOrange">{phase.title}</h3>
+                  <div className="flex items-center mb-4">
+                    <h3 className="text-xl font-bold text-softOrange">{phase.title}</h3>
+                    {phase.completed && (
+                      <CheckCircle2 className="ml-2 text-green-400 h-5 w-5" />
+                    )}
+                  </div>
                   {index === 0 && (
                     <div className="mb-4 tweet-container">
                       <Tweet id="1886840995259592951" />
@@ -176,7 +196,12 @@ export const Roadmap = () => {
               </div>
               <Card className={`w-[calc(50%-20px)] ${index % 2 === 0 ? 'mr-[calc(50%+20px)]' : 'ml-[calc(50%+20px)]'} bg-black/20 border-white/10`}>
                 <CardContent className="p-6">
-                  <h3 className="text-2xl font-bold mb-4 text-softOrange">{phase.title}</h3>
+                  <div className="flex items-center mb-4">
+                    <h3 className="text-2xl font-bold text-softOrange">{phase.title}</h3>
+                    {phase.completed && (
+                      <CheckCircle2 className="ml-2 text-green-400 h-6 w-6" />
+                    )}
+                  </div>
                   {index === 0 && (
                     <div className="mb-6 tweet-container">
                       <Tweet id="1886840995259592951" />
@@ -211,3 +236,4 @@ export const Roadmap = () => {
     </section>
   );
 };
+

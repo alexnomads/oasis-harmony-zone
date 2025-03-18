@@ -1,7 +1,8 @@
+
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Tweet } from 'react-tweet';
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { 
   Carousel,
   CarouselContent,
@@ -11,11 +12,12 @@ import {
 } from "./ui/carousel";
 import { Badge } from "./ui/badge";
 import { useState, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Roadmap = () => {
   const [activePhase, setActivePhase] = useState(0);
-  
   const [api, setApi] = useState<any>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (api) {
@@ -41,6 +43,13 @@ export const Roadmap = () => {
   }, [api]);
   
   const phases = [
+    {
+      title: "Phase 0",
+      items: [
+        "Our journey begins with a vision to transform wellness in the crypto space.",
+        "Building a community-driven platform for meditation and mindfulness."
+      ]
+    },
     {
       title: "Phase 1",
       completed: true,
@@ -165,35 +174,49 @@ export const Roadmap = () => {
           </p>
         </motion.div>
         
-        <div className="mb-10 max-w-md mx-auto">
-          <div className="tweet-container">
-            <Tweet id="1886840995259592951" />
-          </div>
-        </div>
-        
-        <div className="flex justify-center mb-6 gap-4">
+        <div className="flex justify-center mb-8 gap-2 md:gap-4 flex-wrap">
           {phases.map((phase, index) => (
             <div 
               key={index} 
               onClick={() => setActivePhase(index)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all duration-300 ${
-                activePhase === index ? 'bg-white/20 shadow-lg' : 'bg-white/5 hover:bg-white/10'
+                activePhase === index 
+                  ? 'bg-white/20 shadow-lg' 
+                  : 'bg-white/5 hover:bg-white/10'
               }`}
             >
-              <div className={`w-3 h-3 rounded-full ${phase.completed ? 'bg-green-400' : activePhase === index ? 'bg-softOrange' : 'bg-white/30'}`} />
-              <span className={`text-sm font-medium ${activePhase === index ? 'text-white' : 'text-white/70'}`}>{phase.title}</span>
+              <div 
+                className={`w-3 h-3 rounded-full ${
+                  phase.completed 
+                    ? 'bg-green-400' 
+                    : activePhase === index 
+                      ? 'bg-softOrange' 
+                      : 'bg-white/30'
+                }`} 
+              />
+              <span 
+                className={`text-sm font-medium ${
+                  activePhase === index ? 'text-white' : 'text-white/70'
+                }`}
+              >
+                {phase.title}
+              </span>
               {phase.completed && <CheckCircle2 className="h-4 w-4 text-green-400" />}
             </div>
           ))}
         </div>
         
         <Carousel 
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto relative"
           setApi={setApi}
+          opts={{
+            align: isMobile ? "start" : "center",
+            loop: true
+          }}
         >
-          <CarouselContent>
+          <CarouselContent className="px-4">
             {phases.map((phase, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2">
+              <CarouselItem key={index} className={isMobile ? "w-[90vw] max-w-[400px]" : "md:basis-1/2 lg:basis-1/2"}>
                 <Card className="h-full bg-black/20 border-white/10">
                   <CardContent className="p-6 h-full">
                     <div className="flex items-center mb-4 gap-2">
@@ -205,7 +228,13 @@ export const Roadmap = () => {
                       )}
                     </div>
                     
-                    <div className="space-y-4 overflow-auto pr-2" style={{ maxHeight: '70vh' }}>
+                    {index === 0 && (
+                      <div className="mb-6 tweet-container">
+                        <Tweet id="1886840995259592951" />
+                      </div>
+                    )}
+                    
+                    <div className="space-y-4 overflow-auto pr-2 roadmap-content" style={{ maxHeight: isMobile ? '50vh' : '70vh' }}>
                       {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
                         <div key={itemIndex} className="text-base text-white/80">
                           {typeof item === 'string' ? (
@@ -232,8 +261,24 @@ export const Roadmap = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-0 bg-gradient-to-r from-vibrantPurple to-softPurple text-white hover:from-vibrantPurple/90 hover:to-softPurple/90 border-none shadow-md" />
-          <CarouselNext className="right-0 bg-gradient-to-l from-vibrantOrange to-softOrange text-white hover:from-vibrantOrange/90 hover:to-softOrange/90 border-none shadow-md" />
+          
+          <div className={`absolute ${isMobile ? 'bottom-4 right-4' : 'top-1/2 -translate-y-1/2 w-full'} flex ${isMobile ? 'flex-col gap-2' : 'justify-between px-4'}`}>
+            <CarouselPrevious 
+              className={`${isMobile ? 'relative left-auto -bottom-0 translate-y-0' : '-left-4 sm:-left-8 lg:-left-12'} 
+                bg-gradient-to-r from-vibrantPurple to-softPurple text-white hover:from-vibrantPurple/90 hover:to-softPurple/90 
+                border-none shadow-md w-10 h-10 rounded-full`}
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </CarouselPrevious>
+            
+            <CarouselNext 
+              className={`${isMobile ? 'relative right-auto -bottom-0 translate-y-0' : '-right-4 sm:-right-8 lg:-right-12'} 
+                bg-gradient-to-l from-vibrantOrange to-softOrange text-white hover:from-vibrantOrange/90 hover:to-softOrange/90 
+                border-none shadow-md w-10 h-10 rounded-full`}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </CarouselNext>
+          </div>
         </Carousel>
       </div>
     </section>

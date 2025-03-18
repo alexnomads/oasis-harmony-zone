@@ -88,18 +88,41 @@
   }
 }
 
+/* Improved styling for roadmap content on mobile */
+.roadmap-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.roadmap-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.roadmap-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.roadmap-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
   .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
   
   .card {
-    padding: 1em;
+    padding: 0.75em;
   }
   
   .tweet-container {
     max-width: 100%;
+  }
+  
+  .roadmap-content {
+    max-height: 50vh !important;
   }
 }

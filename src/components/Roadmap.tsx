@@ -47,7 +47,7 @@ export const Roadmap = () => {
         {
           title: "Social Sharing",
           subitems: [
-            "Twitter/X integration for sharing meditation accomplishments",
+            "Twitter/X integration for sharing wellness accomplishments",
             "Bonus point earning for social shares"
           ]
         },

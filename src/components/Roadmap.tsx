@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Card, CardContent } from "./ui/card";
 import { Tweet } from 'react-tweet';
@@ -11,10 +10,35 @@ import {
   CarouselPrevious
 } from "./ui/carousel";
 import { Badge } from "./ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Roadmap = () => {
   const [activePhase, setActivePhase] = useState(0);
+  
+  const [api, setApi] = useState<any>(null);
+
+  useEffect(() => {
+    if (api) {
+      api.scrollTo(activePhase);
+    }
+  }, [api, activePhase]);
+
+  const handleSelect = () => {
+    if (api) {
+      const selectedIndex = api.selectedScrollSnap();
+      setActivePhase(selectedIndex);
+    }
+  };
+
+  useEffect(() => {
+    if (!api) return;
+    
+    api.on('select', handleSelect);
+    
+    return () => {
+      api.off('select', handleSelect);
+    };
+  }, [api]);
   
   const phases = [
     {
@@ -141,14 +165,12 @@ export const Roadmap = () => {
           </p>
         </motion.div>
         
-        {/* Tweet Highlight */}
         <div className="mb-10 max-w-md mx-auto">
           <div className="tweet-container">
             <Tweet id="1886840995259592951" />
           </div>
         </div>
         
-        {/* Phase Indicators - Moved above the carousel */}
         <div className="flex justify-center mb-6 gap-4">
           {phases.map((phase, index) => (
             <div 
@@ -165,11 +187,9 @@ export const Roadmap = () => {
           ))}
         </div>
         
-        {/* Roadmap Carousel */}
         <Carousel 
-          className="max-w-4xl mx-auto" 
-          onSelect={(index) => setActivePhase(index)}
-          defaultIndex={activePhase}
+          className="max-w-4xl mx-auto"
+          setApi={setApi}
         >
           <CarouselContent>
             {phases.map((phase, index) => (

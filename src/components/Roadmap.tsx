@@ -198,7 +198,7 @@ export const Roadmap = () => {
             >
               <div 
                 className={`w-3 h-3 rounded-full ${
-                  index === 0 || (phase.phases && phase.phases[0].completed)
+                  index === 0 || (phase.phases && phase.phases[0]?.completed)
                     ? 'bg-green-400' 
                     : activePhase === index 
                       ? 'bg-softOrange' 
@@ -212,7 +212,7 @@ export const Roadmap = () => {
               >
                 {phase.title}
               </span>
-              {(index === 0 || (phase.phases && phase.phases[0].completed)) && 
+              {(index === 0 || (phase.phases && phase.phases[0]?.completed)) && 
                 <CheckCircle2 className="h-4 w-4 text-green-400" />
               }
             </div>
@@ -237,9 +237,11 @@ export const Roadmap = () => {
                       <div className="flex flex-col items-center">
                         <div className="flex items-center mb-4 gap-2 justify-center">
                           <h3 className="text-2xl font-bold text-softOrange">{phase.title}</h3>
-                          <Badge variant="outline" className="text-green-400 border-green-400">
-                            <CheckCircle2 className="mr-1 h-4 w-4" /> Completed
-                          </Badge>
+                          {phase.completed && (
+                            <Badge variant="outline" className="text-green-400 border-green-400">
+                              <CheckCircle2 className="mr-1 h-4 w-4" /> Completed
+                            </Badge>
+                          )}
                         </div>
                         
                         <div className="mb-6 tweet-container w-full max-w-full">

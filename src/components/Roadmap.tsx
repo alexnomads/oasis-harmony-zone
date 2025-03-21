@@ -23,13 +23,13 @@ interface SubItem {
 interface PhaseItem {
   title: string;
   completed?: boolean;
-  items: (string | { title: string; subitems: string[] })[];
+  items: (string | SubItem)[];
 }
 
 interface Phase {
   title: string;
   completed?: boolean;
-  items?: (string | { title: string; subitems: string[] })[];
+  items?: (string | SubItem)[];
   phases?: PhaseItem[];
 }
 
@@ -269,7 +269,7 @@ export const Roadmap = () => {
                         
                         <div className="space-y-4 text-center">
                           {phase.items && Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
-                            <p key={itemIndex} className="text-white">{item}</p>
+                            <p key={itemIndex} className="text-white">{item.toString()}</p>
                           ))}
                         </div>
                       </div>

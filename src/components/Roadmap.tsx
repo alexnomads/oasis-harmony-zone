@@ -14,6 +14,25 @@ import { Badge } from "./ui/badge";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Define proper TypeScript interfaces for our data structures
+interface SubItem {
+  title: string;
+  subitems: string[];
+}
+
+interface PhaseItem {
+  title: string;
+  completed?: boolean;
+  items: (string | { title: string; subitems: string[] })[];
+}
+
+interface Phase {
+  title: string;
+  completed?: boolean;
+  items?: (string | { title: string; subitems: string[] })[];
+  phases?: PhaseItem[];
+}
+
 export const Roadmap = () => {
   const [activePhase, setActivePhase] = useState(0);
   const [api, setApi] = useState<any>(null);
@@ -42,7 +61,7 @@ export const Roadmap = () => {
     };
   }, [api]);
   
-  const phases = [
+  const phases: Phase[] = [
     {
       title: "Phase 0",
       completed: true,
@@ -198,7 +217,7 @@ export const Roadmap = () => {
             >
               <div 
                 className={`w-3 h-3 rounded-full ${
-                  index === 0 || (phase.phases && phase.phases[0]?.completed)
+                  index === 0 || (phase.phases && phase.phases[0] && 'completed' in phase.phases[0] && phase.phases[0].completed)
                     ? 'bg-green-400' 
                     : activePhase === index 
                       ? 'bg-softOrange' 
@@ -212,7 +231,7 @@ export const Roadmap = () => {
               >
                 {phase.title}
               </span>
-              {(index === 0 || (phase.phases && phase.phases[0]?.completed)) && 
+              {(index === 0 || (phase.phases && phase.phases[0] && 'completed' in phase.phases[0] && phase.phases[0].completed)) && 
                 <CheckCircle2 className="h-4 w-4 text-green-400" />
               }
             </div>
@@ -249,7 +268,7 @@ export const Roadmap = () => {
                         </div>
                         
                         <div className="space-y-4 text-center">
-                          {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
+                          {phase.items && Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
                             <p key={itemIndex} className="text-white">{item}</p>
                           ))}
                         </div>
@@ -269,7 +288,7 @@ export const Roadmap = () => {
                             </div>
                             
                             <div className="space-y-4 overflow-auto pr-2 roadmap-content" style={{ maxHeight: isMobile ? '50vh' : '60vh' }}>
-                              {Array.isArray(subPhase.items) && subPhase.items.map((item, itemIndex) => (
+                              {subPhase.items && Array.isArray(subPhase.items) && subPhase.items.map((item, itemIndex) => (
                                 <div key={itemIndex} className="text-base text-white/80">
                                   {typeof item === 'string' ? (
                                     <p className="text-white">{item}</p>

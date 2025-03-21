@@ -1,5 +1,7 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { signInWithPassword } from '@/lib/supabase';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -8,6 +10,10 @@ export default function DirectTest() {
   const [status, setStatus] = useState({
     loading: false,
     result: '',
+  });
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
   });
 
   const testDirectConnection = async () => {
@@ -45,30 +51,25 @@ export default function DirectTest() {
   const testDirectAuth = async () => {
     setStatus({ loading: true, result: 'Testing auth...' });
     try {
-      // Test direct auth API call
-      const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: 'colivingvalley@gmail.com',
-          password: 'Alex1987+',
-        }),
-      });
+      if (!credentials.email || !credentials.password) {
+        throw new Error('Please enter email and password in the fields below');
+      }
+      
+      // Test auth using the secure helper function
+      const { data, error } = await signInWithPassword(
+        credentials.email,
+        credentials.password
+      );
 
-      const responseData = await response.text();
-      console.log('Direct Auth Response:', {
-        status: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
-        data: responseData,
-      });
+      if (error) {
+        throw error;
+      }
 
       setStatus({
         loading: false,
-        result: `Auth Status: ${response.status}, Response: ${responseData}`,
+        result: `Auth Success: User ${data.user?.email} authenticated successfully`,
       });
+      console.log('Auth Response:', data);
     } catch (error) {
       console.error('Direct auth test error:', error);
       setStatus({
@@ -104,13 +105,30 @@ export default function DirectTest() {
               Test Direct API Connection
             </Button>
 
+            <div className="space-y-2 my-4">
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full p-2 rounded-lg bg-zinc-800 text-white border border-zinc-700"
+                value={credentials.email}
+                onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full p-2 rounded-lg bg-zinc-800 text-white border border-zinc-700"
+                value={credentials.password}
+                onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+              />
+            </div>
+
             <Button
               onClick={testDirectAuth}
               disabled={status.loading}
               variant="outline"
               className="w-full"
             >
-              Test Direct Auth
+              Test Auth
             </Button>
 
             <div className="mt-4">

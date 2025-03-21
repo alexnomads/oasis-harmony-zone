@@ -1,18 +1,31 @@
+
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { signInWithPassword, getSession } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 
 export default function AuthTest() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
+  });
 
   const testSignIn = async () => {
+    if (!credentials.email || !credentials.password) {
+      setResult({
+        success: false,
+        error: 'Please enter email and password'
+      });
+      return;
+    }
+    
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'colivingvalley@gmail.com',
-        password: 'Alex1987+'
-      });
+      const { data, error } = await signInWithPassword(
+        credentials.email,
+        credentials.password
+      );
       
       setResult({
         success: !error,
@@ -35,15 +48,15 @@ export default function AuthTest() {
   const checkSession = async () => {
     setLoading(true);
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const { data, error } = await getSession();
       
       setResult({
         success: !error,
-        session,
+        session: data.session,
         error: error?.message
       });
       
-      console.log('Current session:', { session, error });
+      console.log('Current session:', { session: data.session, error });
     } catch (error) {
       console.error('Session check failed:', error);
       setResult({
@@ -61,6 +74,23 @@ export default function AuthTest() {
         <h1 className="text-3xl font-bold mb-8">Auth Test Page</h1>
         
         <div className="space-y-4">
+          <div className="space-y-2 mb-4">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full p-2 rounded-lg bg-zinc-800 text-white border border-zinc-700"
+              value={credentials.email}
+              onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full p-2 rounded-lg bg-zinc-800 text-white border border-zinc-700"
+              value={credentials.password}
+              onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+            />
+          </div>
+          
           <Button
             onClick={testSignIn}
             disabled={loading}

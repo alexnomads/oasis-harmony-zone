@@ -44,3 +44,28 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 })
 
 // Auth helper functions with improved error handling
+export const signInWithPassword = async (email: string, password: string) => {
+  return await supabase.auth.signInWithPassword({ email, password });
+}
+
+export const signUp = async (email: string, password: string) => {
+  return await supabase.auth.signUp({
+    email, 
+    password,
+    options: {
+      emailRedirectTo: getRedirectUrl(),
+    }
+  });
+}
+
+export const signOut = async () => {
+  return await supabase.auth.signOut();
+}
+
+export const getSession = async () => {
+  return await supabase.auth.getSession();
+}
+
+export const refreshSession = async () => {
+  return await supabase.auth.refreshSession();
+}

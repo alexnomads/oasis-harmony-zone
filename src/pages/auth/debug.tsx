@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabase';
+import { supabase, signInWithPassword } from '@/lib/supabase';
 
 export default function AuthDebug() {
   const [status, setStatus] = useState({
@@ -11,6 +12,10 @@ export default function AuthDebug() {
     connection: 'Not tested',
     auth: 'Not tested',
     loading: false,
+  });
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
   });
 
   // Test basic Supabase connection
@@ -40,10 +45,14 @@ export default function AuthDebug() {
   const testAuth = async () => {
     setStatus(prev => ({ ...prev, loading: true, auth: 'Testing...' }));
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'colivingvalley@gmail.com',
-        password: 'Alex1987+',
-      });
+      if (!credentials.email || !credentials.password) {
+        throw new Error('Please enter email and password in the fields below');
+      }
+      
+      const { data, error } = await signInWithPassword(
+        credentials.email,
+        credentials.password
+      );
 
       if (error) throw error;
 
@@ -103,6 +112,22 @@ export default function AuthDebug() {
           {/* Auth Test */}
           <div className="space-y-2">
             <h2 className="text-xl font-semibold">Authentication</h2>
+            <div className="space-y-2 mb-4">
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full p-2 rounded-lg bg-zinc-800 text-white border border-zinc-700"
+                value={credentials.email}
+                onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full p-2 rounded-lg bg-zinc-800 text-white border border-zinc-700"
+                value={credentials.password}
+                onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+              />
+            </div>
             <div className="flex items-center gap-4">
               <Button
                 onClick={testAuth}

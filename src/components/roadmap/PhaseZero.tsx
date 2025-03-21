@@ -20,8 +20,8 @@ export const PhaseZero = ({ phase }: PhaseZeroProps) => {
         )}
       </div>
       
-      <div className="mb-6 tweet-container w-full max-w-full flex justify-center">
-        <div className="w-full md:w-4/5 lg:w-3/4">
+      <div className="mb-6 flex justify-center w-full">
+        <div className="tweet-container w-full md:w-3/4 max-w-[500px]">
           <Tweet id="1886840995259592951" />
         </div>
       </div>

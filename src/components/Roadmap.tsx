@@ -52,105 +52,115 @@ export const Roadmap = () => {
       ]
     },
     {
-      title: "Phase 1",
-      completed: true,
-      items: [
+      title: "Phase 1 & 2",
+      phases: [
         {
-          title: "Meditation Timer System",
-          subitems: [
-            "Interactive timer with start/pause functionality",
-            "Duration selection options",
-            "Visual progress tracking",
-            "Session completion tracking and rewards"
+          title: "Phase 1",
+          completed: true,
+          items: [
+            {
+              title: "Meditation Timer System",
+              subitems: [
+                "Interactive timer with start/pause functionality",
+                "Duration selection options",
+                "Visual progress tracking",
+                "Session completion tracking and rewards"
+              ]
+            },
+            {
+              title: "Points & Rewards System",
+              subitems: [
+                "Point earning based on meditation duration",
+                "Bonus points for sharing sessions",
+                "Meditation streaks tracking",
+                "Total points accumulation"
+              ]
+            },
+            {
+              title: "User Dashboard",
+              subitems: [
+                "Personal meditation statistics",
+                "Progress tracking",
+                "Activity history visualization"
+              ]
+            },
+            {
+              title: "Global Leaderboard",
+              subitems: [
+                "Rankings based on total points",
+                "Display of user meditation statistics",
+                "View of most active meditators"
+              ]
+            },
+            {
+              title: "Social Sharing",
+              subitems: [
+                "Twitter/X integration for sharing wellness accomplishments",
+                "Bonus point earning for social shares"
+              ]
+            },
+            {
+              title: "User Authentication",
+              subitems: [
+                "Secure login/signup system",
+                "Protected routes for authenticated users",
+                "User profile management"
+              ]
+            },
+            {
+              title: "Global Dashboard",
+              subitems: [
+                "Community-wide meditation statistics",
+                "Real-time activity updates",
+                "Time-filtered analytics"
+              ]
+            }
           ]
         },
         {
-          title: "Points & Rewards System",
-          subitems: [
-            "Point earning based on meditation duration",
-            "Bonus points for sharing sessions",
-            "Meditation streaks tracking",
-            "Total points accumulation"
-          ]
-        },
-        {
-          title: "User Dashboard",
-          subitems: [
-            "Personal meditation statistics",
-            "Progress tracking",
-            "Activity history visualization"
-          ]
-        },
-        {
-          title: "Global Leaderboard",
-          subitems: [
-            "Rankings based on total points",
-            "Display of user meditation statistics",
-            "View of most active meditators"
-          ]
-        },
-        {
-          title: "Social Sharing",
-          subitems: [
-            "Twitter/X integration for sharing wellness accomplishments",
-            "Bonus point earning for social shares"
-          ]
-        },
-        {
-          title: "User Authentication",
-          subitems: [
-            "Secure login/signup system",
-            "Protected routes for authenticated users",
-            "User profile management"
-          ]
-        },
-        {
-          title: "Global Dashboard",
-          subitems: [
-            "Community-wide meditation statistics",
-            "Real-time activity updates",
-            "Time-filtered analytics"
+          title: "Phase 2",
+          items: [
+            {
+              title: "Subscription Plans",
+              subitems: [
+                "Three-tier subscription model:",
+                "Basic Plan (free)",
+                "Pro Plan (paid subscription with monthly/yearly options)",
+                "Enterprise Plan (custom pricing)",
+                "Plan comparison with feature highlights",
+                "20% discount for yearly subscriptions"
+              ]
+            },
+            {
+              title: "Web3 Integration",
+              subitems: [
+                "Wallet connection functionality",
+                "Token ($ROJ) payment system for subscriptions",
+                "Blockchain-based reward tracking"
+              ]
+            }
           ]
         }
       ]
     },
     {
-      title: "Phase 2",
-      items: [
+      title: "Phase 3 & 4",
+      phases: [
         {
-          title: "Subscription Plans",
-          subitems: [
-            "Three-tier subscription model:",
-            "Basic Plan (free)",
-            "Pro Plan (paid subscription with monthly/yearly options)",
-            "Enterprise Plan (custom pricing)",
-            "Plan comparison with feature highlights",
-            "20% discount for yearly subscriptions"
+          title: "Phase 3",
+          items: [
+            "Launch of the first Rose of Jericho (ROJ) pop-up at a major crypto conference.",
+            "Initial token sale and distribution.",
+            "Collect feedback for improvements."
           ]
         },
         {
-          title: "Web3 Integration",
-          subitems: [
-            "Wallet connection functionality",
-            "Token ($ROJ) payment system for subscriptions",
-            "Blockchain-based reward tracking"
+          title: "Phase 4",
+          items: [
+            "Establish permanent Rose of Jericho (ROJ) wellness hubs in key crypto hubs (e.g., Singapore, Miami, Lisbon).",
+            "Collaborate with Web3 health-tech projects to integrate innovative wellness solutions."
           ]
         }
-      ]
-    },
-    {
-      title: "Phase 3",
-      items: [
-        "Launch of the first Rose of Jericho (ROJ) pop-up at a major crypto conference.",
-        "Initial token sale and distribution.",
-        "Collect feedback for improvements."
-      ]
-    },
-    {
-      title: "Phase 4",
-      items: [
-        "Establish permanent Rose of Jericho (ROJ) wellness hubs in key crypto hubs (e.g., Singapore, Miami, Lisbon).",
-        "Collaborate with Web3 health-tech projects to integrate innovative wellness solutions."
       ]
     }
   ];
@@ -188,8 +198,8 @@ export const Roadmap = () => {
             >
               <div 
                 className={`w-3 h-3 rounded-full ${
-                  phase.completed 
-                    ? (index === 0 ? 'bg-green-400' : 'bg-green-400') 
+                  index === 0 || (phase.phases && phase.phases[0].completed)
+                    ? 'bg-green-400' 
                     : activePhase === index 
                       ? 'bg-softOrange' 
                       : 'bg-white/30'
@@ -202,7 +212,9 @@ export const Roadmap = () => {
               >
                 {phase.title}
               </span>
-              {phase.completed && <CheckCircle2 className="h-4 w-4 text-green-400" />}
+              {(index === 0 || (phase.phases && phase.phases[0].completed)) && 
+                <CheckCircle2 className="h-4 w-4 text-green-400" />
+              }
             </div>
           ))}
         </div>
@@ -220,43 +232,66 @@ export const Roadmap = () => {
               <CarouselItem key={index} className="w-full">
                 <Card className="h-full bg-black/20 border-white/10">
                   <CardContent className="p-6 h-full">
-                    <div className="flex items-center mb-4 gap-2">
-                      <h3 className="text-2xl font-bold text-softOrange">{phase.title}</h3>
-                      {phase.completed && (
-                        <Badge variant="outline" className="text-green-400 border-green-400">
-                          <CheckCircle2 className="mr-1 h-4 w-4" /> Completed
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {index === 0 && (
-                      <div className="mb-6 tweet-container w-full max-w-full">
-                        <Tweet id="1886840995259592951" />
+                    {index === 0 ? (
+                      // Phase 0 - centered in its own box
+                      <div className="flex flex-col items-center">
+                        <div className="flex items-center mb-4 gap-2 justify-center">
+                          <h3 className="text-2xl font-bold text-softOrange">{phase.title}</h3>
+                          <Badge variant="outline" className="text-green-400 border-green-400">
+                            <CheckCircle2 className="mr-1 h-4 w-4" /> Completed
+                          </Badge>
+                        </div>
+                        
+                        <div className="mb-6 tweet-container w-full max-w-full">
+                          <Tweet id="1886840995259592951" />
+                        </div>
+                        
+                        <div className="space-y-4 text-center">
+                          {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
+                            <p key={itemIndex} className="text-white">{item}</p>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      // Phase 1&2 or Phase 3&4 paired in the same box
+                      <div className="flex flex-col md:flex-row h-full">
+                        {phase.phases && phase.phases.map((subPhase, subIndex) => (
+                          <div key={subIndex} className="md:w-1/2 p-2 h-full">
+                            <div className="flex items-center mb-4 gap-2">
+                              <h3 className="text-2xl font-bold text-softOrange">{subPhase.title}</h3>
+                              {subPhase.completed && (
+                                <Badge variant="outline" className="text-green-400 border-green-400">
+                                  <CheckCircle2 className="mr-1 h-4 w-4" /> Completed
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            <div className="space-y-4 overflow-auto pr-2 roadmap-content" style={{ maxHeight: isMobile ? '50vh' : '60vh' }}>
+                              {Array.isArray(subPhase.items) && subPhase.items.map((item, itemIndex) => (
+                                <div key={itemIndex} className="text-base text-white/80">
+                                  {typeof item === 'string' ? (
+                                    <p className="text-white">{item}</p>
+                                  ) : (
+                                    <div className="mb-4">
+                                      <p className="font-medium text-white mb-2 border-l-2 border-softOrange pl-3">
+                                        {item.title}
+                                      </p>
+                                      <ul className="pl-5 space-y-2">
+                                        {item.subitems.map((subitem, subIndex) => (
+                                          <li key={subIndex} className="text-sm list-disc text-white/80">
+                                            {subitem}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
-                    
-                    <div className="space-y-4 overflow-auto pr-2 roadmap-content" style={{ maxHeight: isMobile ? '50vh' : '60vh' }}>
-                      {Array.isArray(phase.items) && phase.items.map((item, itemIndex) => (
-                        <div key={itemIndex} className="text-base text-white/80">
-                          {typeof item === 'string' ? (
-                            <p className="text-white">{item}</p>
-                          ) : (
-                            <div className="mb-4">
-                              <p className="font-medium text-white mb-2 border-l-2 border-softOrange pl-3">
-                                {item.title}
-                              </p>
-                              <ul className="pl-5 space-y-2">
-                                {item.subitems.map((subitem, subIndex) => (
-                                  <li key={subIndex} className="text-sm list-disc text-white/80">
-                                    {subitem}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
                   </CardContent>
                 </Card>
               </CarouselItem>

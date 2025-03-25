@@ -13,6 +13,7 @@ type LeaderboardEntryProps = {
     total_meditation_time: number;
     display_name: string;
     email: string;
+    active_streak?: number; // Added active_streak field
   };
   index: number;
   currentPage: number;
@@ -54,6 +55,10 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
     : entry.display_name;
   
   const globalRank = (currentPage - 1) * itemsPerPage + index + 1;
+  
+  // Use active_streak if available, otherwise fall back to meditation_streak
+  // This ensures backward compatibility
+  const streak = typeof entry.active_streak !== 'undefined' ? entry.active_streak : entry.meditation_streak;
 
   return (
     <motion.div
@@ -83,8 +88,8 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
             {entry.total_points} pts
           </span>
           <span className="flex items-center gap-1">
-            <Flame className="h-3 w-3 text-orange-500" />
-            {entry.meditation_streak} day streak
+            <Flame className={`h-3 w-3 ${streak > 0 ? 'text-orange-500' : 'text-zinc-500'}`} />
+            {streak} day streak
           </span>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase';
 import { retryOperation } from '../utils/apiUtils';
 import { BaseService } from './baseService';
@@ -22,8 +21,17 @@ export class LeaderboardService extends BaseService {
         throw new Error(`Failed to fetch leaderboard: ${error.message}`);
       }
       
-      console.log(`Leaderboard data retrieved, entries: ${data?.length || 0}`);
-      return data || [];
+      // Process the data to ensure streaks are properly shown
+      const processedData = data?.map(entry => ({
+        ...entry,
+        // If active_streak is available, use it; otherwise calculate based on last meditation date
+        meditation_streak: entry.active_streak !== undefined ? 
+          entry.active_streak : 
+          this.calculateActiveStreak(entry.last_meditation_date, entry.meditation_streak)
+      })) || [];
+      
+      console.log(`Leaderboard data retrieved, entries: ${processedData.length || 0}`);
+      return processedData;
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
       return [];
@@ -52,5 +60,28 @@ export class LeaderboardService extends BaseService {
       console.error('Error fetching leaderboard count:', error);
       return 0;
     }
+  }
+  
+  // Helper method to calculate if a streak is active
+  private static calculateActiveStreak(lastMeditationDate: string | null, currentStreak: number): number {
+    if (!lastMeditationDate) return 0;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    const lastMeditation = new Date(lastMeditationDate);
+    lastMeditation.setHours(0, 0, 0, 0);
+    
+    // If the last meditation was today or yesterday, the streak is active
+    if (lastMeditation.getTime() === today.getTime() || 
+        lastMeditation.getTime() === yesterday.getTime()) {
+      return currentStreak;
+    }
+    
+    // Otherwise, streak is reset to 0
+    return 0;
   }
 }

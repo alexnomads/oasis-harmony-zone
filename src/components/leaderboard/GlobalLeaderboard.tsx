@@ -15,6 +15,7 @@ type LeaderboardEntry = {
   total_meditation_time: number;
   display_name: string;
   email: string;
+  active_streak: number; // Added the active_streak property that's required by LeaderboardEntry
 };
 
 export const GlobalLeaderboard = () => {

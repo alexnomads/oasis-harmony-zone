@@ -13,7 +13,7 @@ type LeaderboardEntryProps = {
     total_meditation_time: number;
     display_name: string;
     email: string;
-    active_streak?: number; // Added active_streak field
+    active_streak: number; // Using the active_streak field from the SQL view
   };
   index: number;
   currentPage: number;
@@ -56,9 +56,9 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
   
   const globalRank = (currentPage - 1) * itemsPerPage + index + 1;
   
-  // Use active_streak if available, otherwise fall back to meditation_streak
-  // This ensures backward compatibility
-  const streak = typeof entry.active_streak !== 'undefined' ? entry.active_streak : entry.meditation_streak;
+  // Using active_streak directly from the database view
+  // This ensures streaks are only counted for users who have meditated today or yesterday
+  const streak = entry.active_streak;
 
   return (
     <motion.div

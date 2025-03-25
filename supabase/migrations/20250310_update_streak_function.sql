@@ -69,13 +69,16 @@ BEGIN
 END
 $$;
 
--- Update the view for the global leaderboard to reflect accurate streak information
+-- Drop the existing view
+DROP VIEW IF EXISTS global_leaderboard;
+
+-- Create the new view with the correct data type
 CREATE OR REPLACE VIEW global_leaderboard AS
 SELECT
     up.user_id,
     up.total_points,
     up.meditation_streak,
-    up.last_meditation_date,
+    up.last_meditation_date,  -- This should be a date type
     COUNT(ms.id) as total_sessions,
     COALESCE(SUM(ms.duration), 0) as total_meditation_time,
     COALESCE(p.email, 'anonymous') as email,

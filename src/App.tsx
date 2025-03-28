@@ -18,8 +18,8 @@ import AuthDebug from "./pages/auth/debug";
 import DirectTest from "./pages/auth/direct-test";
 
 const queryClient = new QueryClient();
-// Replace this with your actual Google Analytics Measurement ID
-const GOOGLE_ANALYTICS_ID = "G-XXXXXXXXXX";
+// Google Analytics Measurement ID
+const GOOGLE_ANALYTICS_ID = "G-Y9ZZ4NRJGR";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

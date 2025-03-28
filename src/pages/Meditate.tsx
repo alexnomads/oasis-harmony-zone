@@ -1,13 +1,11 @@
 
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
-import { MeditationTimer } from '@/components/meditation/MeditationTimer';
-import { SimpleChatInterface } from '@/components/meditation/SimpleChatInterface';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { MeditationAgentChat } from '@/components/meditation/MeditationAgentChat';
 
 export default function Meditate() {
   const { user, loading } = useAuth();
@@ -29,10 +27,10 @@ export default function Meditate() {
             Begin Your Meditation Journey
           </h1>
           
-          {/* Meditation Timer Section - Now First */}
-          <div className="mb-8">
+          {/* Meditation Agent Chat */}
+          <div className="mb-12">
             {user ? (
-              <MeditationTimer />
+              <MeditationAgentChat />
             ) : (
               <Card className="bg-gradient-to-br from-vibrantPurple to-vibrantOrange border-none">
                 <CardContent className="p-6 text-center">
@@ -52,7 +50,7 @@ export default function Meditate() {
             )}
           </div>
           
-          {/* Info Cards - Now displayed in a better layout for mobile */}
+          {/* Info Cards */}
           <div className="grid gap-6 sm:gap-8 mb-12">
             <motion.h2 
               className="text-2xl font-semibold text-center"
@@ -60,53 +58,55 @@ export default function Meditate() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              Meditation Guidance
+              Meditation Benefits for Web3 Professionals
             </motion.h2>
             
             <div className="grid gap-6 md:grid-cols-2">
               <Card className="bg-zinc-900/50 border-zinc-800">
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Today's Focus</h2>
+                  <h2 className="text-xl font-semibold mb-4">Enhanced Focus</h2>
                   <p className="text-zinc-400">
-                    Take a moment to breathe, center yourself, and let go of any tension.
-                    Remember, every session brings you closer to inner peace and earns you
-                    rewards in our community.
+                    Regular meditation improves concentration and decision-making—critical skills for navigating 
+                    volatile markets and complex DeFi strategies.
                   </p>
                 </CardContent>
               </Card>
 
               <Card className="bg-zinc-900/50 border-zinc-800">
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Benefits</h2>
+                  <h2 className="text-xl font-semibold mb-4">Stress Reduction</h2>
+                  <p className="text-zinc-400">
+                    Learn to maintain emotional balance during market volatility, helping you make rational decisions
+                    rather than reactive ones driven by FOMO or FUD.
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">Burnout Prevention</h2>
+                  <p className="text-zinc-400">
+                    The 24/7 crypto market never sleeps, but you need to. Regular meditation helps prevent burnout 
+                    in this always-on industry.
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">Earn While You Heal</h2>
                   <ul className="space-y-2 text-zinc-400">
-                    <li>• Earn points for each minute of meditation</li>
-                    <li>• Build your daily streak</li>
-                    <li>• Track your progress</li>
-                    <li>• Unlock achievements</li>
+                    <li>• Earn $ROJ tokens for consistent practice</li>
+                    <li>• Build your daily streak for bonus rewards</li>
+                    <li>• Track your progress and achievements</li>
+                    <li>• Invest in yourself and your portfolio</li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
           </div>
-          
-          {/* Rose of Jericho AI Wellness Agent */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-8"
-          >
-            <h2 className="text-2xl font-semibold text-center mb-6">
-              Chat with Rose of Jericho
-            </h2>
-            <p className="text-center text-white/70 max-w-2xl mx-auto mb-8">
-              Our AI Wellness Agent can guide you through meditation techniques, answer questions about mindfulness, 
-              and provide personalized wellness recommendations.
-            </p>
-            <SimpleChatInterface />
-          </motion.div>
         </motion.div>
       </div>
     </div>
   );
-}
+};

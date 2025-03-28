@@ -2,12 +2,13 @@
 import React, { useState } from "react";
 import { ChatMessage, MessageType } from "./ChatMessage";
 import { motion } from "framer-motion";
+import { MeditationRecommendation } from "@/lib/services/meditationAgentService";
 
 interface ChatInterfaceProps {
   messages: MessageType[];
   isTyping: boolean;
   isTimerRunning: boolean;
-  startMeditation: () => void;
+  startMeditation: (recommendation?: MeditationRecommendation) => void;
   onSubmit: (e: React.FormEvent, message: string) => void;
 }
 

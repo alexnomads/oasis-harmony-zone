@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -24,12 +24,41 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
   const [isRunning, setIsRunning] = useState(true);
   const [progress, setProgress] = useState(0);
   
+  // Audio refs
+  const startSoundRef = useRef<HTMLAudioElement | null>(null);
+  const completeSoundRef = useRef<HTMLAudioElement | null>(null);
+  
   // Format time display (e.g., "5:30")
   const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = timeInSeconds % 60;
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
+  
+  // Initialize audio elements
+  useEffect(() => {
+    startSoundRef.current = new Audio("/meditation-start.mp3");
+    completeSoundRef.current = new Audio("/meditation-end.mp3");
+    
+    // Play the start sound when the component mounts
+    if (startSoundRef.current) {
+      startSoundRef.current.play().catch(error => {
+        console.error("Error playing start sound:", error);
+      });
+    }
+    
+    return () => {
+      // Cleanup audio elements when component unmounts
+      if (startSoundRef.current) {
+        startSoundRef.current.pause();
+        startSoundRef.current = null;
+      }
+      if (completeSoundRef.current) {
+        completeSoundRef.current.pause();
+        completeSoundRef.current = null;
+      }
+    };
+  }, []);
   
   // Timer effect
   useEffect(() => {
@@ -45,6 +74,14 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
           // Check if meditation duration is reached
           if (newTime >= initialDuration) {
             setIsRunning(false);
+            
+            // Play completion sound
+            if (completeSoundRef.current) {
+              completeSoundRef.current.play().catch(error => {
+                console.error("Error playing completion sound:", error);
+              });
+            }
+            
             onComplete(newTime).catch(error => {
               console.error('Error completing meditation session:', error);
             });
@@ -69,6 +106,14 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
   // Skip to end (for testing or emergency exit)
   const skipToEnd = () => {
     setIsRunning(false);
+    
+    // Play completion sound
+    if (completeSoundRef.current) {
+      completeSoundRef.current.play().catch(error => {
+        console.error("Error playing completion sound:", error);
+      });
+    }
+    
     onComplete(time).catch(error => {
       console.error('Error completing meditation session:', error);
     });

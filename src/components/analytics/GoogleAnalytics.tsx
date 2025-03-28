@@ -11,9 +11,11 @@ declare global {
       params?: {
         page_path?: string;
         page_title?: string;
+        send_page_view?: boolean;
         [key: string]: any;
       }
     ) => void;
+    dataLayer: any[];
   }
 }
 
@@ -24,33 +26,55 @@ interface GoogleAnalyticsProps {
 export const GoogleAnalytics = ({ measurementId }: GoogleAnalyticsProps) => {
   const location = useLocation();
   
-  // Update the tracking ID in the HTML script
-  useEffect(() => {
-    // Replace the placeholder with the actual measurement ID
-    const scripts = document.getElementsByTagName('script');
-    for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].src.includes('googletagmanager.com/gtag/js')) {
-        scripts[i].src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-      }
-      
-      if (scripts[i].innerHTML.includes('G-MEASUREMENT_ID')) {
-        scripts[i].innerHTML = scripts[i].innerHTML.replace(
-          'G-MEASUREMENT_ID', 
-          measurementId
-        );
-      }
-    }
-  }, [measurementId]);
-  
   // Track page views
   useEffect(() => {
     if (typeof window.gtag !== 'undefined') {
+      // Send page view with updated path
       window.gtag('config', measurementId, {
         page_path: location.pathname + location.search,
-        page_title: document.title
+        page_title: document.title,
+        send_page_view: true
       });
+      
+      console.log('GA pageview tracked:', location.pathname + location.search);
+    } else {
+      console.warn('Google Analytics not loaded properly');
     }
   }, [location, measurementId]);
 
+  // Debug initialization
+  useEffect(() => {
+    console.log('Google Analytics initialization check');
+    if (typeof window.gtag === 'undefined') {
+      console.warn('Google Analytics gtag not found');
+    } else {
+      console.log('Google Analytics initialized with ID:', measurementId);
+    }
+    
+    // Check if dataLayer exists
+    if (window.dataLayer) {
+      console.log('dataLayer exists:', window.dataLayer);
+    } else {
+      console.warn('dataLayer not initialized');
+    }
+  }, [measurementId]);
+
   return null; // This component doesn't render anything
+};
+
+// Helper function that can be used elsewhere in the app
+export const trackEvent = (
+  category: string,
+  action: string,
+  label?: string,
+  value?: number
+) => {
+  if (typeof window.gtag !== 'undefined') {
+    window.gtag('event', action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+    });
+    console.log('GA event tracked:', { category, action, label, value });
+  }
 };

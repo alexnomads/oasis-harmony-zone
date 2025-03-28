@@ -18,7 +18,13 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-Y9ZZ4NRJGR');
+      gtag('config', 'G-Y9ZZ4NRJGR', {
+        send_page_view: true,
+        cookie_domain: 'auto',
+        cookie_flags: 'SameSite=None;Secure',
+        anonymize_ip: true
+      });
+      console.log('Google Analytics script loaded');
     </script>
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </head>

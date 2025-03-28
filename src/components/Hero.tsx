@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Clock } from "lucide-react";
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 
 export const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -18,17 +19,29 @@ export const Hero = () => {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+  
+  // Track page view
+  useEffect(() => {
+    // Track that the hero section was viewed
+    if (typeof window.gtag !== 'undefined') {
+      trackEvent('engagement', 'view_hero_section');
+    }
+  }, []);
 
   const handleFollow = () => {
     window.open('https://x.com/ROJOasis', '_blank');
+    // Track Twitter follow click
+    trackEvent('social', 'click_follow_twitter', '@ROJOasis');
   };
 
   const handleMainButtonClick = () => {
     if (user) {
       // If user is logged in, navigate to meditation page
+      trackEvent('navigation', 'start_meditation');
       navigate('/meditate');
     } else {
       // If user is not logged in, show sign in dialog
+      trackEvent('user', 'sign_in_attempt', 'hero_button');
       // This assumes there's a sign in component at the top right
       const signInButton = document.querySelector('[aria-label="Sign In"]');
       if (signInButton) {

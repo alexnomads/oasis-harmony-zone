@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Web3Provider } from "@/contexts/Web3Context";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import Index from "./pages/Index";
 import Meditate from "./pages/Meditate";
 import Dashboard from "./pages/Dashboard";
@@ -17,11 +18,14 @@ import AuthDebug from "./pages/auth/debug";
 import DirectTest from "./pages/auth/direct-test";
 
 const queryClient = new QueryClient();
+// Replace this with your actual Google Analytics Measurement ID
+const GOOGLE_ANALYTICS_ID = "G-XXXXXXXXXX";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
+        <GoogleAnalytics measurementId={GOOGLE_ANALYTICS_ID} />
         <AuthProvider>
           <Web3Provider>
             <Toaster />

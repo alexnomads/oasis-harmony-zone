@@ -1,126 +1,138 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { DurationSelector } from './DurationSelector';
-import { TimerDisplay } from './TimerDisplay';
-import { TimerControls } from './TimerControls';
-import { CompletedSession } from './CompletedSession';
-import { ShareSession } from './ShareSession';
-import { useMeditationSession } from '@/hooks/useMeditationSession';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Pause, Play, SkipForward } from "lucide-react";
+import { motion } from "framer-motion";
+import type { MeditationType } from "@/types/database";
 
-export const MeditationTimer = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const toastShownRef = useRef(false);
+interface MeditationTimerProps {
+  initialDuration: number;
+  initialType: MeditationType;
+  onComplete: (duration: number) => Promise<void>;
+  sessionId: string;
+}
+
+export const MeditationTimer: React.FC<MeditationTimerProps> = ({
+  initialDuration,
+  initialType,
+  onComplete,
+  sessionId
+}) => {
+  const [time, setTime] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+  const [progress, setProgress] = useState(0);
   
-  const {
-    isRunning,
-    time,
-    sessionId,
-    selectedDuration,
-    setSelectedDuration,
-    sessionCompleted,
-    pointsEarned,
-    totalPoints,
-    setTotalPoints,
-    isLoading,
-    formatTime,
-    calculateProgress,
-    toggleTimer,
-    resetTimer
-  } = useMeditationSession(user?.id);
-
-  const handleShare = () => {
-    // This is a simple wrapper for the ShareSession component functionality
-    // to maintain compatibility with the CompletedSession component
-    if (!sessionId) return;
-    
-    // Create the share text
-    const shareText = `I just completed a meditation session & earned points on @ROJOasis! 
-Start you mindfulness journey and earn crypto on 
-
-🧘🏼‍♂️🌹 https://oasis-harmony-zone.lovable.app`;
-    
-    // Open Twitter share dialog
-    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-    window.open(shareUrl, '_blank', 'width=550,height=420');
+  // Format time display (e.g., "5:30")
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
-
-  // Handle success toast with share button
-  const showSuccessToast = () => {
-    if (!sessionId) return;
+  
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
     
-    toast({
-      title: "Meditation Complete! 🎉",
-      description: (
-        <div className="space-y-3">
-          <p>You earned {pointsEarned} points! Total: {totalPoints}</p>
-          <p className="text-sm text-muted-foreground">Share on X to earn an additional point!</p>
-          <div className="flex gap-2 mt-3">
-            <Button 
-              variant="outline" 
-              className="flex-1"
-              onClick={() => navigate('/dashboard')}
-            >
-              View Dashboard
-            </Button>
-            <ShareSession sessionId={sessionId} setTotalPoints={setTotalPoints} />
-          </div>
-        </div>
-      ),
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTime(prevTime => {
+          const newTime = prevTime + 1;
+          const newProgress = (newTime / initialDuration) * 100;
+          setProgress(Math.min(newProgress, 100));
+          
+          // Check if meditation duration is reached
+          if (newTime >= initialDuration) {
+            setIsRunning(false);
+            onComplete(newTime).catch(error => {
+              console.error('Error completing meditation session:', error);
+            });
+            if (interval) clearInterval(interval);
+          }
+          
+          return newTime;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, initialDuration, onComplete]);
+  
+  // Toggle pause/play
+  const toggleTimer = () => {
+    setIsRunning(!isRunning);
+  };
+  
+  // Skip to end (for testing or emergency exit)
+  const skipToEnd = () => {
+    setIsRunning(false);
+    onComplete(time).catch(error => {
+      console.error('Error completing meditation session:', error);
     });
-    
-    // Mark toast as shown
-    toastShownRef.current = true;
   };
-
-  // Show success toast when session is completed
-  if (sessionCompleted && pointsEarned > 0 && !toastShownRef.current) {
-    showSuccessToast();
-  }
-
+  
+  // Convert meditation type to readable format
+  const getTypeDisplay = (type: MeditationType) => {
+    return type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+  };
+  
   return (
-    <Card className="w-full max-w-4xl mx-auto bg-zinc-900/90 border-zinc-800 backdrop-blur-sm overflow-hidden">
+    <Card className="bg-gradient-to-br from-black to-zinc-900 border border-white/20 overflow-hidden">
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
-      <CardHeader>
-        <CardTitle className="text-2xl text-white text-center">Meditation Timer</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-8">
-        <DurationSelector 
-          selectedDuration={selectedDuration}
-          setSelectedDuration={setSelectedDuration}
-          isRunning={isRunning}
-        />
-
-        {sessionCompleted ? (
-          <CompletedSession 
-            pointsEarned={pointsEarned}
-            totalPoints={totalPoints}
-            resetTimer={resetTimer}
-            handleShare={handleShare}
-          />
-        ) : (
-          <>
-            <TimerDisplay 
-              time={time}
-              isRunning={isRunning}
-              calculateProgress={calculateProgress}
-              formatTime={formatTime}
-            />
-
-            <TimerControls 
-              isRunning={isRunning}
-              toggleTimer={toggleTimer}
-              resetTimer={resetTimer}
-              isLoading={isLoading}
-            />
-          </>
-        )}
+      <CardContent className="p-6">
+        <div className="text-center mb-8">
+          <motion.h2 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold text-white mb-2"
+          >
+            {getTypeDisplay(initialType)} Meditation
+          </motion.h2>
+          <p className="text-white/70">Find a comfortable position and focus on your breath</p>
+        </div>
+        
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex justify-center mb-8"
+        >
+          <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-full w-36 h-36 flex items-center justify-center">
+            <span className="text-3xl font-bold text-white">
+              {formatTime(time)}
+            </span>
+          </div>
+        </motion.div>
+        
+        <div className="mb-6">
+          <p className="text-white/70 mb-2 text-sm flex justify-between">
+            <span>Progress</span>
+            <span>{Math.min(Math.round(progress), 100)}%</span>
+          </p>
+          <Progress value={progress} className="bg-white/10" />
+        </div>
+        
+        <div className="flex justify-center space-x-4">
+          <Button 
+            onClick={toggleTimer}
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+          >
+            {isRunning ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
+            {isRunning ? 'Pause' : 'Resume'}
+          </Button>
+          
+          <Button 
+            onClick={skipToEnd}
+            variant="outline"
+            className="text-white/70 border-white/20 hover:bg-white/10"
+          >
+            <SkipForward className="mr-2 h-4 w-4" />
+            Complete
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

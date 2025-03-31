@@ -10,6 +10,8 @@ import { MeditationAgentService, MeditationRecommendation } from "@/lib/services
 import { SessionService } from "@/lib/services/sessionService";
 import { toast } from "@/components/ui/use-toast";
 import { MeditationTimer } from "./MeditationTimer";
+import { Button } from "../ui/button";
+import { TimerControls } from "./TimerControls";
 
 export const MeditationAgentChat: React.FC = () => {
   const { user } = useAuth();
@@ -23,14 +25,20 @@ export const MeditationAgentChat: React.FC = () => {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(300); // 5 minutes in seconds
   const [currentSession, setCurrentSession] = useState<{
     sessionId: string;
     recommendation: MeditationRecommendation;
   } | null>(null);
+  const [focusLost, setFocusLost] = useState(0);
+  const [windowBlurs, setWindowBlurs] = useState(0);
+  const [hasMovement, setHasMovement] = useState(false);
+  const [lastActivityTimestamp, setLastActivityTimestamp] = useState<Date | null>(null);
   
   // Refs to store session start time and timer handle
   const sessionStartTimeRef = useRef<Date | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const warningShownRef = useRef<boolean>(false);
 
   // Auto-scroll to bottom when new messages are added
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -40,6 +48,69 @@ export const MeditationAgentChat: React.FC = () => {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  // Focus monitoring
+  useEffect(() => {
+    if (!isTimerRunning) return;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setFocusLost(prev => prev + 1);
+        setWindowBlurs(prev => prev + 1);
+        if (!warningShownRef.current) {
+          toast({
+            title: "Focus Lost",
+            description: "Please stay on this tab during meditation to earn points.",
+            variant: "destructive"
+          });
+          warningShownRef.current = true;
+        }
+      }
+    };
+
+    const handleActivity = (event: MouseEvent | KeyboardEvent) => {
+      const now = new Date();
+      if (lastActivityTimestamp) {
+        const timeDiff = now.getTime() - lastActivityTimestamp.getTime();
+        // Only detect excessive movement (more frequent than every 500ms)
+        if (timeDiff < 500 && (
+          // Consider mouse movement significant only if it's deliberate
+          event instanceof MouseEvent && 
+          (Math.abs(event.movementX) > 10 || Math.abs(event.movementY) > 10)
+        )) {
+          setHasMovement(true);
+          if (!warningShownRef.current) {
+            toast({
+              title: "Movement Detected",
+              description: "Try to remain still during meditation to earn points.",
+              variant: "destructive"
+            });
+            warningShownRef.current = true;
+          }
+        }
+      }
+      setLastActivityTimestamp(now);
+    };
+
+    // Set up event listeners
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("keydown", handleActivity);
+
+    // Clean up
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+    };
+  }, [isTimerRunning, lastActivityTimestamp, toast]);
+
+  // Reset warning flag when timer stops
+  useEffect(() => {
+    if (!isTimerRunning) {
+      warningShownRef.current = false;
+    }
+  }, [isTimerRunning]);
 
   // Handle user message submission
   const handleSubmit = async (e: React.FormEvent, userMessage: string) => {
@@ -140,11 +211,17 @@ export const MeditationAgentChat: React.FC = () => {
         sessionId: session.id,
         recommendation: recommendation || {
           type: 'mindfulness',
-          duration: 300,
+          duration: selectedDuration, // Use the selected duration
           title: 'Mindfulness Meditation',
           description: 'Focus on your breath and the present moment.'
         }
       });
+      
+      // Reset focus monitoring variables
+      setFocusLost(0);
+      setWindowBlurs(0);
+      setHasMovement(false);
+      warningShownRef.current = false;
       
       // Record start time
       sessionStartTimeRef.current = new Date();
@@ -174,11 +251,24 @@ export const MeditationAgentChat: React.FC = () => {
     }
   };
 
+  // Quick start meditation (without AI chat)
+  const quickStartMeditation = async () => {
+    startMeditation({
+      type: 'mindfulness',
+      duration: selectedDuration,
+      title: 'Quick Mindfulness Meditation',
+      description: 'A quick session to center yourself and clear your mind.'
+    });
+  };
+
   // Handle meditation completion
   const handleMeditationComplete = async (duration: number) => {
     if (!user || !currentSession) return;
     
     try {
+      // Calculate points based on focus quality
+      const focusQuality = calculateFocusQuality();
+      
       // Complete the session in the database
       const { session, userPoints } = await SessionService.completeSession(
         currentSession.sessionId,
@@ -196,9 +286,18 @@ export const MeditationAgentChat: React.FC = () => {
       const followUpMessage = await MeditationAgentService.getFollowUpMessage(user.id);
       
       // Add completion message
+      let completionContent = `Great job! You've completed a ${Math.floor(duration / 60)}-minute ${session.type.replace('_', ' ')} meditation and earned ${session.points_earned} points!`;
+      
+      // Add focus quality feedback
+      if (focusQuality < 0.7) {
+        completionContent += " It seems you may have been distracted during your session. Try to remain still and focused next time for maximum benefit and points.";
+      } else {
+        completionContent += ` ${followUpMessage}`;
+      }
+      
       const completionMessage: MessageType = {
         role: "agent",
-        content: `Great job! You've completed a ${Math.floor(duration / 60)}-minute ${session.type.replace('_', ' ')} meditation and earned ${session.points_earned} points! ${followUpMessage}`,
+        content: completionContent,
         timestamp: new Date(),
         showMeditationStart: false
       };
@@ -225,6 +324,12 @@ export const MeditationAgentChat: React.FC = () => {
     }
   };
 
+  // Calculate focus quality (0-1 score)
+  const calculateFocusQuality = () => {
+    const distractionPenalty = windowBlurs * 0.1 + (hasMovement ? 0.3 : 0);
+    return Math.max(0, 1 - distractionPenalty);
+  };
+
   return (
     <div className="flex flex-col space-y-6">
       {isTimerRunning && currentSession ? (
@@ -236,7 +341,31 @@ export const MeditationAgentChat: React.FC = () => {
             sessionId={currentSession.sessionId}
           />
         </div>
-      ) : null}
+      ) : (
+        <div className="mb-6">
+          <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-center text-white">Quick Start Meditation</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="mb-4">
+                <h3 className="text-white/80 text-sm mb-2 text-center">Choose Duration</h3>
+                <DurationSelector
+                  selectedDuration={selectedDuration}
+                  setSelectedDuration={setSelectedDuration}
+                  isRunning={isTimerRunning}
+                />
+              </div>
+              <Button 
+                onClick={quickStartMeditation}
+                className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
+              >
+                Start Quick Meditation
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       
       <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 overflow-hidden">
         <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
@@ -260,6 +389,8 @@ export const MeditationAgentChat: React.FC = () => {
             messages={messages}
             isTyping={isTyping}
             isTimerRunning={isTimerRunning}
+            selectedDuration={selectedDuration}
+            setSelectedDuration={setSelectedDuration}
             startMeditation={startMeditation}
             onSubmit={handleSubmit}
           />

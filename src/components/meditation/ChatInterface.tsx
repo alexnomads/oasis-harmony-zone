@@ -4,11 +4,14 @@ import { ChatMessage, MessageType } from "./ChatMessage";
 import { motion } from "framer-motion";
 import { Send, Loader2 } from "lucide-react";
 import { MeditationRecommendation } from "@/lib/services/meditationAgentService";
+import { DurationSelector } from "./DurationSelector";
 
 interface ChatInterfaceProps {
   messages: MessageType[];
   isTyping: boolean;
   isTimerRunning: boolean;
+  selectedDuration: number;
+  setSelectedDuration: (duration: number) => void;
   startMeditation: (recommendation?: MeditationRecommendation) => void;
   onSubmit: (e: React.FormEvent, message: string) => void;
 }
@@ -17,6 +20,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   isTyping,
   isTimerRunning,
+  selectedDuration,
+  setSelectedDuration,
   startMeditation,
   onSubmit,
 }) => {
@@ -70,6 +75,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </motion.div>
         )}
       </div>
+
+      {/* Duration Selector */}
+      {!isTimerRunning && (
+        <div className="mb-4">
+          <h3 className="text-white/80 text-sm mb-2 text-center">Choose Meditation Duration</h3>
+          <DurationSelector
+            selectedDuration={selectedDuration}
+            setSelectedDuration={setSelectedDuration}
+            isRunning={isTimerRunning}
+          />
+        </div>
+      )}
 
       {/* Quick response suggestions */}
       {!isTyping && !isTimerRunning && messages.length < 3 && (

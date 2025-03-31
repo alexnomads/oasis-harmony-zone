@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
@@ -49,9 +48,8 @@ export const AsciiArt = () => {
     } else if (timeRemaining === 0 && isTimerRunning) {
       setIsTimerRunning(false);
       
-      // Verify session quality
       const sessionQuality = calculateSessionQuality(focusLost, windowBlurs, hasMovement);
-      const rewardEarned = sessionQuality >= 0.7; // 70% quality threshold
+      const rewardEarned = sessionQuality >= 0.7;
 
       toast({
         title: rewardEarned ? "Meditation Complete! 🎉" : "Meditation Completed with Issues",
@@ -61,7 +59,6 @@ export const AsciiArt = () => {
         variant: rewardEarned ? "default" : "destructive"
       });
 
-      // Show sharing dialog for successful meditations
       if (rewardEarned) {
         const referralCode = "ROJ123";
         const referralUrl = `https://roseofjericho.xyz/join?ref=${referralCode}`;
@@ -70,12 +67,9 @@ export const AsciiArt = () => {
           `I just finished a meditation on @ROJOasis and I feel better.\n\nGet rewards when you take care of yourself! ${referralUrl}`
         );
         
-        // Ask user if they want to share
         if (window.confirm("Would you like to share your achievement on X (Twitter) and earn referral rewards?")) {
-          // Use direct URL instead of popup
           window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
           
-          // Award extra points for sharing
           toast({
             title: "Bonus Points & Referral Link Shared! 🌟",
             description: "Thank you for sharing! You've earned bonus points and will receive additional rewards when people join using your referral link!",
@@ -114,7 +108,6 @@ export const AsciiArt = () => {
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [isTimerRunning, toast]);
 
-  // Update the movement detection logic to only trigger on significant movement
   useEffect(() => {
     if (!isTimerRunning) return;
 
@@ -123,10 +116,7 @@ export const AsciiArt = () => {
         const now = new Date();
         if (lastActiveTimestamp) {
           const timeDiff = now.getTime() - lastActiveTimestamp.getTime();
-          // Only detect excessive movement (more frequent than every 500ms)
-          // This prevents false positives from subtle screen movements
           if (timeDiff < 500 && (
-            // Consider mouse movement significant only if it's deliberate
             event instanceof MouseEvent && 
             (Math.abs(event.movementX) > 10 || Math.abs(event.movementY) > 10)
           )) {
@@ -153,7 +143,6 @@ export const AsciiArt = () => {
   useEffect(() => {
     if (!isTimerRunning) return;
 
-    // Track window blur events (user switching to other windows)
     const handleWindowBlur = () => {
       if (isTimerRunning) {
         setWindowBlurs(prev => prev + 1);
@@ -165,13 +154,11 @@ export const AsciiArt = () => {
       }
     };
 
-    // Track window focus to detect potential multi-window/browser usage
     const handleWindowFocus = () => {
       if (isTimerRunning) {
         const now = new Date();
         const timeSinceLastActive = now.getTime() - lastActiveWindow.getTime();
         
-        // If time since last active is suspiciously short (indicating multiple windows)
         if (timeSinceLastActive < 1000) {
           toast({
             title: "Multiple Windows Detected",
@@ -183,17 +170,14 @@ export const AsciiArt = () => {
       }
     };
 
-    // Store session in localStorage to detect multiple browsers
     const checkMultipleBrowsers = () => {
       const currentSession = {
         id: sessionId,
         timestamp: Date.now(),
       };
 
-      // Store current session
       localStorage.setItem('meditationSession', JSON.stringify(currentSession));
 
-      // Check for other sessions
       const broadcastChannel = new BroadcastChannel('meditation_channel');
       broadcastChannel.postMessage({ type: 'SESSION_CHECK', sessionId });
 
@@ -204,7 +188,7 @@ export const AsciiArt = () => {
             description: "Please use only one browser window for meditation.",
             variant: "destructive"
           });
-          setIsTimerRunning(false); // Stop the session
+          setIsTimerRunning(false);
         }
       };
 
@@ -232,7 +216,6 @@ export const AsciiArt = () => {
   };
 
   const startMeditation = () => {
-    // Clear any existing sessions
     localStorage.removeItem('meditationSession');
     
     setIsTimerRunning(true);
@@ -277,7 +260,6 @@ export const AsciiArt = () => {
 
   return (
     <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-8 sm:py-12 relative">
-      {/* Energy Bubble Component */}
       <MeditationBubble 
         isTimerRunning={isTimerRunning} 
         timeRemaining={timeRemaining} 
@@ -285,7 +267,6 @@ export const AsciiArt = () => {
 
       <div className="container mx-auto px-3 sm:px-4">
         <div className="relative">
-          {/* Centered Chat/Meditation Interface */}
           <div className="max-w-3xl mx-auto bg-black/20 rounded-xl backdrop-blur-sm p-4 sm:p-6 border border-white/20 h-[550px] sm:h-[600px] flex flex-col">
             <div className="flex justify-between items-center gap-2 sm:gap-3 border-b border-white/20 pb-3 sm:pb-4 mb-3 sm:mb-4">
               <div className="flex items-center gap-2 sm:gap-3">
@@ -302,7 +283,6 @@ export const AsciiArt = () => {
                 </div>
               </div>
               
-              {/* Profile Trigger Button and Timer Control */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 <TimerControl
                   timeRemaining={timeRemaining}
@@ -342,6 +322,8 @@ export const AsciiArt = () => {
               messages={messages}
               isTyping={isTyping}
               isTimerRunning={isTimerRunning}
+              selectedDuration={selectedDuration}
+              setSelectedDuration={setSelectedDuration}
               startMeditation={startMeditation}
               onSubmit={handleSubmit}
             />

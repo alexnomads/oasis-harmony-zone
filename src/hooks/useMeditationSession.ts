@@ -18,16 +18,13 @@ export const useMeditationSession = (userId: string | undefined) => {
   const endSoundRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
-  // Initialize audio elements
   useEffect(() => {
     startSoundRef.current = new Audio('/meditation-start.mp3');
     endSoundRef.current = new Audio('/meditation-end.mp3');
     
-    // Set volume to be gentle
     if (startSoundRef.current) startSoundRef.current.volume = 0.4;
     if (endSoundRef.current) endSoundRef.current.volume = 0.4;
     
-    // Preload the sounds
     startSoundRef.current?.load();
     endSoundRef.current?.load();
     
@@ -50,7 +47,6 @@ export const useMeditationSession = (userId: string | undefined) => {
   const handleComplete = useCallback(async () => {
     if (!sessionId) return;
 
-    // Play end sound
     try {
       if (endSoundRef.current) {
         endSoundRef.current.play().catch(error => {
@@ -62,7 +58,11 @@ export const useMeditationSession = (userId: string | undefined) => {
     }
 
     try {
-      const { session, userPoints } = await SessionService.completeSession(sessionId, time);
+      const { session, userPoints } = await SessionService.completeSession(
+        sessionId, 
+        time, 
+        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 }
+      );
       setPointsEarned(session.points_earned);
       setTotalPoints(userPoints.total_points);
       setSessionCompleted(true);
@@ -99,7 +99,6 @@ export const useMeditationSession = (userId: string | undefined) => {
       setSessionId(session.id);
       setIsRunning(true);
       
-      // Play start sound
       try {
         if (startSoundRef.current) {
           startSoundRef.current.play().catch(error => {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -121,18 +120,23 @@ export const QuickMeditation: React.FC = () => {
     }
   };
 
-  const handleMeditationComplete = async (duration: number) => {
+  const handleMeditationComplete = async (duration: number, distractions: {
+    mouseMovements: number,
+    focusLost: number,
+    windowBlurs: number
+  }) => {
     if (!user || !sessionId) return;
     
     try {
       // Calculate session quality based on focus metrics
-      const distractionCount = focusLost + windowBlurs + (hasMovement ? 1 : 0);
+      const distractionCount = distractions.mouseMovements + distractions.focusLost + distractions.windowBlurs;
       const qualityFactor = Math.max(0, 1 - (distractionCount * 0.1));
       
       // Complete the session in the database
       const { session, userPoints } = await SessionService.completeSession(
         sessionId,
-        duration
+        duration,
+        distractions
       );
       
       // Reset timer state

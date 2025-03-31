@@ -8,8 +8,12 @@ export class MeditationService {
     return SessionService.startSession(userId, type);
   }
 
-  static async completeSession(sessionId: string, duration: number) {
-    return SessionService.completeSession(sessionId, duration);
+  static async completeSession(sessionId: string, duration: number, distractions: {
+    mouseMovements: number,
+    focusLost: number,
+    windowBlurs: number
+  }) {
+    return SessionService.completeSession(sessionId, duration, distractions);
   }
   
   static async getUserHistory(userId: string) {

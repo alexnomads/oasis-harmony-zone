@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import type { MeditationSession, MeditationType, MeditationStatus } from '../../types/database';
@@ -33,33 +32,46 @@ export class SessionService extends BaseService {
   }
 
   // Complete a meditation session and award points
-  static async completeSession(sessionId: string, duration: number) {
+  static async completeSession(sessionId: string, duration: number, distractions: { 
+    mouseMovements: number,
+    focusLost: number,
+    windowBlurs: number
+  }) {
     try {
-      console.log('Completing session:', sessionId, 'duration:', duration);
+      console.log('Completing session:', sessionId, 'duration:', duration, 'distractions:', distractions);
       
-      // Calculate points based on duration:
-      // - 30 seconds = 1 point
-      // - 5 minutes = 5 points
-      // - 10 minutes = 15 points
-      // - 15 minutes = 25 points
-      let points;
+      // Calculate base points based on duration
+      let basePoints;
       if (duration <= 30) {
-        points = 1; // 30 seconds
+        basePoints = 1; // 30 seconds
       } else if (duration <= 300) {
-        points = 5; // 5 minutes
+        basePoints = 5; // 5 minutes
       } else if (duration <= 600) {
-        points = 15; // 10 minutes
+        basePoints = 15; // 10 minutes
       } else {
-        points = 25; // 15+ minutes
+        basePoints = 25; // 15+ minutes
       }
-      
-      console.log('Points calculated:', points);
 
-      // Update session with minimal fields to avoid schema issues
+      // Calculate penalties
+      const mousePenalty = distractions.mouseMovements * 0.15;
+      const focusPenalty = distractions.focusLost * 0.5;
+      const windowPenalty = distractions.windowBlurs * 0.5;
+      
+      // Calculate final points (minimum 0)
+      const points = Math.max(0, basePoints - mousePenalty - focusPenalty - windowPenalty);
+      
+      console.log('Points calculated:', {
+        basePoints,
+        mousePenalty,
+        focusPenalty,
+        windowPenalty,
+        finalPoints: points
+      });
+
       const updateData = {
         status: 'completed' as MeditationStatus,
         duration,
-        points_earned: points,
+        points_earned: Math.round(points * 100) / 100, // Round to 2 decimal places
         completed_at: new Date().toISOString()
       };
       
@@ -72,8 +84,6 @@ export class SessionService extends BaseService {
       
       const session = await this.executeQuery<MeditationSession>(() => Promise.resolve(sessionResult));
       
-      console.log('Session updated successfully:', session);
-
       // Get updated user points
       const userPointsResult = await supabase
         .from('user_points')
@@ -88,6 +98,7 @@ export class SessionService extends BaseService {
         last_meditation_date: string | null;
       }>(() => Promise.resolve(userPointsResult));
       
+      console.log('Session updated successfully:', session);
       console.log('User points retrieved:', userPoints);
 
       return { session, userPoints };

@@ -35,6 +35,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setInputValue("");
   };
 
+  const handleQuickResponse = (response: string) => {
+    const event = new Event('submit') as unknown as React.FormEvent;
+    onSubmit(event, response);
+  };
+
   // Quick response suggestions
   const quickResponses = [
     "I'm feeling stressed about the market",
@@ -91,14 +96,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           {quickResponses.map((response, index) => (
             <button
               key={index}
-              onClick={() => {
-                setInputValue(response);
-                // Use setTimeout to allow the UI to update before submitting
-                setTimeout(() => {
-                  const event = new Event('submit') as unknown as React.FormEvent;
-                  onSubmit(event, response);
-                }, 100);
-              }}
+              onClick={() => handleQuickResponse(response)}
               className="text-xs bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-full text-white/80"
             >
               {response}

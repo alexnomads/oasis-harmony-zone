@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -12,6 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 import { MeditationTimer } from "./MeditationTimer";
 import { Button } from "../ui/button";
 import { TimerControls } from "./TimerControls";
+import { DurationSelector } from "./DurationSelector";
 
 export const MeditationAgentChat: React.FC = () => {
   const { user } = useAuth();
@@ -35,12 +35,10 @@ export const MeditationAgentChat: React.FC = () => {
   const [hasMovement, setHasMovement] = useState(false);
   const [lastActivityTimestamp, setLastActivityTimestamp] = useState<Date | null>(null);
   
-  // Refs to store session start time and timer handle
   const sessionStartTimeRef = useRef<Date | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const warningShownRef = useRef<boolean>(false);
 
-  // Auto-scroll to bottom when new messages are added
   const chatContainerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -49,7 +47,6 @@ export const MeditationAgentChat: React.FC = () => {
     }
   }, [messages, isTyping]);
 
-  // Focus monitoring
   useEffect(() => {
     if (!isTimerRunning) return;
 
@@ -72,9 +69,7 @@ export const MeditationAgentChat: React.FC = () => {
       const now = new Date();
       if (lastActivityTimestamp) {
         const timeDiff = now.getTime() - lastActivityTimestamp.getTime();
-        // Only detect excessive movement (more frequent than every 500ms)
         if (timeDiff < 500 && (
-          // Consider mouse movement significant only if it's deliberate
           event instanceof MouseEvent && 
           (Math.abs(event.movementX) > 10 || Math.abs(event.movementY) > 10)
         )) {
@@ -92,12 +87,10 @@ export const MeditationAgentChat: React.FC = () => {
       setLastActivityTimestamp(now);
     };
 
-    // Set up event listeners
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
 
-    // Clean up
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("mousemove", handleActivity);
@@ -105,19 +98,16 @@ export const MeditationAgentChat: React.FC = () => {
     };
   }, [isTimerRunning, lastActivityTimestamp, toast]);
 
-  // Reset warning flag when timer stops
   useEffect(() => {
     if (!isTimerRunning) {
       warningShownRef.current = false;
     }
   }, [isTimerRunning]);
 
-  // Handle user message submission
   const handleSubmit = async (e: React.FormEvent, userMessage: string) => {
     e.preventDefault();
     if (!userMessage.trim() || isTyping) return;
     
-    // Add user message to chat
     const newUserMessage: MessageType = {
       role: "user",
       content: userMessage,
@@ -129,17 +119,13 @@ export const MeditationAgentChat: React.FC = () => {
     setIsTyping(true);
     
     try {
-      // Track user message event for analytics
       trackEvent('meditation', 'user_message_sent');
       
-      // Process the message with our NLP service
       const sentiment = MeditationAgentService.analyzeSentiment(userMessage);
       console.log('Detected sentiment:', sentiment);
       
-      // Get meditation recommendation
       const recommendation = MeditationAgentService.getRecommendation(sentiment);
       
-      // Generate AI response based on sentiment
       let responseContent = '';
       
       if (sentiment.mainEmotion === 'neutral') {
@@ -153,7 +139,6 @@ export const MeditationAgentChat: React.FC = () => {
           `${recommendation.type.replace('_', ' ')}.`;
       }
       
-      // Add AI response to chat after a short delay
       setTimeout(() => {
         const aiResponse: MessageType = {
           role: "agent",
@@ -166,7 +151,6 @@ export const MeditationAgentChat: React.FC = () => {
         setMessages(prev => [...prev, aiResponse]);
         setIsTyping(false);
         
-        // Track that recommendation was provided
         trackEvent('meditation', 'recommendation_given', recommendation.type, recommendation.duration);
       }, 1500);
       
@@ -174,7 +158,6 @@ export const MeditationAgentChat: React.FC = () => {
       console.error('Error processing message:', error);
       setIsTyping(false);
       
-      // Send a fallback message
       const fallbackResponse: MessageType = {
         role: "agent",
         content: "I'm having trouble processing that right now. Would you like to try a simple mindfulness meditation?",
@@ -186,7 +169,6 @@ export const MeditationAgentChat: React.FC = () => {
     }
   };
 
-  // Start meditation based on recommendation
   const startMeditation = async (recommendation?: MeditationRecommendation) => {
     if (!user) {
       toast({
@@ -200,36 +182,29 @@ export const MeditationAgentChat: React.FC = () => {
     try {
       setIsTimerRunning(true);
       
-      // Use provided recommendation or default to mindfulness
       const meditationType = recommendation?.type || 'mindfulness';
       
-      // Create session in database
       const session = await SessionService.startSession(user.id, meditationType);
       
-      // Set current session
       setCurrentSession({
         sessionId: session.id,
         recommendation: recommendation || {
           type: 'mindfulness',
-          duration: selectedDuration, // Use the selected duration
+          duration: selectedDuration,
           title: 'Mindfulness Meditation',
           description: 'Focus on your breath and the present moment.'
         }
       });
       
-      // Reset focus monitoring variables
       setFocusLost(0);
       setWindowBlurs(0);
       setHasMovement(false);
       warningShownRef.current = false;
       
-      // Record start time
       sessionStartTimeRef.current = new Date();
       
-      // Track meditation start
       trackEvent('meditation', 'session_started', meditationType);
       
-      // Add an agent message acknowledging the start
       const startMessage: MessageType = {
         role: "agent",
         content: `Your ${meditationType.replace('_', ' ')} meditation is starting. Find a comfortable position and when you're ready, focus on your breath.`,
@@ -251,7 +226,6 @@ export const MeditationAgentChat: React.FC = () => {
     }
   };
 
-  // Quick start meditation (without AI chat)
   const quickStartMeditation = async () => {
     startMeditation({
       type: 'mindfulness',
@@ -261,34 +235,26 @@ export const MeditationAgentChat: React.FC = () => {
     });
   };
 
-  // Handle meditation completion
   const handleMeditationComplete = async (duration: number) => {
     if (!user || !currentSession) return;
     
     try {
-      // Calculate points based on focus quality
       const focusQuality = calculateFocusQuality();
       
-      // Complete the session in the database
       const { session, userPoints } = await SessionService.completeSession(
         currentSession.sessionId,
         duration
       );
       
-      // Reset timer state
       setIsTimerRunning(false);
       setCurrentSession(null);
       
-      // Track completion
       trackEvent('meditation', 'session_completed', session.type, duration);
       
-      // Get follow-up message
       const followUpMessage = await MeditationAgentService.getFollowUpMessage(user.id);
       
-      // Add completion message
       let completionContent = `Great job! You've completed a ${Math.floor(duration / 60)}-minute ${session.type.replace('_', ' ')} meditation and earned ${session.points_earned} points!`;
       
-      // Add focus quality feedback
       if (focusQuality < 0.7) {
         completionContent += " It seems you may have been distracted during your session. Try to remain still and focused next time for maximum benefit and points.";
       } else {
@@ -304,7 +270,6 @@ export const MeditationAgentChat: React.FC = () => {
       
       setMessages(prev => [...prev, completionMessage]);
       
-      // Show toast notification
       toast({
         title: "Meditation Complete",
         description: `You earned ${session.points_earned} points! Current streak: ${userPoints.meditation_streak} days`,
@@ -324,7 +289,6 @@ export const MeditationAgentChat: React.FC = () => {
     }
   };
 
-  // Calculate focus quality (0-1 score)
   const calculateFocusQuality = () => {
     const distractionPenalty = windowBlurs * 0.1 + (hasMovement ? 0.3 : 0);
     return Math.max(0, 1 - distractionPenalty);

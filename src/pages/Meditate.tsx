@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MeditationAgentChat } from '@/components/meditation/MeditationAgentChat';
+import { QuickMeditation } from '@/components/meditation/QuickMeditation';
 
 export default function Meditate() {
   const { user, loading } = useAuth();
@@ -27,31 +28,59 @@ export default function Meditate() {
             Begin Your Meditation Journey
           </h1>
           
-          {/* Meditation Agent Chat */}
-          <div className="mb-12">
-            {user ? (
-              <MeditationAgentChat />
-            ) : (
-              <Card className="bg-gradient-to-br from-vibrantPurple to-vibrantOrange border-none">
-                <CardContent className="p-6 text-center">
-                  <h2 className="text-xl font-semibold mb-4">Sign in to Start Meditating</h2>
-                  <p className="text-white/80 mb-6">
-                    Create an account to track your progress, earn points, and build your meditation streak.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="border-white text-white bg-transparent hover:bg-white/10"
-                    onClick={() => navigate('/')}
-                  >
-                    Sign In to Continue
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+          {/* Meditation Sections */}
+          <div className="space-y-12">
+            {/* AI Meditation Coach Section */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-6">AI Meditation Coach</h2>
+              {user ? (
+                <MeditationAgentChat />
+              ) : (
+                <Card className="bg-gradient-to-br from-vibrantPurple to-vibrantOrange border-none">
+                  <CardContent className="p-6 text-center">
+                    <h2 className="text-xl font-semibold mb-4">Sign in to Start Meditating</h2>
+                    <p className="text-white/80 mb-6">
+                      Create an account to track your progress, earn points, and build your meditation streak.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="border-white text-white bg-transparent hover:bg-white/10"
+                      onClick={() => navigate('/')}
+                    >
+                      Sign In to Continue
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </section>
+
+            {/* Quick Meditation Section */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-6">Meditate Now</h2>
+              {user ? (
+                <QuickMeditation />
+              ) : (
+                <Card className="bg-gradient-to-br from-vibrantOrange to-vibrantPurple border-none">
+                  <CardContent className="p-6 text-center">
+                    <h2 className="text-xl font-semibold mb-4">Sign in to Start Meditating</h2>
+                    <p className="text-white/80 mb-6">
+                      Create an account to track your progress, earn points, and build your meditation streak.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="border-white text-white bg-transparent hover:bg-white/10"
+                      onClick={() => navigate('/')}
+                    >
+                      Sign In to Continue
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </section>
           </div>
           
           {/* Info Cards */}
-          <div className="grid gap-6 sm:gap-8 mb-12">
+          <div className="grid gap-6 sm:gap-8 mt-12 mb-12">
             <motion.h2 
               className="text-2xl font-semibold text-center"
               initial={{ opacity: 0 }}
@@ -109,4 +138,4 @@ export default function Meditate() {
       </div>
     </div>
   );
-};
+}

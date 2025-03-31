@@ -37,8 +37,22 @@ export class SessionService extends BaseService {
     try {
       console.log('Completing session:', sessionId, 'duration:', duration);
       
-      // Calculate points (1 point per minute, minimum 1 point for completing any session)
-      const points = Math.max(1, Math.floor(duration / 60));
+      // Calculate points based on duration:
+      // - 30 seconds = 1 point
+      // - 5 minutes = 5 points
+      // - 10 minutes = 15 points
+      // - 15 minutes = 25 points
+      let points;
+      if (duration <= 30) {
+        points = 1; // 30 seconds
+      } else if (duration <= 300) {
+        points = 5; // 5 minutes
+      } else if (duration <= 600) {
+        points = 15; // 10 minutes
+      } else {
+        points = 25; // 15+ minutes
+      }
+      
       console.log('Points calculated:', points);
 
       // Update session with minimal fields to avoid schema issues

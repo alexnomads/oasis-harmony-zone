@@ -124,6 +124,10 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
     return type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
   };
   
+  // Remaining time calculation
+  const remainingTime = initialDuration - time;
+  const remainingFormatted = formatTime(remainingTime);
+  
   return (
     <Card className="bg-gradient-to-br from-black to-zinc-900 border border-white/20 overflow-hidden">
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
@@ -147,7 +151,7 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
         >
           <div className="bg-black/50 backdrop-blur-sm border border-white/10 rounded-full w-36 h-36 flex items-center justify-center">
             <span className="text-3xl font-bold text-white">
-              {formatTime(time)}
+              {remainingFormatted}
             </span>
           </div>
         </motion.div>
@@ -178,6 +182,10 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
             Complete
           </Button>
         </div>
+        
+        <p className="text-center text-white/60 text-sm mt-4">
+          Stay focused for maximum points. Avoid tab switching and movement.
+        </p>
       </CardContent>
     </Card>
   );

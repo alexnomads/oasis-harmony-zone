@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -104,9 +105,14 @@ export const QuickMeditation: React.FC = () => {
       setSessionId(session.id);
       setIsTimerRunning(true);
       
+      // Display duration in the appropriate format (30 seconds or X minutes)
+      const displayDuration = selectedDuration === 30 
+        ? "30-second" 
+        : `${Math.floor(selectedDuration / 60)}-minute`;
+      
       toast({
         title: "Meditation Started",
-        description: `Starting ${Math.floor(selectedDuration / 60)}-minute mindfulness meditation.`,
+        description: `Starting ${displayDuration} mindfulness meditation.`,
       });
       
     } catch (error) {
@@ -211,7 +217,11 @@ export const QuickMeditation: React.FC = () => {
                   size="lg"
                 >
                   <Play className="mr-2 h-5 w-5" />
-                  Start {Math.floor(selectedDuration / 60)}-Minute Meditation
+                  {selectedDuration === 30 ? (
+                    "Start 30-Second Meditation"
+                  ) : (
+                    `Start ${Math.floor(selectedDuration / 60)}-Minute Meditation`
+                  )}
                 </Button>
               </motion.div>
             </div>

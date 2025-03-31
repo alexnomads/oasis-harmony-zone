@@ -32,29 +32,13 @@ export class SessionService extends BaseService {
     }
   }
 
-  // Complete a meditation session and award points based on duration
+  // Complete a meditation session and award points
   static async completeSession(sessionId: string, duration: number) {
     try {
       console.log('Completing session:', sessionId, 'duration:', duration);
       
-      // Calculate points based on duration tiers
-      // 30 sec = 1 point
-      // 1-5 min = 5 points
-      // 5-10 min = 10 points
-      // 10-15 min = 15 points
-      // 15+ min = 20 points
-      let points = 1; // Minimum 1 point
-      
-      if (duration >= 900) { // 15 minutes or more
-        points = 20;
-      } else if (duration >= 600) { // 10 minutes or more
-        points = 15;
-      } else if (duration >= 300) { // 5 minutes or more
-        points = 10;
-      } else if (duration >= 60) { // 1 minute or more
-        points = 5;
-      }
-      
+      // Calculate points (1 point per minute, minimum 1 point for completing any session)
+      const points = Math.max(1, Math.floor(duration / 60));
       console.log('Points calculated:', points);
 
       // Update session with minimal fields to avoid schema issues

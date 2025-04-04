@@ -2,19 +2,20 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { ShareSession } from './ShareSession';
 
 interface CompletedSessionProps {
   pointsEarned: number;
   totalPoints: number;
   resetTimer: () => void;
-  handleShare: () => void;
+  sessionId: string | null;
 }
 
 export const CompletedSession = ({
   pointsEarned,
   totalPoints,
   resetTimer,
-  handleShare
+  sessionId
 }: CompletedSessionProps) => {
   const navigate = useNavigate();
 
@@ -39,13 +40,12 @@ export const CompletedSession = ({
         >
           View Dashboard
         </Button>
-        <Button
-          variant="default"
-          className="sm:flex-1 bg-gradient-to-r from-vibrantPurple to-vibrantOrange border-none text-white hover:opacity-90 py-6"
-          onClick={handleShare}
-        >
-          Share on X & Earn Points
-        </Button>
+        
+        <ShareSession 
+          sessionId={sessionId} 
+          setTotalPoints={() => {}} // We'll use the existing totalPoints from parent
+        />
+        
         <Button
           variant="outline"
           className="sm:flex-1 bg-white/5 border-zinc-700 hover:bg-white/10 text-white py-6"

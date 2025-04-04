@@ -1,42 +1,73 @@
 
-import React from "react";
-import { Button } from "../ui/button";
-import { Timer as TimerIcon, Play, Square } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { TimerControls } from './TimerControls';
+import { TimerDisplay } from './TimerDisplay';
+import { CompletedSession } from './CompletedSession';
+import { useMeditationSession } from '@/hooks/useMeditationSession';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface TimerControlProps {
-  timeRemaining: number;
-  isTimerRunning: boolean;
-  toggleTimer: () => void;
-  resetTimer: () => void;
-  formatTime: (seconds: number) => string;
-}
+export const Timer = () => {
+  const { user } = useAuth();
+  const {
+    isRunning,
+    time,
+    sessionId,
+    selectedDuration,
+    setSelectedDuration,
+    sessionCompleted,
+    pointsEarned,
+    totalPoints,
+    calculateProgress,
+    formatTime,
+    toggleTimer,
+    resetTimer
+  } = useMeditationSession(user?.id);
 
-export const TimerControl: React.FC<TimerControlProps> = ({
-  timeRemaining,
-  isTimerRunning,
-  toggleTimer,
-  resetTimer,
-  formatTime,
-}) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  if (!isMounted) return null;
+
   return (
-    <div className="flex items-center gap-2">
-      <div className="text-white text-xl font-mono">{formatTime(timeRemaining)}</div>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={toggleTimer}
-        className="border-white/20 text-white hover:bg-white/10"
-      >
-        {isTimerRunning ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={resetTimer}
-        className="border-white/20 text-white hover:bg-white/10"
-      >
-        <TimerIcon className="h-4 w-4" />
-      </Button>
+    <div className="max-w-md mx-auto p-6 flex flex-col items-center">
+      {!sessionCompleted && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full"
+        >
+          <TimerDisplay
+            time={time}
+            isRunning={isRunning}
+            calculateProgress={calculateProgress}
+            formatTime={formatTime}
+          />
+
+          <div className="mt-8">
+            <TimerControls
+              isRunning={isRunning}
+              toggleTimer={toggleTimer}
+              duration={selectedDuration}
+              setDuration={setSelectedDuration}
+              disabled={sessionCompleted}
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {sessionCompleted && (
+        <CompletedSession
+          pointsEarned={pointsEarned}
+          totalPoints={totalPoints}
+          resetTimer={resetTimer}
+          sessionId={sessionId}
+        />
+      )}
     </div>
   );
 };

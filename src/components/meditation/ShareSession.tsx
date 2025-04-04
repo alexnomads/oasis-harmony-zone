@@ -15,7 +15,14 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
   const [isSharing, setIsSharing] = useState(false);
 
   const handleShare = async () => {
-    if (!sessionId) return;
+    if (!sessionId) {
+      toast({
+        title: "Cannot share session",
+        description: "No active session to share.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
       setIsSharing(true);
@@ -23,7 +30,7 @@ export const ShareSession = ({ sessionId, setTotalPoints }: ShareSessionProps) =
       // First open the sharing window to ensure user gets sharing functionality
       // even if the database update fails
       const shareText = `I just completed a meditation session & earned points on @ROJOasis! 
-Start you mindfulness journey and earn crypto on 
+Start your mindfulness journey and earn crypto on 
 
 🧘🏼‍♂️🌹 https://oasis-harmony-zone.lovable.app`;
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
@@ -36,7 +43,7 @@ Start you mindfulness journey and earn crypto on
         
         toast({
           title: "Thanks for sharing!",
-          description: `You earned an extra point! Total: ${userPoints.total_points}`,
+          description: `You earned an extra point! Total: ${userPoints.total_points.toFixed(1)}`,
         });
       } catch (error) {
         console.error('Error awarding points:', error);
@@ -62,7 +69,7 @@ Start you mindfulness journey and earn crypto on
   return (
     <Button
       variant="default"
-      className="sm:flex-1 bg-gradient-to-r from-vibrantPurple to-vibrantOrange border-none text-white hover:opacity-90"
+      className="sm:flex-1 bg-gradient-to-r from-vibrantPurple to-vibrantOrange border-none text-white hover:opacity-90 py-6"
       onClick={handleShare}
       disabled={isSharing || !sessionId}
     >

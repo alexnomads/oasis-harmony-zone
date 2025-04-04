@@ -19,13 +19,16 @@ export const useMeditationSession = (userId: string | undefined) => {
   const endSoundRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
+  // Preload audio on component mount
   useEffect(() => {
+    // Create and preload the audio elements
     startSoundRef.current = new Audio('/meditation-start.mp3');
     endSoundRef.current = new Audio('/meditation-end.mp3');
     
     if (startSoundRef.current) startSoundRef.current.volume = 0.4;
     if (endSoundRef.current) endSoundRef.current.volume = 0.4;
     
+    // Force preload
     startSoundRef.current?.load();
     endSoundRef.current?.load();
     
@@ -49,10 +52,15 @@ export const useMeditationSession = (userId: string | undefined) => {
     if (!sessionId) return;
 
     try {
+      // Play the end sound with forced user interaction
       if (endSoundRef.current) {
-        endSoundRef.current.play().catch(error => {
-          console.error("Error playing end sound:", error);
-        });
+        const playPromise = endSoundRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error("Error playing end sound:", error);
+          });
+        }
       }
     } catch (e) {
       console.error("Error playing end sound:", e);
@@ -101,10 +109,15 @@ export const useMeditationSession = (userId: string | undefined) => {
       setIsRunning(true);
       
       try {
+        // Play the start sound with forced user interaction
         if (startSoundRef.current) {
-          startSoundRef.current.play().catch(error => {
-            console.error("Error playing start sound:", error);
-          });
+          const playPromise = startSoundRef.current.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Error playing start sound:", error);
+            });
+          }
         }
       } catch (e) {
         console.error("Error playing start sound:", e);

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserProfile } from "./profile/UserProfile";
@@ -5,7 +6,7 @@ import { User } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { MessageType } from "./meditation/ChatMessage";
 import { MeditationBubble } from "./meditation/MeditationBubble";
-import { TimerControl } from "./meditation/Timer";
+import { TimerControl } from "./meditation/TimerControl";  // Updated import path
 import { ChatInterface } from "./meditation/ChatInterface";
 import { MeditationSettings, SoundOption } from "./meditation/MeditationSettings";
 import { calculateSessionQuality, formatTime } from "./meditation/MeditationSessionManager";

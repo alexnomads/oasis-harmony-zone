@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -152,8 +151,8 @@ export const QuickMeditation: React.FC = () => {
       // Adjust points based on quality factor
       const earnedPoints = session.points_earned;
       const qualityMessage = qualityFactor < 1 
-        ? `You earned ${earnedPoints.toFixed(2)} out of a possible ${Math.ceil(earnedPoints / qualityFactor).toFixed(2)} points due to distractions.` 
-        : `Well done on maintaining focus! You earned the full ${earnedPoints.toFixed(2)} points.`;
+        ? `You earned ${earnedPoints.toFixed(1)} out of a possible ${Math.ceil(earnedPoints / qualityFactor).toFixed(1)} points due to distractions.` 
+        : `Well done on maintaining focus! You earned the full ${earnedPoints.toFixed(1)} points.`;
       
       // Show toast notification
       toast({

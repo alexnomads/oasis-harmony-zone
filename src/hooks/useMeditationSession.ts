@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
@@ -69,7 +70,7 @@ export const useMeditationSession = (userId: string | undefined) => {
       
       toast({
         title: "Meditation Complete! 🎉",
-        description: `You earned ${session.points_earned.toFixed(2)} points! Total: ${userPoints.total_points.toFixed(2)}`,
+        description: `You earned ${session.points_earned.toFixed(1)} points! Total: ${userPoints.total_points.toFixed(1)}`,
       });
       
       setIsRunning(false);

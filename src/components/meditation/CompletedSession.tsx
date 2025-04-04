@@ -28,8 +28,8 @@ export const CompletedSession = ({
         Meditation Complete!
       </div>
       <div className="space-y-4">
-        <p className="text-2xl text-white">You earned {pointsEarned.toFixed(2)} points</p>
-        <p className="text-2xl text-white">Your total: {totalPoints.toFixed(2)} points</p>
+        <p className="text-2xl text-white">You earned {pointsEarned.toFixed(1)} points</p>
+        <p className="text-2xl text-white">Your total: {totalPoints.toFixed(1)} points</p>
       </div>
       <div className="flex flex-col sm:flex-row gap-5 justify-center">
         <Button

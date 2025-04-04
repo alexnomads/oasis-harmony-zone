@@ -71,7 +71,7 @@ export class SessionService extends BaseService {
       const updateData = {
         status: 'completed' as MeditationStatus,
         duration,
-        points_earned: Math.round(points * 100) / 100, // Round to 2 decimal places
+        points_earned: Math.round(points * 10) / 10, // Round to 1 decimal place
         completed_at: new Date().toISOString()
       };
       
@@ -130,7 +130,7 @@ export class SessionService extends BaseService {
       const updatedSessionResult = await supabase
         .from('meditation_sessions')
         .update({
-          points_earned: session.points_earned + 1
+          points_earned: Math.round((session.points_earned + 1) * 10) / 10 // Add 1 point, round to 1 decimal
         })
         .eq('id', sessionId)
         .select('*')

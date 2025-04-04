@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ChatInterface } from "./ChatInterface";
@@ -74,7 +73,6 @@ export const MeditationAgentChat: React.FC = () => {
         newAgentMessage.recommendation = aiResponse.recommendation;
       }
 
-      // Delay the AI response to feel more natural
       setTimeout(() => {
         setMessages((prev) => [...prev, newAgentMessage]);
         setIsTyping(false);
@@ -95,10 +93,9 @@ export const MeditationAgentChat: React.FC = () => {
 
     const rec = customRecommendation || recommendation;
     if (rec) {
-      setSelectedDuration(rec.duration); // Use duration directly, not durationMinutes
+      setSelectedDuration(rec.duration);
     }
 
-    // Duration display logic
     const displayDuration = selectedDuration === 30 ? 
       "30-second" : 
       `${Math.floor(selectedDuration / 60)}-minute`;
@@ -114,7 +111,6 @@ export const MeditationAgentChat: React.FC = () => {
     toggleTimer();
   };
 
-  // Reset everything when session completes
   useEffect(() => {
     if (sessionCompleted && pointsEarned > 0) {
       const newMessage: MessageType = {
@@ -167,10 +163,7 @@ export const MeditationAgentChat: React.FC = () => {
             pointsEarned={pointsEarned}
             totalPoints={totalPoints}
             resetTimer={resetTimer}
-            handleShare={() => {
-              // Add sharing functionality here if needed
-              console.log("Sharing session");
-            }}
+            sessionId={sessionId}
           />
         ) : (
           <div ref={chatContainerRef} className="flex flex-col h-full overflow-hidden">

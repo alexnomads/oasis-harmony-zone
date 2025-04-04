@@ -52,8 +52,7 @@ export const Timer = () => {
             <TimerControls
               isRunning={isRunning}
               toggleTimer={toggleTimer}
-              duration={selectedDuration}
-              setDuration={setSelectedDuration}
+              resetTimer={resetTimer}
               disabled={sessionCompleted}
             />
           </div>

@@ -9,6 +9,7 @@ interface CompletedSessionProps {
   totalPoints: number;
   resetTimer: () => void;
   sessionId: string | null;
+  handleShare?: () => void; // Added this optional prop
 }
 
 export const CompletedSession = ({

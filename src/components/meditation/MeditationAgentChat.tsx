@@ -119,7 +119,7 @@ export const MeditationAgentChat: React.FC = () => {
     if (sessionCompleted && pointsEarned > 0) {
       const newMessage: MessageType = {
         role: "agent",
-        content: `Well done! You've earned ${pointsEarned} points for your meditation session. Your total is now ${totalPoints} points. How do you feel?`,
+        content: `Well done! You've earned ${pointsEarned.toFixed(2)} points for your meditation session. Your total is now ${totalPoints.toFixed(2)} points. How do you feel?`,
         timestamp: new Date(),
         showMeditationStart: false,
       };

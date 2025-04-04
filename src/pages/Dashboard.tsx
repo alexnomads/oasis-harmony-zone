@@ -180,7 +180,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-center xs:text-left">
                       <p className="text-xs sm:text-sm text-zinc-400">Total Points</p>
-                      <h3 className="text-xl sm:text-2xl font-bold">{totalPoints}</h3>
+                      <h3 className="text-xl sm:text-2xl font-bold">{totalPoints.toFixed(2)}</h3>
                     </div>
                   </div>
                 </CardContent>
@@ -269,7 +269,7 @@ export default function Dashboard() {
                               {formatDurationDetails(session.duration)}
                             </p>
                             <p className="text-xs sm:text-sm text-vibrantOrange">
-                              +{session.points_earned} points
+                              +{session.points_earned.toFixed(2)} points
                             </p>
                           </div>
                         </div>

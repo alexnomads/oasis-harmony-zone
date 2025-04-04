@@ -69,7 +69,7 @@ export const useMeditationSession = (userId: string | undefined) => {
       
       toast({
         title: "Meditation Complete! 🎉",
-        description: `You earned ${session.points_earned} points! Total: ${userPoints.total_points}`,
+        description: `You earned ${session.points_earned.toFixed(2)} points! Total: ${userPoints.total_points.toFixed(2)}`,
       });
       
       setIsRunning(false);

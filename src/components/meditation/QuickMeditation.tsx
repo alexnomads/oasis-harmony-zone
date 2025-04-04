@@ -150,10 +150,10 @@ export const QuickMeditation: React.FC = () => {
       setSessionId(null);
       
       // Adjust points based on quality factor
-      const earnedPoints = Math.round(session.points_earned * qualityFactor);
+      const earnedPoints = session.points_earned;
       const qualityMessage = qualityFactor < 1 
-        ? `You earned ${earnedPoints} out of a possible ${session.points_earned} points due to distractions.` 
-        : `Well done on maintaining focus! You earned the full ${earnedPoints} points.`;
+        ? `You earned ${earnedPoints.toFixed(2)} out of a possible ${Math.ceil(earnedPoints / qualityFactor).toFixed(2)} points due to distractions.` 
+        : `Well done on maintaining focus! You earned the full ${earnedPoints.toFixed(2)} points.`;
       
       // Show toast notification
       toast({

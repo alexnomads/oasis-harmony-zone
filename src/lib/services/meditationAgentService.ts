@@ -2,6 +2,7 @@
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import { UserPoints, MeditationType } from '../../types/database';
+import { MessageType } from '@/components/meditation/ChatMessage';
 
 // Types for the meditation agent
 export interface UserSentiment {
@@ -17,7 +18,51 @@ export interface MeditationRecommendation {
   description: string;
 }
 
+interface AIResponse {
+  message: string;
+  showMeditationOption: boolean;
+  recommendation?: MeditationRecommendation;
+}
+
 export class MeditationAgentService extends BaseService {
+  // New method to handle AI responses for chat
+  static async getResponse(userMessage: string, previousMessages: MessageType[]): Promise<AIResponse> {
+    // Analyze user sentiment
+    const sentiment = this.analyzeSentiment(userMessage);
+    
+    // Get recommendation based on sentiment
+    const recommendation = this.getRecommendation(sentiment);
+    
+    // Generate response based on sentiment and recommendation
+    let aiMessage = '';
+    let showMeditationOption = false;
+    
+    // Simple response logic based on sentiment
+    if (sentiment.intensity >= 7) {
+      aiMessage = `I can sense that you're feeling quite ${sentiment.mainEmotion}. ${
+        sentiment.cryptoRelated ? 
+        'The crypto markets can certainly be overwhelming. ' : 
+        ''
+      }I think a meditation session could help you find some balance.`;
+      showMeditationOption = true;
+    } else if (sentiment.mainEmotion === 'happy') {
+      aiMessage = `It's great to hear you're feeling positive! A meditation session now could help you maintain this balanced state.`;
+      showMeditationOption = true;
+    } else if (sentiment.mainEmotion === 'unfocused') {
+      aiMessage = `When you're having trouble focusing, meditation can be a powerful tool to clear your mind. Would you like to try a quick session?`;
+      showMeditationOption = true;
+    } else {
+      aiMessage = `Thank you for sharing. How would you feel about doing a quick meditation session to enhance your current state?`;
+      showMeditationOption = true;
+    }
+    
+    return {
+      message: aiMessage,
+      showMeditationOption,
+      recommendation
+    };
+  }
+
   // Enhanced NLP to analyze user input and extract sentiment
   static analyzeSentiment(userInput: string): UserSentiment {
     const input = userInput.toLowerCase();

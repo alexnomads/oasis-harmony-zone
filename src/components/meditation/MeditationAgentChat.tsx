@@ -71,6 +71,7 @@ export const MeditationAgentChat: React.FC = () => {
 
       if (aiResponse.recommendation) {
         setRecommendation(aiResponse.recommendation);
+        newAgentMessage.recommendation = aiResponse.recommendation;
       }
 
       // Delay the AI response to feel more natural
@@ -94,7 +95,7 @@ export const MeditationAgentChat: React.FC = () => {
 
     const rec = customRecommendation || recommendation;
     if (rec) {
-      setSelectedDuration(rec.durationMinutes * 60);
+      setSelectedDuration(rec.duration); // Use duration directly, not durationMinutes
     }
 
     // Duration display logic
@@ -163,11 +164,12 @@ export const MeditationAgentChat: React.FC = () => {
           />
         ) : sessionCompleted ? (
           <CompletedSession
-            duration={time}
             pointsEarned={pointsEarned}
             totalPoints={totalPoints}
-            onReset={() => {
-              resetTimer();
+            resetTimer={resetTimer}
+            handleShare={() => {
+              // Add sharing functionality here if needed
+              console.log("Sharing session");
             }}
           />
         ) : (

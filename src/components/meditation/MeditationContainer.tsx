@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { UserProfile } from "../profile/UserProfile";
 import { User } from "lucide-react";
 import { useToast } from "../ui/use-toast";
@@ -25,6 +25,28 @@ export const MeditationContainer = () => {
   const [soundOption, setSoundOption] = useState<SoundOption>("silent");
   const { toast } = useToast();
   
+  // Audio references
+  const startSoundRef = useRef<HTMLAudioElement | null>(null);
+  const endSoundRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Initialize audio elements
+  useEffect(() => {
+    startSoundRef.current = new Audio('/meditation-start.mp3');
+    endSoundRef.current = new Audio('/meditation-end.mp3');
+    
+    if (startSoundRef.current) startSoundRef.current.volume = 0.7;
+    if (endSoundRef.current) endSoundRef.current.volume = 0.7;
+    
+    // Preload audio files
+    startSoundRef.current?.load();
+    endSoundRef.current?.load();
+    
+    return () => {
+      startSoundRef.current = null;
+      endSoundRef.current = null;
+    };
+  }, []);
+  
   const { 
     timeRemaining,
     selectedDuration,
@@ -35,8 +57,32 @@ export const MeditationContainer = () => {
     hasMovement,
     toggleTimer,
     resetTimer,
-    startMeditation
+    startMeditation: startMeditationState
   } = useMeditationState({ toast });
+
+  const playSound = async (audioRef: React.RefObject<HTMLAudioElement>) => {
+    if (!audioRef.current || soundOption === "silent") return;
+    
+    try {
+      // Reset to start to ensure it plays from the beginning
+      audioRef.current.currentTime = 0;
+      await audioRef.current.play();
+    } catch (error) {
+      console.error("Error playing sound:", error);
+    }
+  };
+
+  const startMeditation = async () => {
+    await playSound(startSoundRef);
+    startMeditationState(selectedDuration, soundOption);
+  };
+
+  // Listen for timer completion to play the end sound
+  useEffect(() => {
+    if (timeRemaining === 0 && !isTimerRunning) {
+      playSound(endSoundRef);
+    }
+  }, [timeRemaining, isTimerRunning]);
 
   const handleSubmit = (e: React.FormEvent, inputValue: string) => {
     e.preventDefault();
@@ -99,7 +145,7 @@ export const MeditationContainer = () => {
               isTimerRunning={isTimerRunning}
               selectedDuration={selectedDuration}
               setSelectedDuration={setSelectedDuration}
-              startMeditation={() => startMeditation(selectedDuration, soundOption)}
+              startMeditation={startMeditation}
               onSubmit={handleSubmit}
             />
           </div>

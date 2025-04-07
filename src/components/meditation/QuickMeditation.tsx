@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,11 +17,33 @@ export const QuickMeditation: React.FC = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   
+  // Audio references
+  const startSoundRef = useRef<HTMLAudioElement | null>(null);
+  const endSoundRef = useRef<HTMLAudioElement | null>(null);
+  
   // Focus monitoring
   const [focusLost, setFocusLost] = useState(0);
   const [windowBlurs, setWindowBlurs] = useState(0);
   const [hasMovement, setHasMovement] = useState(false);
   const [lastActiveTimestamp, setLastActiveTimestamp] = useState<Date | null>(null);
+
+  // Initialize audio elements
+  useEffect(() => {
+    startSoundRef.current = new Audio('/meditation-start.mp3');
+    endSoundRef.current = new Audio('/meditation-end.mp3');
+    
+    if (startSoundRef.current) startSoundRef.current.volume = 0.7;
+    if (endSoundRef.current) endSoundRef.current.volume = 0.7;
+    
+    // Preload audio files
+    startSoundRef.current?.load();
+    endSoundRef.current?.load();
+    
+    return () => {
+      startSoundRef.current = null;
+      endSoundRef.current = null;
+    };
+  }, []);
 
   // Focus tracking for meditation sessions
   useEffect(() => {
@@ -82,6 +105,18 @@ export const QuickMeditation: React.FC = () => {
     };
   }, [isTimerRunning, lastActiveTimestamp, toast]);
 
+  const playSound = async (audioRef: React.RefObject<HTMLAudioElement>) => {
+    if (!audioRef.current) return;
+    
+    try {
+      // Reset to start to ensure it plays from the beginning
+      audioRef.current.currentTime = 0;
+      await audioRef.current.play();
+    } catch (error) {
+      console.error("Error playing sound:", error);
+    }
+  };
+
   const startMeditation = async () => {
     if (!user) {
       toast({
@@ -103,6 +138,9 @@ export const QuickMeditation: React.FC = () => {
       const session = await SessionService.startSession(user.id, 'mindfulness');
       setSessionId(session.id);
       setIsTimerRunning(true);
+      
+      // Play start sound
+      await playSound(startSoundRef);
       
       // Display duration in the appropriate format (30 seconds or X minutes)
       const displayDuration = selectedDuration === 30 
@@ -133,6 +171,9 @@ export const QuickMeditation: React.FC = () => {
     if (!user || !sessionId) return;
     
     try {
+      // Play end sound
+      await playSound(endSoundRef);
+      
       // Calculate session quality based on focus metrics
       const distractionCount = distractions.mouseMovements + distractions.focusLost + distractions.windowBlurs;
       const qualityFactor = Math.max(0, 1 - (distractionCount * 0.1));

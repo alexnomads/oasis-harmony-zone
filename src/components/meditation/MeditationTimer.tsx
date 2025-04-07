@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useRef } from "react";
 import { MeditationType } from "@/types/database";
 import { TimerDisplay } from "./TimerDisplay";
 import { useToast } from "@/components/ui/use-toast";
@@ -27,6 +28,7 @@ export const MeditationTimer: React.FC<TimerProps> = ({
   
   const [timeRemaining, setTimeRemaining] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(true);
+  const endSoundPlayedRef = useRef(false);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -96,7 +98,8 @@ export const MeditationTimer: React.FC<TimerProps> = ({
   }, [isRunning, toast]);
 
   useEffect(() => {
-    if (timeRemaining === 0 && isRunning) {
+    if (timeRemaining === 0 && isRunning && !endSoundPlayedRef.current) {
+      endSoundPlayedRef.current = true;
       setIsRunning(false);
       onComplete(initialDuration, {
         mouseMovements,

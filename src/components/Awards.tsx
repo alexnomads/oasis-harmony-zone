@@ -56,7 +56,7 @@ export const Awards = () => {
         }} transition={{
           duration: 0.4,
           delay: 0.2
-        }} className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center py-[13px]">
+        }} className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center py-px">
             <img src={awards[1].logo} alt={awards[1].name} className="w-28 h-28 sm:w-32 sm:h-32 object-contain" />
           </motion.a>
 

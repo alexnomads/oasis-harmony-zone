@@ -32,7 +32,7 @@ export const Awards = () => {
           </h2>
         </motion.div>
         
-        <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-12">
+        <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-12 py-[10px]">
           {/* First award */}
           <motion.a href={awards[0].link} target="_blank" rel="noopener noreferrer" initial={{
           opacity: 0,

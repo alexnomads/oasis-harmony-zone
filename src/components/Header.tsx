@@ -57,7 +57,7 @@ export const Header = () => {
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
+          <div className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="hover:bg-white/10 text-white">
@@ -104,6 +104,20 @@ export const Header = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <a
+              href="https://twitter.com/ROJOasis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white hover:text-white/80 text-sm font-medium"
+            >
+              <img 
+                src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
+                alt="X Logo" 
+                className="w-4 h-4 invert"
+              />
+              Follow @ROJOasis
+            </a>
           </div>
 
           <div className="flex-1 flex justify-center">
@@ -116,27 +130,6 @@ export const Header = () => {
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-2">
-            <a
-              href="https://twitter.com/ROJOasis"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white hover:text-white/80 text-sm font-medium hidden sm:block"
-            >
-              Follow @ROJOasis
-            </a>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="hover:bg-white/10 text-white"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
-            
             {user && (
               <div className="hidden md:flex flex-col items-end mr-2">
                 <span id="user-status" className="text-xs text-white">

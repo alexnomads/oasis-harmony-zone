@@ -97,11 +97,11 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4">
             <Button
               onClick={handleMainButtonClick}
-              className="bg-white/10 hover:bg-white/20 text-white px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 mb-3 sm:mb-0"
+              className="bg-white/10 hover:bg-white/20 text-white px-8 sm:px-12 py-4 sm:py-6 text-lg sm:text-xl rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105 mx-auto w-auto"
             >
               {user ? (
                 <>
-                  <Clock className="mr-2" size={20} />
+                  <Clock className="mr-2" size={24} />
                   Meditate & Accrue Points Now
                 </>
               ) : (

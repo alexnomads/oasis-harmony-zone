@@ -116,6 +116,14 @@ export const Header = () => {
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-2">
+            <a
+              href="https://twitter.com/ROJOasis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white hover:text-white/80 text-sm font-medium hidden sm:block"
+            >
+              Follow @ROJOasis
+            </a>
             <Button
               variant="ghost"
               size="icon"

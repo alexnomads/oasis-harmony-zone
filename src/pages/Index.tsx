@@ -10,6 +10,7 @@ import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 import { GetInTouch } from "@/components/GetInTouch";
 import { Testimonials } from "@/components/Testimonials";
 import { Footer } from "@/components/Footer";
+import { Awards } from "@/components/Awards";
 
 const Index = () => {
   const { scrollYProgress } = useScroll();
@@ -29,6 +30,9 @@ const Index = () => {
       <main className="relative">
         <section id="hero">
           <Hero />
+        </section>
+        <section id="awards">
+          <Awards />
         </section>
         <section id="programs">
           <Programs />

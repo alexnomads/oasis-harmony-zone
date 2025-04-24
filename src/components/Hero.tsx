@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Clock } from "lucide-react";
 import { trackEvent } from "@/components/analytics/GoogleAnalytics";
-import { Awards } from "./Awards";
 
 export const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -20,9 +19,7 @@ export const Hero = () => {
     return () => clearInterval(interval);
   }, []);
   
-  // Track page view
   useEffect(() => {
-    // Track that the hero section was viewed
     if (typeof window.gtag !== 'undefined') {
       trackEvent('engagement', 'view_hero_section');
     }
@@ -30,19 +27,15 @@ export const Hero = () => {
 
   const handleFollow = () => {
     window.open('https://x.com/ROJOasis', '_blank');
-    // Track Twitter follow click
     trackEvent('social', 'click_follow_twitter', '@ROJOasis');
   };
 
   const handleMainButtonClick = () => {
     if (user) {
-      // If user is logged in, navigate to meditation page
       trackEvent('navigation', 'start_meditation');
       navigate('/meditate');
     } else {
-      // If user is not logged in, show sign in dialog
       trackEvent('user', 'sign_in_attempt', 'hero_button');
-      // This assumes there's a sign in component at the top right
       const signInButton = document.querySelector('[aria-label="Sign In"]');
       if (signInButton) {
         (signInButton as HTMLButtonElement).click();
@@ -54,7 +47,6 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-5 sm:pt-6">
-      {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         <video
           autoPlay
@@ -71,9 +63,6 @@ export const Hero = () => {
         </video>
       </div>
 
-      {/* No need for additional gradient overlay since we're using body's gradient */}
-
-      {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -134,7 +123,6 @@ export const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Reduced bottom margin for mobile */}
       <div className="h-7 sm:h-17 md:h-22"></div>
     </section>
   );

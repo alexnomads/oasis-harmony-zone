@@ -13,7 +13,7 @@ const awards = [{
   link: "https://soonami.io"
 }];
 export const Awards = () => {
-  return <section className="py-12 sm:py-16">
+  return <section className="py-12 sm:py-[4px]">
       <div className="container mx-auto px-4">
         <motion.div initial={{
         opacity: 0,

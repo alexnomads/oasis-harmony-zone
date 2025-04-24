@@ -47,7 +47,7 @@ export const Testimonials = () => {
           duration: 0.6,
           delay: 0.3
         }} className="bg-black/20 rounded-xl p-4">
-            <Tweet id="1886523932330627224" />
+            <Tweet id="1915387070433939723" />
           </motion.div>
           
           <motion.div initial={{

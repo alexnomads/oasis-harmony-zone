@@ -26,7 +26,7 @@ export const Awards = () => {
           className="text-center mb-8"
         >
           <span className="inline-block px-6 py-2 text-lg font-medium bg-white/10 text-white rounded-full">
-            Grants & Hackaton Won So far
+            Grants & Hackatons Won So far
           </span>
         </motion.div>
         

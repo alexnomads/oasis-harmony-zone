@@ -24,12 +24,8 @@ export const Awards = () => {
       }} transition={{
         duration: 0.6
       }} className="text-center mb-8">
-          <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium bg-white/10 text-white rounded-full">
-            Our Partners & Grants
-          </span>
-          <h2 className="text-3xl font-bold text-white">
-            Awards & Recognition
-          </h2>
+          <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium bg-white/10 text-white rounded-full">Grants &amp; Hackaton Won So far</span>
+          
         </motion.div>
         
         <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-12 py-[10px]">
@@ -45,7 +41,7 @@ export const Awards = () => {
         }} transition={{
           duration: 0.4
         }} className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
-            <img src={awards[0].logo} alt={awards[0].name} className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-lg" />
+            <img src={awards[0].logo} alt={awards[0].name} className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-contain" />
           </motion.a>
 
           {/* Middle award (Polygon) */}

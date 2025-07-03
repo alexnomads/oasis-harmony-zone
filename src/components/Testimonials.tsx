@@ -32,6 +32,19 @@ export const Testimonials = () => {
           y: 0
         }} transition={{
           duration: 0.6,
+          delay: 0.1
+        }} className="bg-black/20 rounded-xl p-4">
+            <Tweet id="1940408069831418021" />
+          </motion.div>
+          
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.6,
           delay: 0.2
         }} className="bg-black/20 rounded-xl p-4">
             <Tweet id="1890440940772352257" />

@@ -6,7 +6,7 @@ const awards = [{
 }, {
   name: "Polygon",
   logo: "https://altcoinsbox.com/wp-content/uploads/2023/03/matic-logo.webp",
-  link: "https://polygon.technology"
+  link: "https://x.com/0xPolygon/status/1940408069831418021"
 }, {
   name: "Soonami",
   logo: "https://pbs.twimg.com/profile_images/1709859920030347264/9SL23TTa_400x400.jpg",

@@ -94,10 +94,10 @@ export const Hero = () => {
               {slides[currentSlide]}
             </motion.div>
           </div>
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-2 sm:px-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 px-2 sm:px-4">
             <Button
               onClick={handleMainButtonClick}
-              className="bg-white/10 hover:bg-white/20 text-white px-8 sm:px-12 py-4 sm:py-6 text-lg sm:text-xl rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105 mx-auto w-auto"
+              className="bg-white/10 hover:bg-white/20 text-white px-8 sm:px-12 py-4 sm:py-6 text-lg sm:text-xl rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               {user ? (
                 <>
@@ -110,7 +110,7 @@ export const Hero = () => {
             </Button>
             <Button
               onClick={handleFollow}
-              className="bg-black/30 hover:bg-black/40 text-white px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
+              className="bg-black/30 hover:bg-black/40 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 

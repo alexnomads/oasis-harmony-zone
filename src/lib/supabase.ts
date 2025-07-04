@@ -10,12 +10,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // Get the current site URL for redirects, handling both local and production environments
 const getSiteUrl = () => {
-  // For deployed Lovable apps
-  if (window.location.hostname.includes('lovable.app')) {
-    return window.location.origin
-  }
   // For local development
-  return 'http://localhost:5173'
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:5173'
+  }
+  // For all deployed environments (lovable.app, custom domains, etc.)
+  return window.location.origin
 }
 
 // Set up redirect URL for authentication

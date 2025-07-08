@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { Play, PauseIcon, Timer } from "lucide-react";
+import { Play, PauseIcon, Timer, Shield } from "lucide-react";
 import { SessionService } from "@/lib/services/sessionService";
 import { DurationSelector } from "./DurationSelector";
 import { MeditationTimer } from "./MeditationTimer";
+import { useWakeLock } from "@/hooks/useWakeLock";
 
 export const QuickMeditation: React.FC = () => {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export const QuickMeditation: React.FC = () => {
   const [selectedDuration, setSelectedDuration] = useState(300); // Default 5 min
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const { isWakeLockActive, isSupported, requestWakeLock, releaseWakeLock } = useWakeLock();
   
   // Audio references
   const startSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -139,6 +141,15 @@ export const QuickMeditation: React.FC = () => {
       setSessionId(session.id);
       setIsTimerRunning(true);
       
+      // Request wake lock to prevent screen from turning off
+      const wakeLockAcquired = await requestWakeLock();
+      if (wakeLockAcquired && isSupported) {
+        toast({
+          title: "Screen Sleep Prevented",
+          description: "Your screen will stay on during meditation.",
+        });
+      }
+      
       // Play start sound
       await playSound(startSoundRef);
       
@@ -189,6 +200,9 @@ export const QuickMeditation: React.FC = () => {
       setIsTimerRunning(false);
       setSessionId(null);
       
+      // Release wake lock
+      await releaseWakeLock();
+      
       // Adjust points based on quality factor
       const earnedPoints = session.points_earned;
       const qualityMessage = qualityFactor < 1 
@@ -206,6 +220,9 @@ export const QuickMeditation: React.FC = () => {
       
       setIsTimerRunning(false);
       setSessionId(null);
+      
+      // Release wake lock even on error
+      await releaseWakeLock();
       
       toast({
         title: "Session Completion Error",
@@ -266,9 +283,23 @@ export const QuickMeditation: React.FC = () => {
               </motion.div>
             </div>
             
-            <p className="text-center text-white/60 text-sm">
-              Stay focused to earn maximum points. Movement, tab switching, or leaving the page will reduce points earned.
-            </p>
+            <div className="text-center space-y-2">
+              <p className="text-white/60 text-sm">
+                Stay focused to earn maximum points. Movement, tab switching, or leaving the page will reduce points earned.
+              </p>
+              {isSupported && (
+                <div className="flex items-center justify-center gap-2 text-white/50 text-xs">
+                  <Shield className="w-3 h-3" />
+                  <span>Screen sleep prevention available</span>
+                </div>
+              )}
+              {isWakeLockActive && (
+                <div className="flex items-center justify-center gap-2 text-vibrantOrange text-xs">
+                  <Shield className="w-3 h-3" />
+                  <span>Screen sleep prevented - meditation protected</span>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </CardContent>

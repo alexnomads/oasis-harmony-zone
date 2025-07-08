@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
 import type { MeditationType } from '@/types/database';
+import { useWakeLock } from './useWakeLock';
 
 export const useMeditationSession = (userId: string | undefined) => {
   const [isRunning, setIsRunning] = useState(false);
@@ -18,6 +19,7 @@ export const useMeditationSession = (userId: string | undefined) => {
   const startSoundRef = useRef<HTMLAudioElement | null>(null);
   const endSoundRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
+  const { requestWakeLock, releaseWakeLock, isSupported } = useWakeLock();
 
   // Preload audio on component mount
   useEffect(() => {
@@ -76,6 +78,9 @@ export const useMeditationSession = (userId: string | undefined) => {
       setTotalPoints(userPoints.total_points);
       setSessionCompleted(true);
       
+      // Release wake lock
+      await releaseWakeLock();
+      
       toast({
         title: "Meditation Complete! 🎉",
         description: `You earned ${session.points_earned.toFixed(1)} points! Total: ${userPoints.total_points.toFixed(1)}`,
@@ -107,6 +112,15 @@ export const useMeditationSession = (userId: string | undefined) => {
       const session = await SessionService.startSession(userId, meditationType);
       setSessionId(session.id);
       setIsRunning(true);
+
+      // Request wake lock to prevent screen sleep
+      const wakeLockAcquired = await requestWakeLock();
+      if (wakeLockAcquired && isSupported) {
+        toast({
+          title: "Screen Sleep Prevented",
+          description: "Your screen will stay on during meditation.",
+        });
+      }
       
       try {
         // Play the start sound with forced user interaction
@@ -154,6 +168,8 @@ export const useMeditationSession = (userId: string | undefined) => {
     setSessionCompleted(false);
     setPointsEarned(0);
     toastShownRef.current = false;
+    // Release wake lock when resetting
+    releaseWakeLock();
   };
 
   useEffect(() => {

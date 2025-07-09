@@ -18,20 +18,20 @@ export default function Meditate() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
-      <div className="container mx-auto px-4 pt-24 pb-16">
+      <div className="container mx-auto px-4 pt-20 sm:pt-24 pb-8 sm:pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold text-center mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 sm:mb-8 leading-tight">
             Choose Your Meditation Experience
           </h1>
           
           {user ? (
             /* Meditation Choice Section */
-            <div className="grid gap-6 md:grid-cols-2 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12">
               {/* Quick Meditation Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -40,29 +40,29 @@ export default function Meditate() {
               >
                 <Card className="h-full bg-black/20 backdrop-blur-sm border border-white/20 hover:border-white/40 transition-all duration-300 group cursor-pointer">
                   <div className="h-1 w-full bg-gradient-to-r from-vibrantOrange to-vibrantPurple" />
-                  <CardContent className="p-6 h-full flex flex-col">
-                    <div className="text-center mb-6">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-vibrantOrange to-vibrantPurple flex items-center justify-center">
-                        <Timer className="w-8 h-8 text-white" />
+                  <CardContent className="p-4 sm:p-6 h-full flex flex-col">
+                    <div className="text-center mb-4 sm:mb-6">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gradient-to-r from-vibrantOrange to-vibrantPurple flex items-center justify-center">
+                        <Timer className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">Quick Meditation</h3>
-                      <p className="text-white/70 text-sm">
+                      <h3 className="text-lg sm:text-xl font-semibold text-white mb-1 sm:mb-2">Quick Meditation</h3>
+                      <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
                         Jump straight into a focused meditation session
                       </p>
                     </div>
                     
-                    <div className="space-y-3 mb-6 text-white/60 text-sm">
+                    <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6 text-white/60 text-xs sm:text-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantOrange"></div>
-                        <span>Choose from 30 seconds to 60 minutes</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantOrange flex-shrink-0"></div>
+                        <span className="leading-relaxed">Choose from 30 seconds to 60 minutes</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantPurple"></div>
-                        <span>Screen sleep prevention on mobile</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantPurple flex-shrink-0"></div>
+                        <span className="leading-relaxed">Screen sleep prevention on mobile</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantOrange"></div>
-                        <span>Earn points and build streaks</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantOrange flex-shrink-0"></div>
+                        <span className="leading-relaxed">Earn points and build streaks</span>
                       </div>
                     </div>
                     
@@ -81,39 +81,39 @@ export default function Meditate() {
               >
                 <Card className="h-full bg-black/20 backdrop-blur-sm border border-white/20 hover:border-white/40 transition-all duration-300 group cursor-pointer">
                   <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
-                  <CardContent className="p-6 h-full flex flex-col">
-                    <div className="text-center mb-6">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange flex items-center justify-center overflow-hidden">
+                  <CardContent className="p-4 sm:p-6 h-full flex flex-col">
+                    <div className="text-center mb-4 sm:mb-6">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange flex items-center justify-center overflow-hidden">
                         <img 
                           src="/lovable-uploads/28340a82-c555-4abe-abb5-5ceecab27f08.png"
                           alt="Rose of Jericho"
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">AI Meditation Coach</h3>
-                      <p className="text-white/70 text-sm">
+                      <h3 className="text-lg sm:text-xl font-semibold text-white mb-1 sm:mb-2">AI Meditation Coach</h3>
+                      <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
                         Get personalized guidance from Rose of Jericho
                       </p>
                     </div>
                     
-                    <div className="space-y-3 mb-6 text-white/60 text-sm">
+                    <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6 text-white/60 text-xs sm:text-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantPurple"></div>
-                        <span>Personalized meditation advice</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantPurple flex-shrink-0"></div>
+                        <span className="leading-relaxed">Personalized meditation advice</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantOrange"></div>
-                        <span>Interactive chat experience</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantOrange flex-shrink-0"></div>
+                        <span className="leading-relaxed">Interactive chat experience</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantPurple"></div>
-                        <span>Tips and techniques for your journey</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-vibrantPurple flex-shrink-0"></div>
+                        <span className="leading-relaxed">Tips and techniques for your journey</span>
                       </div>
                     </div>
                     
                     <div className="mt-auto">
                       <Button
-                        className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 text-white"
+                        className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 text-white text-sm sm:text-base py-2 sm:py-3"
                         onClick={() => {
                           const coachSection = document.getElementById('ai-coach-section');
                           coachSection?.scrollIntoView({ behavior: 'smooth' });
@@ -163,9 +163,9 @@ export default function Meditate() {
           )}
           
           {/* Info Cards */}
-          <div className="grid gap-6 sm:gap-8 mt-12 mb-12">
+          <div className="grid gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12 mb-8 sm:mb-12">
             <motion.h2 
-              className="text-2xl font-semibold text-center"
+              className="text-xl sm:text-2xl font-semibold text-center leading-tight"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -173,7 +173,7 @@ export default function Meditate() {
               Meditation Benefits for Web3 Professionals
             </motion.h2>
             
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
               <Card className="bg-zinc-900/50 border-zinc-800">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4">Enhanced Focus</h2>

@@ -57,11 +57,11 @@ export const Header = () => {
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="hover:bg-white/10 text-white">
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 bg-black/90 backdrop-blur-sm border border-zinc-800">
@@ -109,7 +109,7 @@ export const Header = () => {
               href="https://twitter.com/ROJOasis"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-white hover:text-white/80 text-sm font-medium"
+              className="hidden sm:flex items-center gap-2 text-white hover:text-white/80 text-sm font-medium"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
@@ -124,7 +124,7 @@ export const Header = () => {
             <img 
               src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
               alt="Rose of Jericho" 
-              className="h-8 w-auto cursor-pointer"
+              className="h-6 w-auto md:h-8 cursor-pointer"
               onClick={() => navigate('/')}
             />
           </div>

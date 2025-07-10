@@ -11,6 +11,7 @@ interface MeditationSession {
   duration: number;
   type: string;
   points_earned: number;
+  status?: string;
 }
 
 interface MeditationTrendChartProps {
@@ -36,8 +37,12 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
       });
     }
 
-    // Count sessions per day
-    sessions.forEach(session => {
+    // Count only completed sessions per day
+    const completedSessions = sessions.filter(session => 
+      session.status === 'completed' || (!session.status && session.duration > 0)
+    );
+    
+    completedSessions.forEach(session => {
       const sessionDate = new Date(session.created_at).toISOString().split('T')[0];
       const dayData = days.find(day => day.date === sessionDate);
       if (dayData) {

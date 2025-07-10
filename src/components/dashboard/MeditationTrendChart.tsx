@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,14 +19,16 @@ interface MeditationTrendChartProps {
 }
 
 export default function MeditationTrendChart({ sessions }: MeditationTrendChartProps) {
+  const [selectedPeriod, setSelectedPeriod] = useState<7 | 14 | 30>(30);
+
   const chartData = useMemo(() => {
     if (!sessions?.length) return [];
 
-    // Get the last 30 days
+    // Get the selected number of days
     const days = [];
     const today = new Date();
     
-    for (let i = 29; i >= 0; i--) {
+    for (let i = selectedPeriod - 1; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       days.push({
@@ -52,11 +54,11 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
     });
 
     return days;
-  }, [sessions]);
+  }, [sessions, selectedPeriod]);
 
   const maxSessions = Math.max(...chartData.map(d => d.sessions));
-  const totalSessionsLast30Days = chartData.reduce((sum, day) => sum + day.sessions, 0);
-  const averageSessionsPerDay = (totalSessionsLast30Days / 30).toFixed(1);
+  const totalSessions = chartData.reduce((sum, day) => sum + day.sessions, 0);
+  const averageSessionsPerDay = (totalSessions / selectedPeriod).toFixed(1);
 
   const handleShare = () => {
     const tweetText = "I am meditating on @ROJOasis and accumulating wellness and web3 rewards";
@@ -111,12 +113,32 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
               </Button>
               <div className="text-right">
                 <p className="text-2xl font-bold text-vibrantOrange">{averageSessionsPerDay}</p>
-                <p className="text-sm text-zinc-400">avg/day (30d)</p>
+                <p className="text-sm text-zinc-400">avg/day ({selectedPeriod}d)</p>
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
+          {/* Time Period Filter */}
+          <div className="flex justify-center mb-4">
+            <div className="flex items-center gap-1 bg-zinc-800/50 p-1 rounded-lg">
+              {[7, 14, 30].map((period) => (
+                <Button
+                  key={period}
+                  variant={selectedPeriod === period ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setSelectedPeriod(period as 7 | 14 | 30)}
+                  className={`px-3 py-1 text-sm ${
+                    selectedPeriod === period
+                      ? "bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white"
+                      : "text-zinc-400 hover:text-white hover:bg-zinc-700/50"
+                  }`}
+                >
+                  {period}d
+                </Button>
+              ))}
+            </div>
+          </div>
           <div className="relative h-64 w-full">
             {/* Rose of Jericho Logo */}
             <div className="absolute top-4 right-4 z-10 opacity-20">
@@ -177,7 +199,7 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
             </ResponsiveContainer>
           </div>
           
-          {totalSessionsLast30Days === 0 && (
+          {totalSessions === 0 && (
             <div className="text-center py-4">
               <p className="text-zinc-400 text-sm">
                 Start meditating to see your progress trend!

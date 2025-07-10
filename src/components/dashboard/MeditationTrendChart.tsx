@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Share2 } from 'lucide-react';
 
 interface MeditationSession {
   id: string;
@@ -52,6 +53,12 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
   const totalSessionsLast30Days = chartData.reduce((sum, day) => sum + day.sessions, 0);
   const averageSessionsPerDay = (totalSessionsLast30Days / 30).toFixed(1);
 
+  const handleShare = () => {
+    const tweetText = "I am meditating on @ROJOasis and accumulating wellness and web3 rewards";
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+  };
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -87,14 +94,33 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
               </div>
               Meditation Frequency
             </CardTitle>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-vibrantOrange">{averageSessionsPerDay}</p>
-              <p className="text-sm text-zinc-400">avg/day (30d)</p>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleShare}
+                variant="outline"
+                size="sm"
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-vibrantOrange">{averageSessionsPerDay}</p>
+                <p className="text-sm text-zinc-400">avg/day (30d)</p>
+              </div>
             </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="h-64 w-full">
+          <div className="relative h-64 w-full">
+            {/* Rose of Jericho Logo */}
+            <div className="absolute top-4 right-4 z-10 opacity-20">
+              <img 
+                src="https://61b6909d-21c3-4d52-bc90-c6b7b0e6c0f4.lovableproject.com/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png"
+                alt="Rose of Jericho"
+                className="w-12 h-12 object-contain"
+              />
+            </div>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <CartesianGrid 

@@ -124,22 +124,22 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
                   stroke="url(#trendGradient)"
                   strokeWidth={3}
                   dot={{ 
-                    fill: 'hsl(var(--vibrant-orange))', 
+                    fill: '#FF8A00', 
                     strokeWidth: 2, 
-                    stroke: 'hsl(var(--vibrant-purple))',
+                    stroke: '#9C27B0',
                     r: 4 
                   }}
                   activeDot={{ 
                     r: 6, 
-                    fill: 'hsl(var(--vibrant-orange))',
-                    stroke: 'hsl(var(--vibrant-purple))',
-                    strokeWidth: 2
+                    fill: '#FF8A00',
+                    stroke: '#9C27B0',
+                    strokeWidth: 3
                   }}
                 />
                 <defs>
                   <linearGradient id="trendGradient" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="hsl(var(--vibrant-purple))" />
-                    <stop offset="100%" stopColor="hsl(var(--vibrant-orange))" />
+                    <stop offset="0%" stopColor="#9C27B0" />
+                    <stop offset="100%" stopColor="#FF8A00" />
                   </linearGradient>
                 </defs>
               </LineChart>

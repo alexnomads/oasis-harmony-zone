@@ -1,0 +1,160 @@
+import { useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { TrendingUp } from 'lucide-react';
+
+interface MeditationSession {
+  id: string;
+  created_at: string;
+  duration: number;
+  type: string;
+  points_earned: number;
+}
+
+interface MeditationTrendChartProps {
+  sessions: MeditationSession[];
+}
+
+export default function MeditationTrendChart({ sessions }: MeditationTrendChartProps) {
+  const chartData = useMemo(() => {
+    if (!sessions?.length) return [];
+
+    // Get the last 30 days
+    const days = [];
+    const today = new Date();
+    
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      days.push({
+        date: date.toISOString().split('T')[0],
+        dateDisplay: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        sessions: 0,
+        totalMinutes: 0
+      });
+    }
+
+    // Count sessions per day
+    sessions.forEach(session => {
+      const sessionDate = new Date(session.created_at).toISOString().split('T')[0];
+      const dayData = days.find(day => day.date === sessionDate);
+      if (dayData) {
+        dayData.sessions += 1;
+        dayData.totalMinutes += Math.round(session.duration / 60); // Convert seconds to minutes
+      }
+    });
+
+    return days;
+  }, [sessions]);
+
+  const maxSessions = Math.max(...chartData.map(d => d.sessions));
+  const totalSessionsLast30Days = chartData.reduce((sum, day) => sum + day.sessions, 0);
+  const averageSessionsPerDay = (totalSessionsLast30Days / 30).toFixed(1);
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-zinc-800 border border-zinc-700 rounded-lg p-3 shadow-lg">
+          <p className="text-white font-medium">{label}</p>
+          <p className="text-vibrantOrange">
+            {data.sessions} session{data.sessions !== 1 ? 's' : ''}
+          </p>
+          {data.totalMinutes > 0 && (
+            <p className="text-zinc-300 text-sm">
+              {data.totalMinutes} minute{data.totalMinutes !== 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.5 }}
+    >
+      <Card className="bg-zinc-900/50 border-zinc-800">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-r from-vibrantPurple/20 to-vibrantOrange/20 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-vibrantOrange" />
+              </div>
+              Meditation Frequency
+            </CardTitle>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-vibrantOrange">{averageSessionsPerDay}</p>
+              <p className="text-sm text-zinc-400">avg/day (30d)</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <CartesianGrid 
+                  strokeDasharray="3 3" 
+                  stroke="rgba(63, 63, 70, 0.3)"
+                  horizontal={true}
+                  vertical={false}
+                />
+                <XAxis 
+                  dataKey="dateDisplay" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgb(161, 161, 170)', fontSize: 12 }}
+                  interval="preserveStartEnd"
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgb(161, 161, 170)', fontSize: 12 }}
+                  domain={[0, maxSessions > 0 ? Math.max(maxSessions + 1, 3) : 3]}
+                  tickCount={4}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="sessions"
+                  stroke="url(#trendGradient)"
+                  strokeWidth={3}
+                  dot={{ 
+                    fill: 'hsl(var(--vibrant-orange))', 
+                    strokeWidth: 2, 
+                    stroke: 'hsl(var(--vibrant-purple))',
+                    r: 4 
+                  }}
+                  activeDot={{ 
+                    r: 6, 
+                    fill: 'hsl(var(--vibrant-orange))',
+                    stroke: 'hsl(var(--vibrant-purple))',
+                    strokeWidth: 2
+                  }}
+                />
+                <defs>
+                  <linearGradient id="trendGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="hsl(var(--vibrant-purple))" />
+                    <stop offset="100%" stopColor="hsl(var(--vibrant-orange))" />
+                  </linearGradient>
+                </defs>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          
+          {totalSessionsLast30Days === 0 && (
+            <div className="text-center py-4">
+              <p className="text-zinc-400 text-sm">
+                Start meditating to see your progress trend!
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}

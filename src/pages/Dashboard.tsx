@@ -11,6 +11,7 @@ import { Timer, Award, TrendingUp, History, Globe } from 'lucide-react';
 import { formatDurationDetails } from '@/lib/utils/timeFormat';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/use-toast';
+import MeditationTrendChart from '@/components/dashboard/MeditationTrendChart';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -236,11 +237,15 @@ export default function Dashboard() {
             </motion.div>
           </motion.div>
 
+          {/* Meditation Trend Chart */}
+          <MeditationTrendChart sessions={userData?.sessions || []} />
+
           <motion.div
             variants={itemVariants}
             initial="hidden"
             animate="visible"
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
+            className="mt-6"
           >
             <Card className="bg-zinc-900/50 border-zinc-800">
               <div className="p-5 sm:p-6 border-b border-zinc-800">

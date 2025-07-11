@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ShareSession } from './ShareSession';
+import { CommunityInviteModal } from './CommunityInviteModal';
+import { useState, useEffect } from 'react';
 
 interface CompletedSessionProps {
   pointsEarned: number;
@@ -19,6 +21,26 @@ export const CompletedSession = ({
   sessionId
 }: CompletedSessionProps) => {
   const navigate = useNavigate();
+  const [showCommunityModal, setShowCommunityModal] = useState(false);
+
+  useEffect(() => {
+    // Check if user has opted out of community invites
+    const hideInvite = localStorage.getItem('hideRoseOfJerichoInvite');
+    if (hideInvite === 'true') return;
+
+    // Get session count and determine if we should show the modal
+    const sessionCount = parseInt(localStorage.getItem('completedSessionCount') || '0') + 1;
+    localStorage.setItem('completedSessionCount', sessionCount.toString());
+
+    // Show modal every 3rd session, but with a delay
+    if (sessionCount % 3 === 0) {
+      const timer = setTimeout(() => {
+        setShowCommunityModal(true);
+      }, 3000); // Show 3 seconds after completion
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   return (
     <motion.div
@@ -55,6 +77,11 @@ export const CompletedSession = ({
           New Session
         </Button>
       </div>
+
+      <CommunityInviteModal 
+        isOpen={showCommunityModal}
+        onClose={() => setShowCommunityModal(false)}
+      />
     </motion.div>
   );
 };

@@ -1,6 +1,7 @@
 
 import { Medal, Timer, Award, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDuration } from '@/lib/utils/timeFormat';
 
@@ -60,13 +61,17 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
   // This ensures streaks are only counted for users who have meditated today or yesterday
   const streak = entry.active_streak;
 
+  // Generate username slug for URL
+  const usernameSlug = getUsernameFromEmail(entry.email);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10 shadow-sm hover:bg-white/10 transition-colors duration-200"
-    >
+    <Link to={`/global-dashboard/${usernameSlug}`} className="block">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.05 }}
+        className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10 shadow-sm hover:bg-white/10 transition-colors duration-200 cursor-pointer"
+      >
       <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
         {globalRank <= 3 ? (
           <Medal className={`h-6 w-6 ${getMedalColor(index)}`} />
@@ -102,5 +107,6 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
         </p>
       </div>
     </motion.div>
+    </Link>
   );
 };

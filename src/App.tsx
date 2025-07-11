@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import Meditate from "./pages/Meditate";
 import Dashboard from "./pages/Dashboard";
 import GlobalDashboard from "./pages/GlobalDashboard";
+import UserProfile from "./pages/UserProfile";
 import AuthCallback from "./pages/auth/callback";
 import AuthTest from "./pages/auth/test";
 import AuthDebug from "./pages/auth/debug";
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/auth/debug" element={<AuthDebug />} />
               <Route path="/auth/direct" element={<DirectTest />} />
               <Route path="/global-dashboard" element={<GlobalDashboard />} />
+              <Route path="/global-dashboard/:username" element={<UserProfile />} />
               <Route
                 path="/meditate"
                 element={

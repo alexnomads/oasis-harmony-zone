@@ -54,4 +54,47 @@ export class LeaderboardService extends BaseService {
       return 0;
     }
   }
+
+  // Get user profile by username
+  static async getUserByUsername(username: string) {
+    try {
+      console.log(`Fetching user profile for username: ${username}`);
+      
+      // First try to find by exact username match (from email)
+      const { data, error } = await retryOperation(async () =>
+        supabase
+          .from('global_leaderboard')
+          .select('*')
+          .or(`email.ilike.${username}@%,display_name.ilike.%${username}%`)
+          .limit(1)
+          .single()
+      );
+      
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error fetching user by username:', error);
+        throw new Error(`Failed to fetch user: ${error.message}`);
+      }
+      
+      if (data) {
+        // Get user's rank in the leaderboard
+        const { count: rank } = await retryOperation(async () =>
+          supabase
+            .from('global_leaderboard')
+            .select('*', { count: 'exact', head: true })
+            .gt('total_points', data.total_points)
+        );
+        
+        return {
+          ...data,
+          rank: (rank || 0) + 1
+        };
+      }
+      
+      console.log(`User not found for username: ${username}`);
+      return null;
+    } catch (error) {
+      console.error('Error fetching user by username:', error);
+      return null;
+    }
+  }
 }

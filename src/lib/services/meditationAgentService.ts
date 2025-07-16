@@ -24,41 +24,113 @@ interface AIResponse {
   recommendation?: MeditationRecommendation;
 }
 
+interface ConversationMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 export class MeditationAgentService extends BaseService {
-  // New method to handle AI responses for chat
+  // New method to handle AI responses for chat using real LLM
   static async getResponse(userMessage: string, previousMessages: MessageType[]): Promise<AIResponse> {
-    // Analyze user sentiment
-    const sentiment = this.analyzeSentiment(userMessage);
+    try {
+      // Get user context if available
+      const userContext = await this.getUserContext();
+      
+      // Prepare conversation history
+      const conversationHistory: ConversationMessage[] = previousMessages
+        .slice(-6) // Keep last 6 messages for context
+        .map(msg => ({
+          role: msg.role === 'agent' ? 'assistant' : 'user',
+          content: msg.content
+        }));
+
+      // Call Supabase Edge Function for AI response
+      const { data, error } = await supabase.functions.invoke('ai-meditation-chat', {
+        body: {
+          message: userMessage,
+          conversationHistory,
+          userContext
+        }
+      });
+
+      if (error) {
+        console.error('Error calling AI function:', error);
+        return this.getFallbackResponse(userMessage);
+      }
+
+      // Analyze sentiment for meditation recommendations
+      const sentiment = this.analyzeSentiment(userMessage);
+      const recommendation = this.getRecommendation(sentiment);
+      
+      // Determine if we should show meditation option based on response content
+      const aiResponse = data.response || "I'm here to help with your meditation practice.";
+      const shouldShowMeditation = this.shouldShowMeditationOption(aiResponse, sentiment);
+
+      return {
+        message: aiResponse,
+        showMeditationOption: shouldShowMeditation,
+        recommendation: shouldShowMeditation ? recommendation : undefined
+      };
+      
+    } catch (error) {
+      console.error('Error in AI meditation chat:', error);
+      return this.getFallbackResponse(userMessage);
+    }
+  }
+
+  // Get user context for personalized responses
+  private static async getUserContext() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data: userPoints } = await supabase
+        .from('user_points')
+        .select('meditation_streak, total_points')
+        .eq('user_id', user.id)
+        .single();
+
+      return {
+        meditationStreak: userPoints?.meditation_streak || 0,
+        totalPoints: userPoints?.total_points || 0,
+        preferredMeditationType: 'mindfulness' // Could be stored in user preferences
+      };
+    } catch (error) {
+      console.error('Error getting user context:', error);
+      return null;
+    }
+  }
+
+  // Determine if meditation option should be shown
+  private static shouldShowMeditationOption(response: string, sentiment: UserSentiment): boolean {
+    const meditationKeywords = /meditat|breath|relax|calm|center|focus|mindful|session|practice/i;
+    const questionIndicators = /would you like|shall we|how about|ready for|interested in/i;
     
-    // Get recommendation based on sentiment
+    return (
+      meditationKeywords.test(response) ||
+      questionIndicators.test(response) ||
+      sentiment.intensity >= 6 ||
+      response.includes('session')
+    );
+  }
+
+  // Fallback response when AI service fails
+  private static getFallbackResponse(userMessage: string): AIResponse {
+    const sentiment = this.analyzeSentiment(userMessage);
     const recommendation = this.getRecommendation(sentiment);
     
-    // Generate response based on sentiment and recommendation
-    let aiMessage = '';
-    let showMeditationOption = false;
+    const fallbackResponses = [
+      "I understand what you're going through. Sometimes taking a moment to breathe and center ourselves can make all the difference. Would you like to try a meditation session?",
+      "Thank you for sharing that with me. Meditation can be a powerful tool for navigating challenging emotions. Shall we explore a practice together?",
+      "I hear you. When we're feeling overwhelmed, a few minutes of mindful breathing can help us find our balance again. Ready to give it a try?",
+      "Your feelings are completely valid. I've found that meditation can offer us a peaceful refuge, especially during turbulent times. Would you like to start a session?"
+    ];
     
-    // Simple response logic based on sentiment
-    if (sentiment.intensity >= 7) {
-      aiMessage = `I can sense that you're feeling quite ${sentiment.mainEmotion}. ${
-        sentiment.cryptoRelated ? 
-        'The crypto markets can certainly be overwhelming. ' : 
-        ''
-      }I think a meditation session could help you find some balance.`;
-      showMeditationOption = true;
-    } else if (sentiment.mainEmotion === 'happy') {
-      aiMessage = `It's great to hear you're feeling positive! A meditation session now could help you maintain this balanced state.`;
-      showMeditationOption = true;
-    } else if (sentiment.mainEmotion === 'unfocused') {
-      aiMessage = `When you're having trouble focusing, meditation can be a powerful tool to clear your mind. Would you like to try a quick session?`;
-      showMeditationOption = true;
-    } else {
-      aiMessage = `Thank you for sharing. How would you feel about doing a quick meditation session to enhance your current state?`;
-      showMeditationOption = true;
-    }
+    const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
     
     return {
-      message: aiMessage,
-      showMeditationOption,
+      message: randomResponse,
+      showMeditationOption: true,
       recommendation
     };
   }

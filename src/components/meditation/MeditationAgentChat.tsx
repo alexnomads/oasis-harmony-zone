@@ -76,14 +76,27 @@ export const MeditationAgentChat: React.FC = () => {
       setTimeout(() => {
         setMessages((prev) => [...prev, newAgentMessage]);
         setIsTyping(false);
-      }, 1000);
+      }, 1500); // Slightly longer delay for more natural feel
     } catch (error) {
       console.error("Error getting AI response:", error);
-      setIsTyping(false);
+      
+      // Graceful fallback with encouraging message
+      const fallbackMessage: MessageType = {
+        role: "agent",
+        content: "I'm experiencing a brief technical moment, but I'm still here to support you. How are you feeling right now? Would you like to try a meditation session?",
+        timestamp: new Date(),
+        showMeditationStart: true,
+      };
+      
+      setTimeout(() => {
+        setMessages((prev) => [...prev, fallbackMessage]);
+        setIsTyping(false);
+      }, 1000);
+      
       toast({
-        title: "Error",
-        description: "Failed to get a response. Please try again.",
-        variant: "destructive",
+        title: "Connection Issue",
+        description: "AI temporarily unavailable, but fallback support is active.",
+        variant: "default",
       });
     }
   };

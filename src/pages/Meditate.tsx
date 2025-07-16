@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Timer } from 'lucide-react';
@@ -5,9 +6,11 @@ import { Header } from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MeditationAgentChat } from '@/components/meditation/MeditationAgentChat';
 import { QuickMeditation } from '@/components/meditation/QuickMeditation';
 export default function Meditate() {
+  const [isAICoachOpen, setIsAICoachOpen] = useState(false);
   const {
     user,
     loading
@@ -116,12 +119,10 @@ export default function Meditate() {
                     </div>
                     
                     <div className="mt-auto">
-                      <Button className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 text-white text-sm sm:text-base py-2 sm:py-3" onClick={() => {
-                    const coachSection = document.getElementById('ai-coach-section');
-                    coachSection?.scrollIntoView({
-                      behavior: 'smooth'
-                    });
-                  }}>
+                      <Button 
+                        className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 text-white text-sm sm:text-base py-2 sm:py-3" 
+                        onClick={() => setIsAICoachOpen(true)}
+                      >
                         Chat with Rose
                       </Button>
                     </div>
@@ -143,22 +144,17 @@ export default function Meditate() {
               </Card>
             </div>)}
 
-          {/* AI Coach Section - Full Experience */}
-          {user && <section id="ai-coach-section" className="mb-12">
-              <motion.div initial={{
-            opacity: 0,
-            y: 20
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            duration: 0.5,
-            delay: 0.3
-          }}>
-                <h2 className="text-2xl font-semibold mb-6 text-center">Full AI Meditation Coach Experience</h2>
-                <MeditationAgentChat />
-              </motion.div>
-            </section>}
+          {/* AI Coach Modal */}
+          <Dialog open={isAICoachOpen} onOpenChange={setIsAICoachOpen}>
+            <DialogContent className="max-w-none w-screen h-screen p-0 bg-black">
+              <div className="h-full flex flex-col">
+                <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
+                <div className="flex-1 overflow-hidden">
+                  <MeditationAgentChat />
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
           
           {/* Info Cards */}
           <div className="grid gap-4 sm:gap-6 md:gap-8 mt-8 sm:mt-12 mb-8 sm:mb-12">

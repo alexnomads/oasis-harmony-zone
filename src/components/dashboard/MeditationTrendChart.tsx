@@ -3,7 +3,11 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Share2 } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { DashboardImageGenerator } from './DashboardImageGenerator';
+import { formatDurationDetails } from '@/lib/utils/timeFormat';
 
 interface MeditationSession {
   id: string;
@@ -19,6 +23,7 @@ interface MeditationTrendChartProps {
 }
 
 export default function MeditationTrendChart({ sessions }: MeditationTrendChartProps) {
+  const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<7 | 14 | 30>(30);
 
   const chartData = useMemo(() => {
@@ -57,14 +62,46 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
   }, [sessions, selectedPeriod]);
 
   const maxSessions = Math.max(...chartData.map(d => d.sessions));
-  const totalSessions = chartData.reduce((sum, day) => sum + day.sessions, 0);
-  const averageSessionsPerDay = (totalSessions / selectedPeriod).toFixed(1);
+  const chartTotalSessions = chartData.reduce((sum, day) => sum + day.sessions, 0);
+  const averageSessionsPerDay = (chartTotalSessions / selectedPeriod).toFixed(1);
 
-  const handleShare = () => {
-    const tweetText = "I am meditating on @ROJOasis and accumulating wellness and web3 rewards";
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-    window.open(twitterUrl, '_blank', 'width=550,height=420');
-  };
+  // Calculate totals for sharing
+  const totalCompletedSessions = sessions.filter(s => s.status === 'completed').length;
+  const totalDuration = sessions
+    .filter(s => s.status === 'completed')
+    .reduce((acc, session) => acc + (session.duration || 0), 0);
+  const totalPoints = sessions
+    .filter(s => s.status === 'completed')
+    .reduce((acc, session) => acc + (session.points_earned || 0), 0);
+  
+  // Calculate streak (simplified - consecutive days with sessions)
+  const today = new Date();
+  const completedSessions = sessions
+    .filter(s => s.status === 'completed')
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  
+  let streak = 0;
+  if (completedSessions.length > 0) {
+    const sessionDates = completedSessions.map(s => 
+      new Date(s.created_at).toDateString()
+    );
+    const uniqueDates = [...new Set(sessionDates)];
+    
+    // Check if today has a session
+    const todayStr = today.toDateString();
+    const yesterdayStr = new Date(today.getTime() - 24 * 60 * 60 * 1000).toDateString();
+    
+    if (uniqueDates.includes(todayStr) || uniqueDates.includes(yesterdayStr)) {
+      for (let i = 0; i < uniqueDates.length; i++) {
+        const checkDate = new Date(today.getTime() - i * 24 * 60 * 60 * 1000).toDateString();
+        if (uniqueDates.includes(checkDate)) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+    }
+  }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -94,28 +131,23 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
     >
       <Card className="bg-zinc-900/50 border-zinc-800">
         <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-r from-vibrantPurple/20 to-vibrantOrange/20 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-vibrantOrange" />
-              </div>
-              Meditation Frequency
-            </CardTitle>
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={handleShare}
-                variant="outline"
-                size="sm"
-                className="border-white/20 text-white hover:bg-white/10"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-vibrantOrange">{averageSessionsPerDay}</p>
-                <p className="text-sm text-zinc-400">avg/day ({selectedPeriod}d)</p>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Meditation Frequency</h2>
+              <p className="text-zinc-400 mt-1">Your meditation activity over time</p>
             </div>
+            {user && (
+              <div className="min-w-0">
+                <DashboardImageGenerator
+                  userEmail={user.email || ''}
+                  totalPoints={totalPoints}
+                  streak={streak}
+                  totalSessions={totalCompletedSessions}
+                  totalDuration={formatDurationDetails(totalDuration)}
+                  profileUrl={`https://roseofjericho.xyz/profile/${user.email?.split('@')[0]}`}
+                />
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -199,7 +231,7 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
             </ResponsiveContainer>
           </div>
           
-          {totalSessions === 0 && (
+          {chartTotalSessions === 0 && (
             <div className="text-center py-4">
               <p className="text-zinc-400 text-sm">
                 Start meditating to see your progress trend!

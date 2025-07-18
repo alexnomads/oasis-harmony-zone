@@ -120,7 +120,7 @@ export const Header = () => {
             </a>
           </div>
 
-          <div className="flex-1 flex justify-center items-center">
+          <div className="absolute left-1/2 transform -translate-x-1/2">
             <img 
               src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
               alt="Rose of Jericho" 

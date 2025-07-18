@@ -167,33 +167,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Share Dashboard Section */}
-          {user && (
-            <motion.div
-              variants={itemVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.1 }}
-              className="mb-6"
-            >
-              <Card className="bg-zinc-900/50 border-zinc-800">
-                <div className="p-5 sm:p-6 border-b border-zinc-800">
-                  <h2 className="text-xl sm:text-2xl font-bold">Share Your Journey</h2>
-                  <p className="text-zinc-400 mt-1">Generate a beautiful image of your meditation progress</p>
-                </div>
-                <CardContent className="p-5 sm:p-6">
-                  <DashboardImageGenerator
-                    userEmail={user.email || ''}
-                    totalPoints={totalPoints}
-                    streak={streak}
-                    totalSessions={totalSessions}
-                    totalDuration={formatDurationDetails(totalDuration)}
-                    profileUrl={`https://roseofjericho.xyz/profile/${user.email?.split('@')[0]}`}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
 
           <motion.div 
             className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8"

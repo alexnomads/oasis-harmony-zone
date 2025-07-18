@@ -53,23 +53,23 @@ export const DashboardImageGenerator = ({
 
     // Add title
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 48px Arial';
+    ctx.font = 'bold 42px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('My Meditation Journey', canvas.width / 2, 120);
+    ctx.fillText('My Meditation Journey', canvas.width / 2, 115);
 
     // Add subtitle with user email
     ctx.fillStyle = '#a1a1aa'; // zinc-400
-    ctx.font = '24px Arial';
+    ctx.font = '22px Arial';
     const displayName = userEmail.split('@')[0];
-    ctx.fillText(`@${displayName} on Rose of Jericho`, canvas.width / 2, 150);
+    ctx.fillText(`@${displayName} on Rose of Jericho`, canvas.width / 2, 145);
 
     // Stats cards layout
-    const cardWidth = 250;
-    const cardHeight = 140;
-    const cardSpacing = 40;
+    const cardWidth = 240;
+    const cardHeight = 130;
+    const cardSpacing = 50;
     const startX = (canvas.width - (2 * cardWidth + cardSpacing)) / 2;
-    const topRowY = 220;
-    const bottomRowY = 390;
+    const topRowY = 200;
+    const bottomRowY = 360;
 
     // Helper function to draw stat card
     const drawStatCard = (x: number, y: number, icon: string, value: string, label: string, color: string) => {
@@ -90,23 +90,33 @@ export const DashboardImageGenerator = ({
 
       // Icon text (emoji)
       ctx.fillStyle = color;
-      ctx.font = '30px Arial';
+      ctx.font = '26px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(icon, x + 60, y + 58);
+      ctx.fillText(icon, x + 50, y + 48);
 
       // Value
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 32px Arial';
+      ctx.font = 'bold 28px Arial';
       ctx.textAlign = 'left';
-      ctx.fillText(value, x + 100, y + 55);
+      const maxWidth = cardWidth - 110; // Leave space for icon and padding
+      let fontSize = 28;
+      ctx.font = `bold ${fontSize}px Arial`;
+      
+      // Reduce font size if text is too wide
+      while (ctx.measureText(value).width > maxWidth && fontSize > 16) {
+        fontSize -= 2;
+        ctx.font = `bold ${fontSize}px Arial`;
+      }
+      
+      ctx.fillText(value, x + 85, y + 48);
 
       // Label
       ctx.fillStyle = '#a1a1aa'; // zinc-400
-      ctx.font = '18px Arial';
-      ctx.fillText(label, x + 100, y + 80);
+      ctx.font = '16px Arial';
+      ctx.fillText(label, x + 85, y + 70);
     };
 
-    // Draw stat cards
+    // Draw stat cards with adjusted positions
     drawStatCard(startX, topRowY, '🏆', totalPoints.toFixed(1), 'Total Points', '#eab308'); // yellow-500
     drawStatCard(startX + cardWidth + cardSpacing, topRowY, '🔥', `${streak} days`, 'Current Streak', '#f97316'); // orange-500
     drawStatCard(startX, bottomRowY, '📅', totalSessions.toString(), 'Total Sessions', '#3b82f6'); // blue-500
@@ -114,15 +124,15 @@ export const DashboardImageGenerator = ({
 
     // Add call to action
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 28px Arial';
+    ctx.font = 'bold 26px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Join me on roseofjericho.xyz', canvas.width / 2, 600);
+    ctx.fillText('Join me on roseofjericho.xyz', canvas.width / 2, 550);
 
     // Add profile URL if provided
     if (profileUrl) {
       ctx.fillStyle = '#a1a1aa'; // zinc-400
-      ctx.font = '20px Arial';
-      ctx.fillText(profileUrl, canvas.width / 2, 630);
+      ctx.font = '18px Arial';
+      ctx.fillText(profileUrl, canvas.width / 2, 580);
     }
 
     return canvas;

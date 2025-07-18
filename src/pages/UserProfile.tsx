@@ -19,6 +19,8 @@ import {
 import { formatDuration } from "@/lib/utils/timeFormat";
 import { LeaderboardService } from "@/lib/services/leaderboardService";
 import { toast } from "sonner";
+import { DashboardImageGenerator } from "@/components/dashboard/DashboardImageGenerator";
+import { formatDurationDetails } from "@/lib/utils/timeFormat";
 
 type UserProfileData = {
   user_id: string;
@@ -251,6 +253,26 @@ export default function UserProfile() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Share Profile Journey */}
+          <Card className="bg-zinc-900/50 border border-zinc-800 mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Share2 className="h-5 w-5" />
+                Share Your Journey
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DashboardImageGenerator
+                userEmail={userProfile.display_name === userProfile.email ? userProfile.email : userProfile.display_name}
+                totalPoints={userProfile.total_points}
+                streak={userProfile.active_streak}
+                totalSessions={userProfile.total_sessions}
+                totalDuration={formatDurationDetails(userProfile.total_meditation_time)}
+                profileUrl={window.location.href}
+              />
+            </CardContent>
+          </Card>
 
           {/* Achievements Section */}
           <Card className="bg-zinc-900/50 border border-zinc-800">

@@ -101,10 +101,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         return (
           <span key={i}>
             {part.split("\n").map((line, j) => (
-              <span key={j}>
+              <React.Fragment key={j}>
                 {line}
                 {j < part.split("\n").length - 1 && <br />}
-              </span>
+              </React.Fragment>
             ))}
           </span>
         );
@@ -112,10 +112,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     }
     
     return content.split("\n").map((line, i) => (
-      <span key={i}>
+      <React.Fragment key={i}>
         {line}
         {i < content.split("\n").length - 1 && <br />}
-      </span>
+      </React.Fragment>
     ));
   };
 
@@ -180,13 +180,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             </div>
           </div>
           
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
+            <DurationSelector 
+              onSelect={setSelectedDuration}
+              currentDuration={selectedDuration}
+            />
             <Button
-              onClick={() => handleStartMeditation(message.recommendation)}
+              onClick={() => handleStartMeditation({
+                ...message.recommendation!,
+                duration: selectedDuration
+              })}
               className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 transition-all duration-300"
             >
               <Play className="w-4 h-4 mr-2" />
-              Start {Math.floor(message.recommendation.duration / 60)}-Minute Session
+              Start {Math.floor(selectedDuration / 60)}-Minute Session
             </Button>
           </div>
         </motion.div>

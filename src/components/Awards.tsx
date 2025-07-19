@@ -29,53 +29,37 @@ export const Awards = () => {
           </span>
         </motion.div>
         
-        <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-12">
-          {/* First award */}
-          <motion.a href={awards[0].link} target="_blank" rel="noopener noreferrer" initial={{
-          opacity: 0,
-          scale: 0.8
-        }} whileInView={{
-          opacity: 1,
-          scale: 1
-        }} whileHover={{
-          scale: 1.05
-        }} transition={{
-          duration: 0.4
-        }} className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
-            <img src={awards[0].logo} alt={awards[0].name} className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-contain" />
-          </motion.a>
-
-          {/* Middle award (Polygon) */}
-          <motion.a href={awards[1].link} target="_blank" rel="noopener noreferrer" initial={{
-          opacity: 0,
-          scale: 0.8
-        }} whileInView={{
-          opacity: 1,
-          scale: 1
-        }} whileHover={{
-          scale: 1.05
-        }} transition={{
-          duration: 0.4,
-          delay: 0.2
-        }} className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center py-[10px]">
-            <img src={awards[1].logo} alt={awards[1].name} className="w-28 h-28 sm:w-32 sm:h-32 object-contain" />
-          </motion.a>
-
-          {/* Last award */}
-          <motion.a href={awards[2].link} target="_blank" rel="noopener noreferrer" initial={{
-          opacity: 0,
-          scale: 0.8
-        }} whileInView={{
-          opacity: 1,
-          scale: 1
-        }} whileHover={{
-          scale: 1.05
-        }} transition={{
-          duration: 0.4,
-          delay: 0.4
-        }} className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
-            <img src={awards[2].logo} alt={awards[2].name} className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-lg" />
-          </motion.a>
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8">
+          {awards.map((award, index) => (
+            <motion.a 
+              key={award.name}
+              href={award.link} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              initial={{
+                opacity: 0,
+                scale: 0.8
+              }} 
+              whileInView={{
+                opacity: 1,
+                scale: 1
+              }} 
+              whileHover={{
+                scale: 1.05
+              }} 
+              transition={{
+                duration: 0.4,
+                delay: index * 0.2
+              }} 
+              className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center"
+            >
+              <img 
+                src={award.logo} 
+                alt={award.name} 
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-contain" 
+              />
+            </motion.a>
+          ))}
         </div>
       </div>
     </section>;

@@ -133,7 +133,7 @@ export const Header = () => {
             {user && (
               <div className="hidden md:flex flex-col items-end mr-2">
                 <span id="user-status" className="text-xs text-white">
-                  {user.email}
+                  {user.email?.split('@')[0]}
                 </span>
                 <span id="points-display" className="text-xs text-white">
                   Points: {points}
@@ -201,7 +201,7 @@ export const Header = () => {
         {user && (
           <div className="md:hidden w-full flex justify-between text-white text-xs py-1 px-2">
             <span id="mobile-user-status">
-              {user.email}
+              {user.email?.split('@')[0]}
             </span>
             <span id="mobile-points-display">
               Points: {points}

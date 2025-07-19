@@ -162,7 +162,7 @@ export default function Dashboard() {
                 size="lg"
               >
                 <Globe className="mr-2 h-5 w-5" />
-                Global View
+                Global Dashboard
               </Button>
             </div>
           </div>

@@ -92,7 +92,7 @@ export const DashboardImageGenerator = ({
       ctx.fillStyle = color;
       ctx.font = '26px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(icon, x + 50, y + 48);
+      ctx.fillText(icon, x + 60, y + 58);
 
       // Value
       ctx.fillStyle = '#ffffff';

@@ -29,7 +29,7 @@ export const Awards = () => {
           </span>
         </motion.div>
         
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8">
+        <div className="flex flex-row justify-center items-center gap-3 sm:gap-8">
           {awards.map((award, index) => (
             <motion.a 
               key={award.name}
@@ -51,12 +51,12 @@ export const Awards = () => {
                 duration: 0.4,
                 delay: index * 0.2
               }} 
-              className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center"
+              className="bg-black/20 backdrop-blur-sm p-2 sm:p-4 rounded-xl border border-white/20 w-24 h-24 sm:w-36 sm:h-36 flex items-center justify-center"
             >
               <img 
                 src={award.logo} 
                 alt={award.name} 
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-contain" 
+                className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg object-contain" 
               />
             </motion.a>
           ))}

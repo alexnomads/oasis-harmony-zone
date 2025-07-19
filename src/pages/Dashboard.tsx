@@ -112,11 +112,22 @@ export default function Dashboard() {
   const recentSessions = userData?.sessions.slice(0, 5) || [];
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const date = new Date(dateString);
+    const dateOptions: Intl.DateTimeFormatOptions = {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
-    });
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    };
+    
+    const datePart = date.toLocaleDateString('en-US', dateOptions);
+    const timePart = date.toLocaleTimeString('en-US', timeOptions);
+    
+    return `${datePart} at ${timePart}`;
   };
 
   const containerVariants = {

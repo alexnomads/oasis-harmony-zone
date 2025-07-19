@@ -122,18 +122,29 @@ export const DashboardImageGenerator = ({
     drawStatCard(startX, bottomRowY, '📅', totalSessions.toString(), 'Total Sessions', '#3b82f6'); // blue-500
     drawStatCard(startX + cardWidth + cardSpacing, bottomRowY, '⏱️', totalDuration, 'Total Time', '#10b981'); // green-500
 
-    // Add call to action
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 26px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Join me on roseofjericho.xyz', canvas.width / 2, 550);
+    // Add ROJ logo
+    const logo = new Image();
+    logo.onload = () => {
+      // Draw logo at center bottom
+      const logoSize = 60;
+      const logoX = (canvas.width - logoSize) / 2;
+      const logoY = 520;
+      ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+      
+      // Add call to action
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 26px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Join me on roseofjericho.xyz', canvas.width / 2, 610);
 
-    // Add profile URL if provided
-    if (profileUrl) {
-      ctx.fillStyle = '#a1a1aa'; // zinc-400
-      ctx.font = '18px Arial';
-      ctx.fillText(profileUrl, canvas.width / 2, 580);
-    }
+      // Add profile URL if provided
+      if (profileUrl) {
+        ctx.fillStyle = '#a1a1aa'; // zinc-400
+        ctx.font = '18px Arial';
+        ctx.fillText(profileUrl, canvas.width / 2, 640);
+      }
+    };
+    logo.src = '/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png';
 
     return canvas;
   }, [userEmail, totalPoints, streak, totalSessions, totalDuration, profileUrl]);

@@ -131,17 +131,22 @@ export const DashboardImageGenerator = ({
       const logoY = 520;
       ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
       
-      // Add call to action
+      // Add website URL under the logo
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 26px Arial';
+      ctx.font = 'bold 24px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('Join me on roseofjericho.xyz', canvas.width / 2, 610);
+      ctx.fillText('www.roseofjericho.xyz', canvas.width / 2, 610);
+
+      // Add call to action
+      ctx.fillStyle = '#a1a1aa'; // zinc-400
+      ctx.font = '20px Arial';
+      ctx.fillText('Join me on the meditation journey', canvas.width / 2, 640);
 
       // Add profile URL if provided
       if (profileUrl) {
         ctx.fillStyle = '#a1a1aa'; // zinc-400
-        ctx.font = '18px Arial';
-        ctx.fillText(profileUrl, canvas.width / 2, 640);
+        ctx.font = '16px Arial';
+        ctx.fillText(profileUrl, canvas.width / 2, 660);
       }
     };
     logo.src = '/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png';

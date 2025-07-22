@@ -34,11 +34,18 @@ export default function AuthCallback() {
           throw new Error(error_description);
         }
 
-        // Handle email verification
+        // Handle email verification and password recovery
         if (token_hash && type) {
           console.log('Attempting verification with type:', type);
 
-          // Support both verification types
+          // Handle password recovery
+          if (type === 'recovery') {
+            console.log('Password recovery detected, redirecting to reset password page');
+            navigate(`/reset-password?token_hash=${token_hash}&type=${type}`);
+            return;
+          }
+
+          // Support email verification types
           if (type !== 'email_confirmation' && type !== 'email' && type !== 'signup') {
             throw new Error(`Invalid verification type: ${type}`);
           }

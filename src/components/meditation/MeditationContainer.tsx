@@ -92,7 +92,7 @@ export const MeditationContainer = () => {
           {/* Main Content */}
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-              <TabsList className="grid w-full grid-cols-3 bg-black/20 border border-white/20">
+              <TabsList className="grid w-full grid-cols-2 bg-black/20 border border-white/20">
                 <TabsTrigger value="chat" className="flex items-center gap-2">
                   <MessageCircle className="w-4 h-4" />
                   AI Coach
@@ -100,10 +100,6 @@ export const MeditationContainer = () => {
                 <TabsTrigger value="quick" className="flex items-center gap-2">
                   <Brain className="w-4 h-4" />
                   Quick Session
-                </TabsTrigger>
-                <TabsTrigger value="profile" className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Profile
                 </TabsTrigger>
               </TabsList>
 
@@ -114,10 +110,6 @@ export const MeditationContainer = () => {
 
                 <TabsContent value="quick" className="h-full m-0">
                   <QuickMeditation />
-                </TabsContent>
-
-                <TabsContent value="profile" className="h-full m-0">
-                  <UserProfile />
                 </TabsContent>
               </div>
             </Tabs>

@@ -44,12 +44,16 @@ export class SessionService extends BaseService {
       let basePoints;
       if (duration <= 30) {
         basePoints = 1; // 30 seconds
+      } else if (duration <= 60) {
+        basePoints = 2; // 1 minute
       } else if (duration <= 300) {
         basePoints = 5; // 5 minutes
       } else if (duration <= 600) {
         basePoints = 15; // 10 minutes
+      } else if (duration <= 900) {
+        basePoints = 25; // 15 minutes
       } else {
-        basePoints = 25; // 15+ minutes
+        basePoints = 50; // 30+ minutes
       }
 
       // Calculate penalties

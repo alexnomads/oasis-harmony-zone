@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { MeditationSession } from "@/components/dashboard/MeditationSession";
-import { formatDuration } from "@/lib/utils";
+import { SessionCard } from "@/components/dashboard/SessionCard";
+import { formatDuration } from "@/lib/utils/timeFormat";
 import {
   Trophy,
   Flame,
@@ -194,7 +194,7 @@ export default function Dashboard() {
       <h2 className="text-2xl font-bold text-white">Recent Sessions</h2>
       <div className="space-y-2">
         {dashboardData.sessions.map(session => (
-          <MeditationSession key={session.id} session={session} />
+          <SessionCard key={session.id} session={session} />
         ))}
       </div>
     </div>

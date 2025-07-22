@@ -12,13 +12,17 @@ export const usePet = (userId: string | undefined) => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Load pet data
+  // Load pet data with better error handling
   const loadPetData = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       setIsLoading(true);
       setError(null);
+      console.log('Loading pet data for user:', userId);
       
       const [petData, currencyData, moodData] = await Promise.all([
         PetService.getUserPet(userId),
@@ -26,16 +30,24 @@ export const usePet = (userId: string | undefined) => {
         PetService.getMoodHistory(userId, 7) // Last 7 days
       ]);
 
+      console.log('Pet data loaded successfully:', { petData, currencyData, moodData });
       setPet(petData);
       setCurrency(currencyData);
       setMoodHistory(moodData);
     } catch (err) {
       console.error('Error loading pet data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load pet data');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load pet data';
+      setError(errorMessage);
+      
+      toast({
+        title: "Pet Loading Error",
+        description: "Having trouble loading your companion. Please refresh the page.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [userId, toast]);
 
   // Update pet evolution
   const updateEvolution = useCallback(async () => {
@@ -72,7 +84,7 @@ export const usePet = (userId: string | undefined) => {
     }
   }, [userId]);
 
-  // Log mood
+  // Log mood with improved error handling
   const logMood = useCallback(async (moodData: {
     mood_score: number;
     energy_level: number;
@@ -82,15 +94,25 @@ export const usePet = (userId: string | undefined) => {
     if (!userId) return;
 
     try {
+      console.log('Attempting to log mood:', moodData);
+      
       const newMoodLog = await PetService.logMood(userId, moodData);
       setMoodHistory(prev => [newMoodLog, ...prev.slice(0, 6)]); // Keep last 7 days
       
-      // Update currency
-      const updatedCurrency = await PetService.getUserCurrency(userId);
-      setCurrency(updatedCurrency);
+      // Refresh currency data
+      try {
+        const updatedCurrency = await PetService.getUserCurrency(userId);
+        setCurrency(updatedCurrency);
+      } catch (currencyError) {
+        console.error('Failed to refresh currency:', currencyError);
+      }
       
       // Add experience for mood logging
-      await addExperience(10);
+      try {
+        await addExperience(10);
+      } catch (expError) {
+        console.error('Failed to add experience:', expError);
+      }
       
       toast({
         title: "Mood Logged! 🌸",
@@ -98,9 +120,10 @@ export const usePet = (userId: string | undefined) => {
       });
     } catch (err) {
       console.error('Error logging mood:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to log mood';
       toast({
-        title: "Error",
-        description: "Failed to log mood. Please try again.",
+        title: "Mood Logging Failed",
+        description: errorMessage + ". Please try again.",
         variant: "destructive",
       });
     }

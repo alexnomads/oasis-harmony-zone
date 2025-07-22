@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import type { CompanionPet, MoodLog, ROJCurrency, PetAchievement, PetEvolutionStage } from '../../types/pet';
@@ -25,7 +24,7 @@ export class PetService extends BaseService {
         
       if (petError) throw petError;
       
-      // Create currency record if it doesn't exist
+      // Initialize both point systems with sync
       const { data: currencyData, error: currencyError } = await supabase
         .from('roj_currency')
         .upsert({
@@ -37,6 +36,18 @@ export class PetService extends BaseService {
         .single();
         
       if (currencyError) throw currencyError;
+      
+      // Ensure user_points exists and is synced
+      const { error: userPointsError } = await supabase
+        .from('user_points')
+        .upsert({
+          user_id: userId,
+          total_points: 0,
+          meditation_streak: 0,
+          last_meditation_date: null
+        });
+        
+      if (userPointsError) console.warn('User points sync warning:', userPointsError);
       
       console.log('Successfully initialized pet data:', { petData, currencyData });
       return { 
@@ -148,7 +159,7 @@ export class PetService extends BaseService {
     }
   }
 
-  // Log user mood with improved error handling
+  // Log user mood with synced point system
   static async logMood(userId: string, moodData: {
     mood_score: number;
     energy_level: number;
@@ -176,13 +187,12 @@ export class PetService extends BaseService {
       
       console.log('Mood logged successfully:', data);
       
-      // Award points for mood logging (with error handling)
+      // Award points using synced system (5 points for mood logging)
       try {
-        await this.addCurrency(userId, 5, 0);
+        await this.addSyncedCurrency(userId, 5, 0);
         console.log('Currency awarded successfully');
       } catch (currencyError) {
         console.error('Failed to award currency, but mood was logged:', currencyError);
-        // Don't throw here - mood logging was successful
       }
       
       return data as MoodLog;
@@ -210,18 +220,20 @@ export class PetService extends BaseService {
     }
   }
 
-  // Add currency (ROJ points and stars) with better error handling
-  static async addCurrency(userId: string, rojPoints: number, stars: number): Promise<ROJCurrency> {
+  // Add currency with synchronized point system
+  static async addSyncedCurrency(userId: string, rojPoints: number, stars: number): Promise<ROJCurrency> {
     try {
-      console.log('Adding currency for user:', userId, 'ROJ:', rojPoints, 'Stars:', stars);
+      console.log('Adding synced currency for user:', userId, 'ROJ:', rojPoints, 'Stars:', stars);
       
       // Get current currency data (will auto-initialize if needed)
       const currentCurrency = await this.getUserCurrency(userId);
+      const newRojPoints = currentCurrency.roj_points + rojPoints;
 
-      const { data, error } = await supabase
+      // Update ROJ currency (this will trigger sync to main points via database trigger)
+      const { data: currencyData, error: currencyError } = await supabase
         .from('roj_currency')
         .update({
-          roj_points: currentCurrency.roj_points + rojPoints,
+          roj_points: newRojPoints,
           stars: currentCurrency.stars + stars,
           updated_at: new Date().toISOString()
         })
@@ -229,13 +241,34 @@ export class PetService extends BaseService {
         .select()
         .single();
         
-      if (error) throw error;
-      console.log('Currency updated successfully:', data);
-      return data as ROJCurrency;
+      if (currencyError) throw currencyError;
+      
+      // Also manually update user_points to ensure immediate sync
+      const { error: pointsError } = await supabase
+        .from('user_points')
+        .upsert({
+          user_id: userId,
+          total_points: newRojPoints,
+          meditation_streak: 0, // Will be properly calculated by existing triggers
+          last_meditation_date: null,
+          updated_at: new Date().toISOString()
+        });
+        
+      if (pointsError) {
+        console.warn('Manual sync to user_points failed, relying on triggers:', pointsError);
+      }
+      
+      console.log('Currency updated successfully:', currencyData);
+      return currencyData as ROJCurrency;
     } catch (error) {
-      console.error('Error adding currency:', error);
+      console.error('Error adding synced currency:', error);
       throw error;
     }
+  }
+
+  // Backward compatibility - keep existing addCurrency method
+  static async addCurrency(userId: string, rojPoints: number, stars: number): Promise<ROJCurrency> {
+    return this.addSyncedCurrency(userId, rojPoints, stars);
   }
 
   // Get user achievements

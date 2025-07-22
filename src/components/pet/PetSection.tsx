@@ -71,7 +71,7 @@ export const PetSection: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Currency Display */}
+      {/* ROJ Wallet Display */}
       {currency && (
         <Card className="bg-zinc-900/50 border-zinc-800">
           <CardHeader className="pb-3">
@@ -86,7 +86,7 @@ export const PetSection: React.FC = () => {
                 <Coins className="w-4 h-4 text-yellow-400" />
                 <span className="text-white text-sm">ROJ Points</span>
               </div>
-              <span className="text-yellow-400 font-medium">{currency.roj_points}</span>
+              <span className="text-yellow-400 font-medium">{currency.roj_points.toFixed(1)}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

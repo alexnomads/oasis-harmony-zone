@@ -1,3 +1,4 @@
+
 -- Migration to sync ROJ points with meditation points as unified system
 -- This makes ROJ points the user-facing currency name while maintaining sync with main points
 
@@ -13,7 +14,20 @@ WHERE EXISTS (
   SELECT 1 FROM user_points WHERE user_points.user_id = roj_currency.user_id
 );
 
--- Step 2: Create function to sync points automatically
+-- Step 2: Initialize ROJ currency for users who have points but no ROJ record
+INSERT INTO roj_currency (user_id, roj_points, stars, created_at, updated_at)
+SELECT 
+  up.user_id, 
+  up.total_points, 
+  0, 
+  NOW(), 
+  NOW()
+FROM user_points up
+WHERE NOT EXISTS (
+  SELECT 1 FROM roj_currency rc WHERE rc.user_id = up.user_id
+);
+
+-- Step 3: Create function to sync points automatically
 CREATE OR REPLACE FUNCTION sync_roj_with_meditation_points()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -29,14 +43,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Step 3: Create trigger to automatically sync ROJ points when meditation points change
+-- Step 4: Create trigger to automatically sync ROJ points when meditation points change
 DROP TRIGGER IF EXISTS sync_roj_points_trigger ON user_points;
 CREATE TRIGGER sync_roj_points_trigger
   AFTER INSERT OR UPDATE OF total_points ON user_points
   FOR EACH ROW
   EXECUTE FUNCTION sync_roj_with_meditation_points();
 
--- Step 4: Create function to update both systems when ROJ points are awarded directly
+-- Step 5: Create function to update both systems when ROJ points are awarded directly
 CREATE OR REPLACE FUNCTION award_roj_points(p_user_id UUID, p_points NUMERIC)
 RETURNS VOID AS $$
 BEGIN
@@ -51,3 +65,6 @@ BEGIN
   -- ROJ points will be automatically updated by the trigger
 END;
 $$ LANGUAGE plpgsql;
+
+-- Step 6: Force sync all existing data
+SELECT sync_roj_with_meditation_points() FROM user_points;

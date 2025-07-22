@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import type { CompanionPet, MoodLog, ROJCurrency, PetAchievement, PetEvolutionStage } from '../../types/pet';
@@ -25,7 +24,7 @@ export class PetService extends BaseService {
         
       if (petError) throw petError;
       
-      // Create currency record if it doesn't exist
+      // Create currency record if it doesn't exist (will be auto-synced with user_points)
       const { data: currencyData, error: currencyError } = await supabase
         .from('roj_currency')
         .upsert({
@@ -76,7 +75,7 @@ export class PetService extends BaseService {
     }
   }
 
-  // Get user's currency with auto-initialization
+  // Get user's currency with auto-initialization and sync check
   static async getUserCurrency(userId: string): Promise<ROJCurrency> {
     try {
       console.log('Fetching currency for user:', userId);
@@ -89,9 +88,29 @@ export class PetService extends BaseService {
         
       if (error) {
         if (error.message.includes('No data returned')) {
-          console.log('No currency found, initializing...');
-          const { currency } = await this.initializeUserPetData(userId);
-          return currency;
+          console.log('No currency found, checking for existing points to sync...');
+          
+          // Check if user has meditation points to sync
+          const { data: userPoints } = await supabase
+            .from('user_points')
+            .select('total_points')
+            .eq('user_id', userId)
+            .single();
+          
+          const initialRojPoints = userPoints?.total_points || 0;
+          
+          const { data: newCurrency, error: createError } = await supabase
+            .from('roj_currency')
+            .insert({
+              user_id: userId,
+              roj_points: initialRojPoints,
+              stars: 0
+            })
+            .select()
+            .single();
+            
+          if (createError) throw createError;
+          return newCurrency as ROJCurrency;
         }
         throw error;
       }
@@ -122,10 +141,10 @@ export class PetService extends BaseService {
     }
   }
 
-  // Add experience points to pet
+  // Add experience points to pet (separate from ROJ points)
   static async addExperience(userId: string, points: number): Promise<CompanionPet> {
     try {
-      console.log('Adding experience for user:', userId, 'points:', points);
+      console.log('Adding pet experience for user:', userId, 'XP:', points);
       
       // Get current pet data (will auto-initialize if needed)
       const currentPet = await this.getUserPet(userId);
@@ -141,6 +160,8 @@ export class PetService extends BaseService {
         .single();
         
       if (error) throw error;
+      
+      console.log('Pet XP updated successfully. XP is separate from ROJ points.');
       return data as CompanionPet;
     } catch (error) {
       console.error('Error adding pet experience:', error);
@@ -158,9 +179,6 @@ export class PetService extends BaseService {
     try {
       console.log('Logging mood for user:', userId, moodData);
       
-      // First ensure currency exists
-      await this.getUserCurrency(userId);
-      
       const { data, error } = await supabase
         .from('mood_logs')
         .upsert({
@@ -176,12 +194,12 @@ export class PetService extends BaseService {
       
       console.log('Mood logged successfully:', data);
       
-      // Award points for mood logging (with error handling)
+      // Award ROJ points for mood logging (synced with main points system)
       try {
         await this.addCurrency(userId, 5, 0);
-        console.log('Currency awarded successfully');
+        console.log('ROJ points awarded successfully for mood logging');
       } catch (currencyError) {
-        console.error('Failed to award currency, but mood was logged:', currencyError);
+        console.error('Failed to award ROJ points, but mood was logged:', currencyError);
         // Don't throw here - mood logging was successful
       }
       
@@ -210,12 +228,12 @@ export class PetService extends BaseService {
     }
   }
 
-  // Add currency (ROJ points and stars) - ROJ points sync with meditation points
+  // Add currency (ROJ points sync with meditation points, stars separate)
   static async addCurrency(userId: string, rojPoints: number, stars: number): Promise<ROJCurrency> {
     try {
       console.log('Adding currency for user:', userId, 'ROJ:', rojPoints, 'Stars:', stars);
       
-      // Award ROJ points through the unified system (this updates both meditation and ROJ points)
+      // Award ROJ points through the unified system (updates both meditation and ROJ points)
       if (rojPoints > 0) {
         const { error: pointsError } = await supabase.rpc('award_roj_points', {
           p_user_id: userId,
@@ -223,6 +241,7 @@ export class PetService extends BaseService {
         });
         
         if (pointsError) throw pointsError;
+        console.log('ROJ points added through unified system - synced with total points');
       }
       
       // Update stars separately if needed
@@ -246,7 +265,7 @@ export class PetService extends BaseService {
       
       // If only ROJ points were awarded, get the updated currency
       const updatedCurrency = await this.getUserCurrency(userId);
-      console.log('ROJ points updated successfully:', updatedCurrency);
+      console.log('Currency system: ROJ Points = Total Points (unified system)');
       return updatedCurrency;
     } catch (error) {
       console.error('Error adding currency:', error);

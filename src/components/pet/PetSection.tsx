@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CompanionPetComponent } from './CompanionPet';
 import { DailyMoodLogger } from './DailyMoodLogger';
-import { Coins, Sparkles } from 'lucide-react';
+import { Coins, Sparkles, Zap } from 'lucide-react';
 import { usePet } from '@/hooks/usePet';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -57,12 +57,26 @@ export const PetSection: React.FC = () => {
         </CardHeader>
         <CardContent>
           {pet ? (
-            <CompanionPetComponent 
-              pet={pet} 
-              isAnimating={petEmotion === 'happy'} 
-              size="medium"
-              showStats={true}
-            />
+            <div className="space-y-3">
+              <CompanionPetComponent 
+                pet={pet} 
+                isAnimating={petEmotion === 'happy'} 
+                size="medium"
+                showStats={true}
+              />
+              <div className="bg-zinc-800/50 rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    <span className="text-white text-sm">Pet XP</span>
+                  </div>
+                  <span className="text-yellow-400 font-medium">{pet.experience_points}</span>
+                </div>
+                <p className="text-xs text-white/60">
+                  Grows your companion through evolution stages
+                </p>
+              </div>
+            </div>
           ) : (
             <div className="text-center text-white/70 py-4">
               <p>Your companion is being prepared...</p>
@@ -77,16 +91,21 @@ export const PetSection: React.FC = () => {
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2">
               <Coins className="w-5 h-5 text-yellow-400" />
-              ROJ Wallet
+              Universal Currency
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Coins className="w-4 h-4 text-yellow-400" />
-                <span className="text-white text-sm">ROJ Points</span>
+            <div className="bg-gradient-to-r from-purple-500/10 to-orange-500/10 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Coins className="w-4 h-4 text-yellow-400" />
+                  <span className="text-white text-sm font-medium">ROJ Points</span>
+                </div>
+                <span className="text-yellow-400 font-bold text-lg">{currency.roj_points}</span>
               </div>
-              <span className="text-yellow-400 font-medium">{currency.roj_points}</span>
+              <p className="text-xs text-white/60">
+                Main currency - synced with total meditation points
+              </p>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

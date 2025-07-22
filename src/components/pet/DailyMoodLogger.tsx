@@ -35,12 +35,21 @@ export const DailyMoodLogger: React.FC<DailyMoodLoggerProps> = ({
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
+      console.log('DailyMoodLogger: Starting mood submission with data:', {
+        mood_score: moodScore,
+        energy_level: energyLevel[0],
+        stress_level: stressLevel[0],
+        symptoms: selectedSymptoms
+      });
+      
       await onLogMood({
         mood_score: moodScore,
         energy_level: energyLevel[0],
         stress_level: stressLevel[0],
         symptoms: selectedSymptoms
       });
+      
+      console.log('DailyMoodLogger: Mood logged successfully');
       setIsOpen(false);
       // Reset form
       setMoodScore(3);
@@ -48,7 +57,7 @@ export const DailyMoodLogger: React.FC<DailyMoodLoggerProps> = ({
       setStressLevel([5]);
       setSelectedSymptoms([]);
     } catch (error) {
-      console.error('Failed to log mood:', error);
+      console.error('DailyMoodLogger: Failed to log mood:', error);
     } finally {
       setIsSubmitting(false);
     }

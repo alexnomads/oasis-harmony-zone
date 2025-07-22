@@ -91,27 +91,36 @@ export const usePet = (userId: string | undefined) => {
     stress_level: number;
     symptoms?: string[];
   }) => {
-    if (!userId) return;
+    if (!userId) {
+      console.error('usePet: logMood called without userId');
+      return;
+    }
 
     try {
-      console.log('Attempting to log mood:', moodData);
+      console.log('usePet: Starting mood logging for user:', userId, 'with data:', moodData);
       
       const newMoodLog = await PetService.logMood(userId, moodData);
+      console.log('usePet: Mood logged successfully:', newMoodLog);
+      
       setMoodHistory(prev => [newMoodLog, ...prev.slice(0, 6)]); // Keep last 7 days
       
       // Refresh currency data
       try {
+        console.log('usePet: Refreshing currency data...');
         const updatedCurrency = await PetService.getUserCurrency(userId);
+        console.log('usePet: Currency refreshed:', updatedCurrency);
         setCurrency(updatedCurrency);
       } catch (currencyError) {
-        console.error('Failed to refresh currency:', currencyError);
+        console.error('usePet: Failed to refresh currency:', currencyError);
       }
       
       // Add experience for mood logging
       try {
+        console.log('usePet: Adding experience points...');
         await addExperience(10);
+        console.log('usePet: Experience points added successfully');
       } catch (expError) {
-        console.error('Failed to add experience:', expError);
+        console.error('usePet: Failed to add experience:', expError);
       }
       
       toast({
@@ -119,13 +128,14 @@ export const usePet = (userId: string | undefined) => {
         description: "You earned 5 ROJ points and 10 XP for checking in with yourself.",
       });
     } catch (err) {
-      console.error('Error logging mood:', err);
+      console.error('usePet: Error logging mood:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to log mood';
       toast({
         title: "Mood Logging Failed",
         description: errorMessage + ". Please try again.",
         variant: "destructive",
       });
+      throw err; // Re-throw to let caller handle it
     }
   }, [userId, addExperience, toast]);
 

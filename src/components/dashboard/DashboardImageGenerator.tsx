@@ -2,6 +2,7 @@ import { useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Share2, Download } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { SharingService } from '@/lib/services/sharingService';
 
 interface DashboardImageGeneratorProps {
   userEmail: string;
@@ -175,15 +176,18 @@ export const DashboardImageGenerator = ({
     }, 'image/png');
   }, [generateImage]);
 
-  const handleShareTwitter = useCallback(() => {
+  const handleShareTwitter = useCallback(async () => {
     const canvas = generateImage();
     if (!canvas) return;
 
     canvas.toBlob(async (blob) => {
       if (!blob) return;
 
-      const displayName = userEmail.split('@')[0];
-      const text = `🧘‍♀️ Check out my meditation journey on @ROJOasis! 
+      // Try to share using Web Share API with image
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'meditation-journey.png', { type: 'image/png' })] })) {
+        try {
+          const displayName = userEmail.split('@')[0];
+          const text = `🧘‍♀️ Check out my meditation journey on @ROJOasis! 
       
 📊 ${totalPoints.toFixed(1)} points earned
 🔥 ${streak} day streak
@@ -194,9 +198,6 @@ Join me at roseofjericho.xyz${profileUrl ? `\n${profileUrl}` : ''}
 
 #Meditation #Mindfulness #RoseOfJericho`;
 
-      // Try to share using Web Share API with image
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'meditation-journey.png', { type: 'image/png' })] })) {
-        try {
           await navigator.share({
             text,
             files: [new File([blob], 'meditation-journey.png', { type: 'image/png' })]
@@ -207,9 +208,17 @@ Join me at roseofjericho.xyz${profileUrl ? `\n${profileUrl}` : ''}
         }
       }
 
-      // Fallback to Twitter intent URL
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-      window.open(twitterUrl, '_blank', 'width=550,height=420');
+      // Fallback to Twitter intent URL with unified sharing service
+      await SharingService.shareOnX({
+        type: 'journey_summary',
+        userEmail,
+        stats: {
+          totalPoints,
+          streak,
+          totalSessions,
+          totalDuration
+        }
+      });
       
       // Also trigger download for user to manually attach
       handleDownload();

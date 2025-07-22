@@ -3,6 +3,7 @@ import { User, AuthError } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase, getRedirectUrl } from '@/lib/supabase';
+import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -251,15 +252,64 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      toast({
-        title: 'Solana Authentication',
-        description: 'Solana wallet authentication needs to be implemented with Web3 wallet connection.',
-        variant: 'default',
-      });
+      // Check if Solana wallet is available (Phantom, Solflare, etc.)
+      const { solana } = window as any;
       
-      // TODO: Implement proper Solana wallet authentication
-      // This requires connecting to a Solana wallet (Phantom, Solflare, etc.)
-      // and signing a message, not OAuth
+      if (!solana) {
+        throw new Error('Solana wallet not found. Please install Phantom or another Solana wallet.');
+      }
+
+      // Connect to the wallet
+      const response = await solana.connect();
+      const publicKey = response.publicKey.toString();
+      
+      // Create a message to sign for authentication
+      const message = `Sign in to Meditation App\nWallet: ${publicKey}\nTime: ${Date.now()}`;
+      const encodedMessage = new TextEncoder().encode(message);
+      
+      // Request signature from wallet
+      const signedMessage = await solana.signMessage(encodedMessage, 'utf8');
+      
+      // Use the wallet address as a unique identifier for Supabase
+      const { data, error } = await retryOperation(() =>
+        supabase.auth.signInWithPassword({
+          email: `${publicKey}@solana.wallet`,
+          password: publicKey, // Use public key as password for simplicity
+        })
+      );
+      
+      // If user doesn't exist, create them
+      if (error && error.message.includes('Invalid login credentials')) {
+        const { error: signUpError } = await retryOperation(() =>
+          supabase.auth.signUp({
+            email: `${publicKey}@solana.wallet`,
+            password: publicKey,
+            options: {
+              data: {
+                wallet_address: publicKey,
+                wallet_type: 'solana',
+                display_name: `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`,
+              },
+            },
+          })
+        );
+        
+        if (signUpError) throw signUpError;
+        
+        toast({
+          title: 'Wallet Connected',
+          description: 'Your Solana wallet has been connected and account created!',
+        });
+      } else if (error) {
+        throw error;
+      } else {
+        toast({
+          title: 'Wallet Connected',
+          description: 'Successfully signed in with your Solana wallet!',
+        });
+      }
+      
+      navigate('/dashboard');
       
     } catch (error) {
       const message = handleAuthError(error as Error | AuthError);

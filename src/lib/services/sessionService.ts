@@ -1,6 +1,5 @@
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
-import { PetService } from './petService';
 import type { MeditationSession, MeditationType, MeditationStatus } from '../../types/database';
 
 export class SessionService extends BaseService {
@@ -32,7 +31,7 @@ export class SessionService extends BaseService {
     }
   }
 
-  // Complete a meditation session and award points to synced system
+  // Complete a meditation session and award points
   static async completeSession(sessionId: string, duration: number, distractions: { 
     mouseMovements: number,
     focusLost: number,
@@ -85,15 +84,7 @@ export class SessionService extends BaseService {
       
       const session = await this.executeQuery<MeditationSession>(() => Promise.resolve(sessionResult));
       
-      // Award points using synced system - add flat 10 ROJ points for completion
-      try {
-        await PetService.addSyncedCurrency(session.user_id, 10, 0);
-        console.log('ROJ points awarded via synced system');
-      } catch (rojError) {
-        console.error('Failed to award ROJ points:', rojError);
-      }
-      
-      // Get updated user points (now synced)
+      // Get updated user points
       const userPointsResult = await supabase
         .from('user_points')
         .select('*')
@@ -108,7 +99,7 @@ export class SessionService extends BaseService {
       }>(() => Promise.resolve(userPointsResult));
       
       console.log('Session updated successfully:', session);
-      console.log('User points retrieved (synced):', userPoints);
+      console.log('User points retrieved:', userPoints);
 
       return { session, userPoints };
     } catch (error) {
@@ -117,7 +108,7 @@ export class SessionService extends BaseService {
     }
   }
 
-  // Award an additional point for sharing using synced system
+  // Award an additional point for sharing a meditation session
   static async awardSharingPoint(sessionId: string) {
     try {
       console.log('Awarding sharing point for session:', sessionId);
@@ -135,7 +126,7 @@ export class SessionService extends BaseService {
         throw new Error('Cannot award sharing points for incomplete sessions');
       }
       
-      // Update session points
+      // Just update the points, don't try to update shared field
       const updatedSessionResult = await supabase
         .from('meditation_sessions')
         .update({
@@ -148,14 +139,25 @@ export class SessionService extends BaseService {
       const updatedSession = await this.executeQuery<MeditationSession>(() => Promise.resolve(updatedSessionResult));
       console.log('Session updated with sharing point:', updatedSession);
       
-      // Award sharing point using synced system
-      await PetService.addSyncedCurrency(session.user_id, 1, 0);
+      // Update user points directly
+      // First get current points
+      const currentPointsResult = await supabase
+        .from('user_points')
+        .select('total_points')
+        .eq('user_id', session.user_id)
+        .single();
       
-      // Get updated synced points
+      const currentPoints = await this.executeQuery<{ total_points: number }>(() => Promise.resolve(currentPointsResult));
+      
+      // Then update with new value
       const updatePointsResult = await supabase
         .from('user_points')
-        .select('*')
+        .update({
+          total_points: currentPoints.total_points + 1,
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', session.user_id)
+        .select('*')
         .single();
       
       const userPoints = await this.executeQuery<{ 
@@ -165,7 +167,7 @@ export class SessionService extends BaseService {
         last_meditation_date: string | null;
       }>(() => Promise.resolve(updatePointsResult));
       
-      console.log('User points after sharing (synced):', userPoints);
+      console.log('User points after sharing:', userPoints);
       
       return { session: updatedSession, userPoints };
     } catch (error) {

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -26,6 +27,7 @@ export default function ResetPassword() {
   const { toast } = useToast();
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tokenValidationError, setTokenValidationError] = useState<string | null>(null);
 
   const {
     register,
@@ -41,19 +43,46 @@ export default function ResetPassword() {
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
 
-        if (!token_hash || type !== 'recovery') {
+        console.log('Reset password page - URL parameters:', {
+          token_hash: token_hash ? 'present' : 'not present',
+          type,
+          full_url: window.location.href,
+          search_params: window.location.search,
+          timestamp: new Date().toISOString()
+        });
+
+        if (!token_hash) {
+          console.error('No token_hash found in URL parameters');
+          setTokenValidationError('No reset token found in the URL.');
           setIsValidToken(false);
           return;
         }
 
-        // Verify the recovery token
-        const { error } = await supabase.auth.verifyOtp({
+        if (type !== 'recovery') {
+          console.error('Invalid type for password reset:', type);
+          setTokenValidationError('Invalid reset link type.');
+          setIsValidToken(false);
+          return;
+        }
+
+        console.log('Attempting to verify recovery token...');
+
+        // Verify the recovery token with Supabase
+        const { data, error } = await supabase.auth.verifyOtp({
           token_hash,
           type: 'recovery',
         });
 
+        console.log('Token verification result:', {
+          success: !error,
+          error: error?.message,
+          data: data ? 'present' : 'none',
+          timestamp: new Date().toISOString()
+        });
+
         if (error) {
           console.error('Token validation error:', error);
+          setTokenValidationError(error.message || 'Token validation failed');
           setIsValidToken(false);
           toast({
             title: 'Invalid or expired link',
@@ -61,10 +90,14 @@ export default function ResetPassword() {
             variant: 'destructive',
           });
         } else {
+          console.log('Token validation successful');
           setIsValidToken(true);
+          setTokenValidationError(null);
         }
       } catch (error) {
         console.error('Token validation error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        setTokenValidationError(errorMessage);
         setIsValidToken(false);
       }
     };
@@ -73,16 +106,26 @@ export default function ResetPassword() {
   }, [searchParams, toast]);
 
   const onSubmit = async (data: ResetPasswordData) => {
-    if (!isValidToken) return;
+    if (!isValidToken) {
+      console.error('Attempted to submit with invalid token');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
+      console.log('Attempting to update password...');
+      
       const { error } = await supabase.auth.updateUser({
         password: data.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Password update error:', error);
+        throw error;
+      }
 
+      console.log('Password updated successfully');
+      
       toast({
         title: 'Password updated successfully',
         description: 'You can now sign in with your new password.',
@@ -100,6 +143,10 @@ export default function ResetPassword() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleRequestNewResetLink = () => {
+    navigate('/?request_reset=true');
   };
 
   if (isValidToken === null) {
@@ -123,12 +170,26 @@ export default function ResetPassword() {
           <p className="text-zinc-400 mb-4">
             This password reset link is invalid or has expired.
           </p>
-          <Button 
-            onClick={() => navigate('/')} 
-            className="mt-4"
-          >
-            Return to Home
-          </Button>
+          {tokenValidationError && (
+            <p className="text-red-400 text-sm mb-4">
+              Error: {tokenValidationError}
+            </p>
+          )}
+          <div className="space-y-2">
+            <Button 
+              onClick={handleRequestNewResetLink} 
+              className="w-full"
+            >
+              Request New Reset Link
+            </Button>
+            <Button 
+              onClick={() => navigate('/')} 
+              variant="outline"
+              className="w-full"
+            >
+              Return to Home
+            </Button>
+          </div>
         </div>
       </div>
     );

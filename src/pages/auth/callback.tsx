@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -34,16 +33,19 @@ export default function AuthCallback() {
           throw new Error(error_description);
         }
 
-        // Handle email verification and password recovery
+        // Handle password recovery - preserve ALL URL parameters
+        if (token_hash && type === 'recovery') {
+          console.log('Password recovery detected, redirecting to reset password page with parameters');
+          // Build the complete URL with all parameters to ensure nothing is lost
+          const resetUrl = `/reset-password?${window.location.search}`;
+          console.log('Redirecting to:', resetUrl);
+          navigate(resetUrl);
+          return;
+        }
+
+        // Handle email verification and other types
         if (token_hash && type) {
           console.log('Attempting verification with type:', type);
-
-          // Handle password recovery
-          if (type === 'recovery') {
-            console.log('Password recovery detected, redirecting to reset password page');
-            navigate(`/reset-password?token_hash=${token_hash}&type=${type}`);
-            return;
-          }
 
           // Support email verification types
           if (type !== 'email_confirmation' && type !== 'email' && type !== 'signup') {

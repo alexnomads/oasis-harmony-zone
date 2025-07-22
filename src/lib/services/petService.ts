@@ -210,28 +210,44 @@ export class PetService extends BaseService {
     }
   }
 
-  // Add currency (ROJ points and stars) with better error handling
+  // Add currency (ROJ points and stars) - ROJ points sync with meditation points
   static async addCurrency(userId: string, rojPoints: number, stars: number): Promise<ROJCurrency> {
     try {
       console.log('Adding currency for user:', userId, 'ROJ:', rojPoints, 'Stars:', stars);
       
-      // Get current currency data (will auto-initialize if needed)
-      const currentCurrency = await this.getUserCurrency(userId);
-
-      const { data, error } = await supabase
-        .from('roj_currency')
-        .update({
-          roj_points: currentCurrency.roj_points + rojPoints,
-          stars: currentCurrency.stars + stars,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', userId)
-        .select()
-        .single();
+      // Award ROJ points through the unified system (this updates both meditation and ROJ points)
+      if (rojPoints > 0) {
+        const { error: pointsError } = await supabase.rpc('award_roj_points', {
+          p_user_id: userId,
+          p_points: rojPoints
+        });
         
-      if (error) throw error;
-      console.log('Currency updated successfully:', data);
-      return data as ROJCurrency;
+        if (pointsError) throw pointsError;
+      }
+      
+      // Update stars separately if needed
+      if (stars > 0) {
+        const currentCurrency = await this.getUserCurrency(userId);
+        
+        const { data, error } = await supabase
+          .from('roj_currency')
+          .update({
+            stars: currentCurrency.stars + stars,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', userId)
+          .select()
+          .single();
+          
+        if (error) throw error;
+        console.log('Stars updated successfully:', data);
+        return data as ROJCurrency;
+      }
+      
+      // If only ROJ points were awarded, get the updated currency
+      const updatedCurrency = await this.getUserCurrency(userId);
+      console.log('ROJ points updated successfully:', updatedCurrency);
+      return updatedCurrency;
     } catch (error) {
       console.error('Error adding currency:', error);
       throw error;

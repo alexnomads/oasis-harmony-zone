@@ -197,7 +197,7 @@ export default function Dashboard() {
                           <Award className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
                         </div>
                         <div className="text-center xs:text-left">
-                          <p className="text-xs sm:text-sm text-zinc-400">Total Points</p>
+                          <p className="text-xs sm:text-sm text-zinc-400">ROJ Points</p>
                           <h3 className="text-xl sm:text-2xl font-bold">{totalPoints.toFixed(1)}</h3>
                         </div>
                       </div>

@@ -8,7 +8,7 @@ import { MeditationAgentChat } from "./MeditationAgentChat";
 import { QuickMeditation } from "./QuickMeditation";
 import { UserProfile } from "../profile/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
-import { CompanionPet } from "../pet/CompanionPet";
+import { CompanionPetComponent } from "../pet/CompanionPet";
 import { DailyMoodLogger } from "../pet/DailyMoodLogger";
 import { usePet } from "@/hooks/usePet";
 
@@ -41,7 +41,7 @@ export const MeditationContainer = () => {
                     <div className="text-white/70">Loading your pet...</div>
                   </div>
                 ) : pet ? (
-                  <CompanionPet 
+                  <CompanionPetComponent 
                     pet={pet} 
                     isAnimating={petEmotion === 'happy'} 
                     size="large"

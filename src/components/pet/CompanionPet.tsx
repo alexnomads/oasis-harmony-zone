@@ -2,11 +2,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Heart } from 'lucide-react';
-import type { CompanionPet, PetEvolutionStage } from '@/types/pet';
+import type { CompanionPet as CompanionPetType, PetEvolutionStage } from '@/types/pet';
 import { PET_EVOLUTION_STAGES } from '@/types/pet';
 
 interface CompanionPetProps {
-  pet: CompanionPet;
+  pet: CompanionPetType;
   isAnimating?: boolean;
   size?: 'small' | 'medium' | 'large';
   showStats?: boolean;
@@ -152,7 +152,7 @@ const PetVisual: React.FC<{ stage: PetEvolutionStage; isAnimating: boolean; size
   );
 };
 
-export const CompanionPet: React.FC<CompanionPetProps> = ({ 
+export const CompanionPetComponent: React.FC<CompanionPetProps> = ({ 
   pet, 
   isAnimating = false, 
   size = 'medium',

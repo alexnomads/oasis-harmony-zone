@@ -51,10 +51,14 @@ export class PetService extends BaseService {
   // Add experience points to pet
   static async addExperience(userId: string, points: number): Promise<CompanionPet> {
     try {
+      // First get current pet data
+      const currentPet = await this.getUserPet(userId);
+      if (!currentPet) throw new Error('Pet not found');
+
       const { data, error } = await supabase
         .from('companion_pets')
         .update({
-          experience_points: supabase.raw('experience_points + ?', [points]),
+          experience_points: currentPet.experience_points + points,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', userId)
@@ -138,11 +142,15 @@ export class PetService extends BaseService {
   // Add currency (ROJ points and stars)
   static async addCurrency(userId: string, rojPoints: number, stars: number): Promise<ROJCurrency> {
     try {
+      // First get current currency data
+      const currentCurrency = await this.getUserCurrency(userId);
+      if (!currentCurrency) throw new Error('Currency record not found');
+
       const { data, error } = await supabase
         .from('roj_currency')
         .update({
-          roj_points: supabase.raw('roj_points + ?', [rojPoints]),
-          stars: supabase.raw('stars + ?', [stars]),
+          roj_points: currentCurrency.roj_points + rojPoints,
+          stars: currentCurrency.stars + stars,
           updated_at: new Date().toISOString()
         })
         .eq('user_id', userId)

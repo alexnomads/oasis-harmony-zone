@@ -1,7 +1,7 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { SessionService } from '@/lib/services/sessionService';
+import { PetService } from '@/lib/services/petService';
 import type { MeditationType } from '@/types/database';
 import { useWakeLock } from './useWakeLock';
 
@@ -78,12 +78,23 @@ export const useMeditationSession = (userId: string | undefined) => {
       setTotalPoints(userPoints.total_points);
       setSessionCompleted(true);
       
+      // Award pet experience and currency for meditation
+      if (userId) {
+        try {
+          await PetService.addExperience(userId, Math.floor(time / 60) * 5); // 5 XP per minute
+          await PetService.addCurrency(userId, 10, 0); // 10 ROJ points for meditation
+          await PetService.updatePetEvolution(userId); // Check for evolution
+        } catch (petError) {
+          console.error('Error updating pet after meditation:', petError);
+        }
+      }
+      
       // Release wake lock
       await releaseWakeLock();
       
       toast({
         title: "Meditation Complete! 🎉",
-        description: `You earned ${session.points_earned.toFixed(1)} points! Total: ${userPoints.total_points.toFixed(1)}`,
+        description: `You earned ${session.points_earned.toFixed(1)} points! Your pet gained XP too! 🌸`,
       });
       
       setIsRunning(false);
@@ -94,7 +105,7 @@ export const useMeditationSession = (userId: string | undefined) => {
         variant: "destructive",
       });
     }
-  }, [sessionId, time, toast]);
+  }, [sessionId, time, userId, toast]);
 
   const startMeditation = async () => {
     try {

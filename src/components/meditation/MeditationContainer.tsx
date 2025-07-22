@@ -1,153 +1,126 @@
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Brain, MessageCircle, User, Coins } from "lucide-react";
+import { MeditationAgentChat } from "./MeditationAgentChat";
+import { QuickMeditation } from "./QuickMeditation";
 import { UserProfile } from "../profile/UserProfile";
-import { User } from "lucide-react";
-import { useToast } from "../ui/use-toast";
-import { MessageType } from "./ChatMessage";
-import { MeditationBubble } from "./MeditationBubble";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { MeditationHeader } from "./MeditationHeader";
-import { MeditationSettings, SoundOption } from "./MeditationSettings";
-import { useMeditationState } from "@/hooks/useMeditationState";
-import { ChatInterface } from "./ChatInterface";
+import { useAuth } from "@/contexts/AuthContext";
+import { CompanionPet } from "../pet/CompanionPet";
+import { DailyMoodLogger } from "../pet/DailyMoodLogger";
+import { usePet } from "@/hooks/usePet";
 
 export const MeditationContainer = () => {
-  const [messages, setMessages] = useState<MessageType[]>([
-    { 
-      role: "agent", 
-      content: "Hello! I'm Rose of Jericho, your AI Wellness Agent. Select your meditation duration and sound preference above. When you're ready, click the button below to begin.", 
-      timestamp: new Date(),
-      showMeditationStart: true 
-    }
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [soundOption, setSoundOption] = useState<SoundOption>("silent");
-  const { toast } = useToast();
-  
-  // Audio references
-  const startSoundRef = useRef<HTMLAudioElement | null>(null);
-  const endSoundRef = useRef<HTMLAudioElement | null>(null);
-  
-  // Initialize audio elements
-  useEffect(() => {
-    startSoundRef.current = new Audio('/meditation-start.mp3');
-    endSoundRef.current = new Audio('/meditation-end.mp3');
-    
-    if (startSoundRef.current) startSoundRef.current.volume = 0.7;
-    if (endSoundRef.current) endSoundRef.current.volume = 0.7;
-    
-    // Preload audio files
-    startSoundRef.current?.load();
-    endSoundRef.current?.load();
-    
-    return () => {
-      startSoundRef.current = null;
-      endSoundRef.current = null;
-    };
-  }, []);
-  
-  const { 
-    timeRemaining,
-    selectedDuration,
-    setSelectedDuration,
-    isTimerRunning,
-    focusLost,
-    windowBlurs,
-    hasMovement,
-    toggleTimer,
-    resetTimer,
-    startMeditation: startMeditationState
-  } = useMeditationState({ toast });
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState("chat");
+  const {
+    pet,
+    currency,
+    isLoading: petLoading,
+    logMood,
+    getCurrentMood,
+    getPetEmotion
+  } = usePet(user?.id);
 
-  const playSound = async (audioRef: React.RefObject<HTMLAudioElement>) => {
-    if (!audioRef.current || soundOption === "silent") return;
-    
-    try {
-      // Reset to start to ensure it plays from the beginning
-      audioRef.current.currentTime = 0;
-      await audioRef.current.play();
-    } catch (error) {
-      console.error("Error playing sound:", error);
-    }
-  };
-
-  const startMeditation = async () => {
-    await playSound(startSoundRef);
-    startMeditationState(selectedDuration, soundOption);
-  };
-
-  // Listen for timer completion to play the end sound
-  useEffect(() => {
-    if (timeRemaining === 0 && !isTimerRunning) {
-      playSound(endSoundRef);
-    }
-  }, [timeRemaining, isTimerRunning]);
-
-  const handleSubmit = (e: React.FormEvent, inputValue: string) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-
-    const newUserMessage: MessageType = {
-      role: "user",
-      content: inputValue,
-      timestamp: new Date(),
-      showMeditationStart: false
-    };
-
-    setMessages(prev => [...prev, newUserMessage]);
-    setIsTyping(true);
-
-    // Import this dynamically to reduce initial load time
-    import("./AIResponseHandler").then(({ default: getAIResponse }) => {
-      setTimeout(() => {
-        const aiResponse: MessageType = {
-          role: "agent",
-          content: getAIResponse(inputValue),
-          timestamp: new Date(),
-          showMeditationStart: inputValue.toLowerCase().includes("meditate") || inputValue.toLowerCase().includes("meditation")
-        };
-        setMessages(prev => [...prev, aiResponse]);
-        setIsTyping(false);
-      }, 2000);
-    });
-  };
+  const hasLoggedMoodToday = !!getCurrentMood();
+  const petEmotion = getPetEmotion();
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#9C27B0] to-[#FF8A00] py-8 sm:py-12 relative">
-      <MeditationBubble 
-        isTimerRunning={isTimerRunning} 
-        timeRemaining={timeRemaining} 
-      />
+    <div className="min-h-screen bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-2rem)]">
+          {/* Pet & Currency Sidebar */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Pet Display */}
+            <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+              <CardContent className="p-4">
+                {petLoading ? (
+                  <div className="flex items-center justify-center h-32">
+                    <div className="text-white/70">Loading your pet...</div>
+                  </div>
+                ) : pet ? (
+                  <CompanionPet 
+                    pet={pet} 
+                    isAnimating={petEmotion === 'happy'} 
+                    size="large"
+                    showStats={true}
+                  />
+                ) : (
+                  <div className="text-center text-white/70">
+                    <p>Your companion will appear once you create an account!</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
-      <div className="container mx-auto px-3 sm:px-4">
-        <div className="relative">
-          <div className="max-w-3xl mx-auto bg-black/20 rounded-xl backdrop-blur-sm p-4 sm:p-6 border border-white/20 h-[550px] sm:h-[600px] flex flex-col">
-            <MeditationHeader 
-              timeRemaining={timeRemaining}
-              isTimerRunning={isTimerRunning}
-              toggleTimer={toggleTimer}
-              resetTimer={resetTimer}
-            />
+            {/* Currency Display */}
+            {currency && (
+              <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Coins className="w-4 h-4 text-yellow-400" />
+                        <span className="text-white text-sm">ROJ Points</span>
+                      </div>
+                      <span className="text-yellow-400 font-medium">{currency.roj_points}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-purple-400">⭐</span>
+                        <span className="text-white text-sm">Stars</span>
+                      </div>
+                      <span className="text-purple-400 font-medium">{currency.stars}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-            <div className="mb-3 sm:mb-4">
-              <MeditationSettings
-                selectedDuration={selectedDuration}
-                setSelectedDuration={setSelectedDuration}
-                soundOption={soundOption}
-                setSoundOption={setSoundOption}
+            {/* Daily Mood Logger */}
+            {user && (
+              <DailyMoodLogger
+                onLogMood={logMood}
+                hasLoggedToday={hasLoggedMoodToday}
+                isLoading={petLoading}
               />
-            </div>
+            )}
+          </div>
 
-            <ChatInterface
-              messages={messages}
-              isTyping={isTyping}
-              isTimerRunning={isTimerRunning}
-              selectedDuration={selectedDuration}
-              setSelectedDuration={setSelectedDuration}
-              startMeditation={startMeditation}
-              onSubmit={handleSubmit}
-            />
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+              <TabsList className="grid w-full grid-cols-3 bg-black/20 border border-white/20">
+                <TabsTrigger value="chat" className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  AI Coach
+                </TabsTrigger>
+                <TabsTrigger value="quick" className="flex items-center gap-2">
+                  <Brain className="w-4 h-4" />
+                  Quick Session
+                </TabsTrigger>
+                <TabsTrigger value="profile" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Profile
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="mt-4 h-[calc(100%-4rem)]">
+                <TabsContent value="chat" className="h-full m-0">
+                  <MeditationAgentChat />
+                </TabsContent>
+
+                <TabsContent value="quick" className="h-full m-0">
+                  <QuickMeditation />
+                </TabsContent>
+
+                <TabsContent value="profile" className="h-full m-0">
+                  <UserProfile />
+                </TabsContent>
+              </div>
+            </Tabs>
           </div>
         </div>
       </div>

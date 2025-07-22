@@ -3,16 +3,14 @@
 -- This makes ROJ points the user-facing currency name while maintaining sync with main points
 
 -- Step 1: Sync existing ROJ points with user points (ROJ becomes the display name)
+-- Force sync all existing ROJ records with user_points
 UPDATE roj_currency 
 SET roj_points = COALESCE((
   SELECT total_points 
   FROM user_points 
   WHERE user_points.user_id = roj_currency.user_id
-), 0),
-updated_at = NOW()
-WHERE EXISTS (
-  SELECT 1 FROM user_points WHERE user_points.user_id = roj_currency.user_id
-);
+), roj_points),
+updated_at = NOW();
 
 -- Step 2: Initialize ROJ currency for users who have points but no ROJ record
 INSERT INTO roj_currency (user_id, roj_points, stars, created_at, updated_at)
@@ -66,5 +64,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Step 6: Force sync all existing data
-SELECT sync_roj_with_meditation_points() FROM user_points;
+-- Step 6: Force sync all existing data immediately
+DO $$
+DECLARE
+    rec RECORD;
+BEGIN
+    -- Update all existing roj_currency records to match user_points
+    FOR rec IN SELECT up.user_id, up.total_points 
+               FROM user_points up 
+               JOIN roj_currency rc ON rc.user_id = up.user_id
+    LOOP
+        UPDATE roj_currency 
+        SET roj_points = rec.total_points, updated_at = NOW()
+        WHERE user_id = rec.user_id;
+    END LOOP;
+    
+    RAISE NOTICE 'ROJ points synchronized with total points for all users';
+END $$;

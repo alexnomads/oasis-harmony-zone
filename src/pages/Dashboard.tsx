@@ -15,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Dashboard() {
+  // Fixed MeditationSession import error by using SessionCard component
   const { user } = useAuth();
   const navigate = useNavigate();
   

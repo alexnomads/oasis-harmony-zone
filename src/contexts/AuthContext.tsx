@@ -219,9 +219,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
+      const redirectUrl = getRedirectUrl();
+      console.log('Using redirect URL for password reset:', redirectUrl);
+      
       const { error } = await retryOperation(() => 
         supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
+          redirectTo: redirectUrl,
         })
       );
       

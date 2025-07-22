@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
@@ -60,6 +59,7 @@ type AuthContextType = AuthState & {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  signInWithSolana: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -247,6 +247,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const signInWithSolana = async () => {
+    try {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+      
+      const redirectUrl = getRedirectUrl();
+      console.log('Using redirect URL for Solana OAuth:', redirectUrl);
+      
+      const { error } = await retryOperation(() =>
+        supabase.auth.signInWithOAuth({
+          provider: 'solana',
+          options: {
+            redirectTo: redirectUrl,
+          },
+        })
+      );
+      
+      if (error) throw error;
+      
+      // OAuth redirect will handle the rest
+    } catch (error) {
+      const message = handleAuthError(error as Error | AuthError);
+      setState(prev => ({ ...prev, error: message }));
+      toast({
+        title: 'Solana Sign In Failed',
+        description: message,
+        variant: 'destructive',
+      });
+    } finally {
+      setState(prev => ({ ...prev, loading: false }));
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -255,6 +287,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signUp,
         signOut,
         resetPassword,
+        signInWithSolana,
       }}
     >
       {children}

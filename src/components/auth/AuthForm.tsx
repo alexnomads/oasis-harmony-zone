@@ -1,9 +1,10 @@
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { motion } from 'framer-motion';
-import { User } from 'lucide-react';
+import { User, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,7 +38,7 @@ export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
-  const { signIn, signUp, resetPassword, loading } = useAuth();
+  const { signIn, signUp, resetPassword, signInWithSolana, loading } = useAuth();
   
   const form = useForm({
     resolver: zodResolver(showForgotPassword ? resetPasswordSchema : authSchema),
@@ -112,6 +113,38 @@ export const AuthForm = () => {
             </div>
           ) : (
             <>
+              {!showForgotPassword && (
+                <>
+                  <Button
+                    onClick={signInWithSolana}
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transition-all duration-300 relative"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
+                        </div>
+                        <span className="opacity-0">Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wallet className="mr-2 h-4 w-4" />
+                        Sign in with Solana
+                      </>
+                    )}
+                  </Button>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-zinc-700" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-zinc-900 px-2 text-zinc-400">Or continue with email</span>
+                    </div>
+                  </div>
+                </>
+              )}
+              
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <div className="space-y-1">
                   <Input

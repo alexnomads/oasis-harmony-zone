@@ -251,21 +251,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      const redirectUrl = getRedirectUrl();
-      console.log('Using redirect URL for Solana OAuth:', redirectUrl);
+      toast({
+        title: 'Solana Authentication',
+        description: 'Solana wallet authentication needs to be implemented with Web3 wallet connection.',
+        variant: 'default',
+      });
       
-      const { error } = await retryOperation(() =>
-        supabase.auth.signInWithOAuth({
-          provider: 'solana',
-          options: {
-            redirectTo: redirectUrl,
-          },
-        })
-      );
+      // TODO: Implement proper Solana wallet authentication
+      // This requires connecting to a Solana wallet (Phantom, Solflare, etc.)
+      // and signing a message, not OAuth
       
-      if (error) throw error;
-      
-      // OAuth redirect will handle the rest
     } catch (error) {
       const message = handleAuthError(error as Error | AuthError);
       setState(prev => ({ ...prev, error: message }));

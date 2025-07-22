@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/use-toast';
 import MeditationTrendChart from '@/components/dashboard/MeditationTrendChart';
 import { DashboardImageGenerator } from '@/components/dashboard/DashboardImageGenerator';
+import { PetSection } from '@/components/pet/PetSection';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -153,7 +154,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-6xl mx-auto"
+          className="max-w-7xl mx-auto"
         >
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
             <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vibrantPurple to-vibrantOrange">Your Journey</h1>
@@ -178,144 +179,159 @@ export default function Dashboard() {
             </div>
           </div>
 
-
-          <motion.div 
-            className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                <CardContent className="p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-purple-500/10 rounded-lg">
-                      <Award className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm text-zinc-400">Total Points</p>
-                      <h3 className="text-xl sm:text-2xl font-bold">{totalPoints.toFixed(1)}</h3>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                <CardContent className="p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-orange-500/10 rounded-lg">
-                      <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm text-zinc-400">Current Streak</p>
-                      <h3 className="text-xl sm:text-2xl font-bold">{streak} days</h3>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                <CardContent className="p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-blue-500/10 rounded-lg">
-                      <History className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm text-zinc-400">Total Sessions</p>
-                      <h3 className="text-xl sm:text-2xl font-bold">{totalSessions}</h3>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                <CardContent className="p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-green-500/10 rounded-lg">
-                      <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm text-zinc-400">Total Time</p>
-                      <h3 className="text-xl sm:text-2xl font-bold">{formatDurationDetails(totalDuration)}</h3>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
-
-          {/* Meditation Trend Chart */}
-          <MeditationTrendChart sessions={userData?.sessions || []} />
-
-          <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.5 }}
-            className="mt-6"
-          >
-            <Card className="bg-zinc-900/50 border-zinc-800">
-              <div className="p-5 sm:p-6 border-b border-zinc-800">
-                <h2 className="text-xl sm:text-2xl font-bold">Recent Sessions</h2>
-              </div>
-              <CardContent className="p-0">
-                {recentSessions.length > 0 ? (
-                  <div className="divide-y divide-zinc-800/70">
-                    {recentSessions.map((session, index) => (
-                      <motion.div
-                        key={session.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * index }}
-                        className="p-4 sm:p-5 hover:bg-white/5 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-sm sm:text-base">{session.type}</p>
-                            <p className="text-xs sm:text-sm text-zinc-400">
-                              {formatDate(session.created_at)}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-medium text-sm sm:text-base">
-                              {formatDurationDetails(session.duration)}
-                            </p>
-                            <p className="text-xs sm:text-sm text-vibrantOrange">
-                              +{session.points_earned.toFixed(1)} points
-                            </p>
-                          </div>
+          {/* Main content grid with pet section */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Main stats and content */}
+            <div className="lg:col-span-3 space-y-6">
+              <motion.div 
+                className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <motion.div variants={itemVariants}>
+                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                    <CardContent className="p-4 sm:pt-6">
+                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                        <div className="p-3 bg-purple-500/10 rounded-lg">
+                          <Award className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
                         </div>
-                      </motion.div>
-                    ))}
+                        <div className="text-center xs:text-left">
+                          <p className="text-xs sm:text-sm text-zinc-400">Total Points</p>
+                          <h3 className="text-xl sm:text-2xl font-bold">{totalPoints.toFixed(1)}</h3>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div variants={itemVariants}>
+                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                    <CardContent className="p-4 sm:pt-6">
+                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                        <div className="p-3 bg-orange-500/10 rounded-lg">
+                          <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
+                        </div>
+                        <div className="text-center xs:text-left">
+                          <p className="text-xs sm:text-sm text-zinc-400">Current Streak</p>
+                          <h3 className="text-xl sm:text-2xl font-bold">{streak} days</h3>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div variants={itemVariants}>
+                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                    <CardContent className="p-4 sm:pt-6">
+                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                        <div className="p-3 bg-blue-500/10 rounded-lg">
+                          <History className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
+                        </div>
+                        <div className="text-center xs:text-left">
+                          <p className="text-xs sm:text-sm text-zinc-400">Total Sessions</p>
+                          <h3 className="text-xl sm:text-2xl font-bold">{totalSessions}</h3>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div variants={itemVariants}>
+                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                    <CardContent className="p-4 sm:pt-6">
+                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                        <div className="p-3 bg-green-500/10 rounded-lg">
+                          <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
+                        </div>
+                        <div className="text-center xs:text-left">
+                          <p className="text-xs sm:text-sm text-zinc-400">Total Time</p>
+                          <h3 className="text-xl sm:text-2xl font-bold">{formatDurationDetails(totalDuration)}</h3>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </motion.div>
+
+              {/* Meditation Trend Chart */}
+              <MeditationTrendChart sessions={userData?.sessions || []} />
+
+              <motion.div
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.5 }}
+              >
+                <Card className="bg-zinc-900/50 border-zinc-800">
+                  <div className="p-5 sm:p-6 border-b border-zinc-800">
+                    <h2 className="text-xl sm:text-2xl font-bold">Recent Sessions</h2>
                   </div>
-                ) : (
-                  <div className="text-center py-10 text-zinc-400">
-                    <motion.div
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <Timer className="h-12 w-12 mx-auto mb-3 text-zinc-600" />
-                      <p className="text-lg">No meditation sessions yet.</p>
-                      <p className="mt-2 text-sm">Start your journey today!</p>
-                      <Button
-                        onClick={() => navigate('/meditate')}
-                        className="mt-6 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
-                      >
-                        Begin Meditation
-                      </Button>
-                    </motion.div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+                  <CardContent className="p-0">
+                    {recentSessions.length > 0 ? (
+                      <div className="divide-y divide-zinc-800/70">
+                        {recentSessions.map((session, index) => (
+                          <motion.div
+                            key={session.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 * index }}
+                            className="p-4 sm:p-5 hover:bg-white/5 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-medium text-sm sm:text-base">{session.type}</p>
+                                <p className="text-xs sm:text-sm text-zinc-400">
+                                  {formatDate(session.created_at)}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium text-sm sm:text-base">
+                                  {formatDurationDetails(session.duration)}
+                                </p>
+                                <p className="text-xs sm:text-sm text-vibrantOrange">
+                                  +{session.points_earned.toFixed(1)} points
+                                </p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-10 text-zinc-400">
+                        <motion.div
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          <Timer className="h-12 w-12 mx-auto mb-3 text-zinc-600" />
+                          <p className="text-lg">No meditation sessions yet.</p>
+                          <p className="mt-2 text-sm">Start your journey today!</p>
+                          <Button
+                            onClick={() => navigate('/meditate')}
+                            className="mt-6 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
+                          >
+                            Begin Meditation
+                          </Button>
+                        </motion.div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Pet Section Sidebar */}
+            <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <PetSection />
+              </motion.div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>

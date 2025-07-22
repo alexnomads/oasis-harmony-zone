@@ -131,13 +131,15 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
     >
       <Card className="bg-zinc-900/50 border-zinc-800">
         <CardHeader className="pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white">Meditation Frequency</h2>
-              <p className="text-zinc-400 mt-1">Your meditation activity over time</p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Meditation Frequency</h2>
+                <p className="text-zinc-400 mt-1">Your meditation activity over time</p>
+              </div>
             </div>
             {user && (
-              <div className="min-w-0">
+              <div className="flex justify-center sm:justify-end">
                 <DashboardImageGenerator
                   userEmail={user.email || ''}
                   totalPoints={totalPoints}

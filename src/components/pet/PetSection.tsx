@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { CompanionPetComponent } from './CompanionPet';
 import { DailyMoodLogger } from './DailyMoodLogger';
-import { Coins, Sparkles, Zap, RefreshCw } from 'lucide-react';
+import { Coins, Sparkles, Zap } from 'lucide-react';
 import { usePet } from '@/hooks/usePet';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -16,8 +15,7 @@ export const PetSection: React.FC = () => {
     isLoading,
     logMood,
     getCurrentMood,
-    getPetEmotion,
-    forceSyncPoints
+    getPetEmotion
   } = usePet(user?.id);
 
   const hasLoggedMoodToday = !!getCurrentMood();
@@ -91,20 +89,9 @@ export const PetSection: React.FC = () => {
       {currency && (
         <Card className="bg-zinc-900/50 border-zinc-800">
           <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center gap-2 justify-between">
-              <div className="flex items-center gap-2">
-                <Coins className="w-5 h-5 text-yellow-400" />
-                Universal Currency
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={forceSyncPoints}
-                className="text-xs"
-              >
-                <RefreshCw className="w-3 h-3 mr-1" />
-                Sync
-              </Button>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Coins className="w-5 h-5 text-yellow-400" />
+              Universal Currency
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">

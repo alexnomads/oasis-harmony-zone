@@ -3,32 +3,6 @@ import { BaseService } from './baseService';
 import type { CompanionPet, MoodLog, ROJCurrency, PetAchievement, PetEvolutionStage } from '../../types/pet';
 
 export class PetService extends BaseService {
-  // Force sync ROJ points with total points manually
-  static async forceSyncRojPoints(userId: string): Promise<ROJCurrency> {
-    try {
-      console.log('Force syncing ROJ points for user:', userId);
-      
-      // Call the manual sync function
-      const { data, error } = await supabase.rpc('manual_sync_all_roj_points');
-      
-      if (error) {
-        console.error('Manual sync error:', error);
-        throw error;
-      }
-      
-      console.log('Manual sync results:', data);
-      
-      // Get the updated currency
-      const updatedCurrency = await this.getUserCurrency(userId);
-      console.log('ROJ points after manual sync:', updatedCurrency.roj_points);
-      
-      return updatedCurrency;
-    } catch (error) {
-      console.error('Error force syncing ROJ points:', error);
-      throw error;
-    }
-  }
-
   // Initialize pet and currency for a user if they don't exist
   static async initializeUserPetData(userId: string): Promise<{ pet: CompanionPet; currency: ROJCurrency }> {
     try {
@@ -63,13 +37,10 @@ export class PetService extends BaseService {
         
       if (currencyError) throw currencyError;
       
-      // Force sync to ensure ROJ points match total points
-      const syncedCurrency = await this.forceSyncRojPoints(userId);
-      
-      console.log('Successfully initialized pet data:', { petData, currency: syncedCurrency });
+      console.log('Successfully initialized pet data:', { petData, currencyData });
       return { 
         pet: petData as CompanionPet, 
-        currency: syncedCurrency
+        currency: currencyData as ROJCurrency 
       };
     } catch (error) {
       console.error('Error initializing pet data:', error);
@@ -104,7 +75,7 @@ export class PetService extends BaseService {
     }
   }
 
-  // Get user's currency with auto-initialization and forced sync
+  // Get user's currency with auto-initialization and sync check
   static async getUserCurrency(userId: string): Promise<ROJCurrency> {
     try {
       console.log('Fetching currency for user:', userId);
@@ -144,21 +115,7 @@ export class PetService extends BaseService {
         throw error;
       }
       
-      // Always check if sync is needed
-      const { data: userPoints } = await supabase
-        .from('user_points')
-        .select('total_points')
-        .eq('user_id', userId)
-        .single();
-      
-      const currency = data as ROJCurrency;
-      
-      if (userPoints && userPoints.total_points !== currency.roj_points) {
-        console.log(`ROJ points mismatch detected: ROJ=${currency.roj_points}, Total=${userPoints.total_points}. Force syncing...`);
-        return await this.forceSyncRojPoints(userId);
-      }
-      
-      return currency;
+      return data as ROJCurrency;
     } catch (error) {
       console.error('Error fetching user currency:', error);
       throw error;
@@ -306,7 +263,7 @@ export class PetService extends BaseService {
         return data as ROJCurrency;
       }
       
-      // If only ROJ points were awarded, get the updated currency with sync check
+      // If only ROJ points were awarded, get the updated currency
       const updatedCurrency = await this.getUserCurrency(userId);
       console.log('Currency system: ROJ Points = Total Points (unified system)');
       return updatedCurrency;

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CompanionPetComponent } from "../pet/CompanionPet";
 import { DailyMoodLogger } from "../pet/DailyMoodLogger";
 import { usePet } from "@/hooks/usePet";
-
 export const MeditationContainer = () => {
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const [activeTab, setActiveTab] = useState("chat");
   const {
     pet,
@@ -23,12 +23,9 @@ export const MeditationContainer = () => {
     getCurrentMood,
     getPetEmotion
   } = usePet(user?.id);
-
   const hasLoggedMoodToday = !!getCurrentMood();
   const petEmotion = getPetEmotion();
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
+  return <div className="min-h-screen bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-2rem)]">
           {/* Pet & Currency Sidebar */}
@@ -36,57 +33,21 @@ export const MeditationContainer = () => {
             {/* Pet Display */}
             <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
               <CardContent className="p-4">
-                {petLoading ? (
-                  <div className="flex items-center justify-center h-32">
+                {petLoading ? <div className="flex items-center justify-center h-32">
                     <div className="text-white/70">Loading your pet...</div>
-                  </div>
-                ) : pet ? (
-                  <CompanionPetComponent 
-                    pet={pet} 
-                    isAnimating={petEmotion === 'happy'} 
-                    size="large"
-                    showStats={true}
-                  />
-                ) : (
-                  <div className="text-center text-white/70">
+                  </div> : pet ? <CompanionPetComponent pet={pet} isAnimating={petEmotion === 'happy'} size="large" showStats={true} /> : <div className="text-center text-white/70">
                     <p>Your companion will appear once you create an account!</p>
-                  </div>
-                )}
+                  </div>}
               </CardContent>
             </Card>
 
             {/* Currency Display */}
-            {currency && (
-              <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Coins className="w-4 h-4 text-yellow-400" />
-                        <span className="text-white text-sm">ROJ Points</span>
-                      </div>
-                      <span className="text-yellow-400 font-medium">{currency.roj_points}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-purple-400">⭐</span>
-                        <span className="text-white text-sm">Stars</span>
-                      </div>
-                      <span className="text-purple-400 font-medium">{currency.stars}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {currency && <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+                
+              </Card>}
 
             {/* Daily Mood Logger */}
-            {user && (
-              <DailyMoodLogger
-                onLogMood={logMood}
-                hasLoggedToday={hasLoggedMoodToday}
-                isLoading={petLoading}
-              />
-            )}
+            {user && <DailyMoodLogger onLogMood={logMood} hasLoggedToday={hasLoggedMoodToday} isLoading={petLoading} />}
           </div>
 
           {/* Main Content */}
@@ -116,6 +77,5 @@ export const MeditationContainer = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };

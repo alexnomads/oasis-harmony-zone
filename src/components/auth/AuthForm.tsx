@@ -22,7 +22,16 @@ const authSchema = z.object({
     .max(72, 'Password must be less than 72 characters')
 });
 
+const resetPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .transform(val => val.toLowerCase().trim())
+});
+
 type AuthFormData = z.infer<typeof authSchema>;
+type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,20 +39,22 @@ export const AuthForm = () => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const { signIn, signUp, resetPassword, loading } = useAuth();
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm<AuthFormData>({
-    resolver: zodResolver(authSchema),
+  const form = useForm({
+    resolver: zodResolver(showForgotPassword ? resetPasswordSchema : authSchema),
     defaultValues: {
       email: '',
       password: ''
     }
   });
 
-  const onSubmit = async (data: AuthFormData) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = form;
+
+  const onSubmit = async (data: any) => {
     if (loading) return;
     
     if (showForgotPassword) {
@@ -64,6 +75,8 @@ export const AuthForm = () => {
     setShowForgotPassword(false);
     setResetEmailSent(false);
     reset();
+    // Reset form validation schema by re-initializing
+    form.clearErrors();
   };
 
   return (

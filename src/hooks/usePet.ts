@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { PetService } from '@/lib/services/petService';
@@ -11,6 +10,29 @@ export const usePet = (userId: string | undefined) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Force sync ROJ points with total points
+  const forceSyncPoints = useCallback(async () => {
+    if (!userId) return;
+
+    try {
+      console.log('Force syncing ROJ points...');
+      const syncedCurrency = await PetService.forceSyncRojPoints(userId);
+      setCurrency(syncedCurrency);
+      
+      toast({
+        title: "Points Synchronized",
+        description: `ROJ points updated to ${syncedCurrency.roj_points}`,
+      });
+    } catch (err) {
+      console.error('Error force syncing points:', err);
+      toast({
+        title: "Sync Failed",
+        description: "Could not sync ROJ points. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [userId, toast]);
 
   // Load pet data with better error handling
   const loadPetData = useCallback(async () => {
@@ -26,7 +48,7 @@ export const usePet = (userId: string | undefined) => {
       
       const [petData, currencyData, moodData] = await Promise.all([
         PetService.getUserPet(userId),
-        PetService.getUserCurrency(userId),
+        PetService.getUserCurrency(userId), // This now includes sync checking
         PetService.getMoodHistory(userId, 7) // Last 7 days
       ]);
 
@@ -104,7 +126,7 @@ export const usePet = (userId: string | undefined) => {
       
       setMoodHistory(prev => [newMoodLog, ...prev.slice(0, 6)]); // Keep last 7 days
       
-      // Refresh currency data
+      // Refresh currency data with sync check
       try {
         console.log('usePet: Refreshing currency data...');
         const updatedCurrency = await PetService.getUserCurrency(userId);
@@ -186,6 +208,7 @@ export const usePet = (userId: string | undefined) => {
     awardCurrency,
     getCurrentMood,
     getPetEmotion,
+    forceSyncPoints,
     reload: loadPetData
   };
 };

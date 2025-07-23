@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "../ui/button";
-import { Play, Clock, Calendar, ChevronDown, ChevronUp } from "lucide-react";
-import { MeditationRecommendation } from "@/lib/services/meditationAgentService";
 
-export type MessageType = {
-  role: "user" | "agent";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Play, Clock } from 'lucide-react';
+import { MeditationRecommendation } from '@/lib/services/meditationAgentService';
+
+export interface MessageType {
+  role: 'user' | 'agent';
   content: string;
   timestamp: Date;
   showMeditationStart: boolean;
   recommendation?: MeditationRecommendation;
-};
+}
 
 interface ChatMessageProps {
   message: MessageType;
@@ -19,208 +20,111 @@ interface ChatMessageProps {
   startMeditation: (recommendation?: MeditationRecommendation) => void;
 }
 
-const DurationSelector: React.FC<{
-  onSelect: (duration: number) => void;
-  currentDuration: number;
-}> = ({ onSelect, currentDuration }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const formatMeditationContent = (content: string) => {
+  // Split content into paragraphs and format with meditation-specific styling
+  const paragraphs = content.split('\n\n');
   
-  const durations = [
-    { value: 60, label: "1 minute", description: "Quick reset" },
-    { value: 180, label: "3 minutes", description: "Short break" },
-    { value: 300, label: "5 minutes", description: "Standard session" },
-    { value: 600, label: "10 minutes", description: "Deep practice" },
-    { value: 900, label: "15 minutes", description: "Extended session" },
-    { value: 1200, label: "20 minutes", description: "Comprehensive" }
-  ];
-
-  const currentLabel = durations.find(d => d.value === currentDuration)?.label || "5 minutes";
-
-  return (
-    <div className="relative">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full justify-between bg-white/5 border-white/20 text-white hover:bg-white/10"
-      >
-        <div className="flex items-center">
-          <Clock className="w-4 h-4 mr-2" />
-          {currentLabel}
-        </div>
-        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-      </Button>
-      
-      {isExpanded && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-full left-0 right-0 mt-2 bg-black/80 backdrop-blur-sm border border-white/20 rounded-lg overflow-hidden z-10"
-        >
-          {durations.map((duration) => (
-            <button
-              key={duration.value}
-              onClick={() => {
-                onSelect(duration.value);
-                setIsExpanded(false);
-              }}
-              className={`w-full px-3 py-2 text-left hover:bg-white/10 transition-colors ${
-                duration.value === currentDuration ? "bg-white/10 text-vibrantPurple" : "text-white"
-              }`}
-            >
-              <div className="font-medium">{duration.label}</div>
-              <div className="text-xs text-white/70">{duration.description}</div>
-            </button>
+  return paragraphs.map((paragraph, index) => {
+    // Handle lists
+    if (paragraph.includes('•') || paragraph.includes('-')) {
+      const listItems = paragraph.split('\n').filter(item => item.trim());
+      return (
+        <div key={index} className="space-y-1">
+          {listItems.map((item, itemIndex) => (
+            <div key={itemIndex} className="flex items-start gap-2">
+              <span className="text-vibrantOrange text-sm mt-1">•</span>
+              <span className="text-white/90 text-sm leading-relaxed">
+                {item.replace(/^[•\-]\s*/, '')}
+              </span>
+            </div>
           ))}
-        </motion.div>
-      )}
-    </div>
-  );
+        </div>
+      );
+    }
+    
+    // Handle regular paragraphs
+    return (
+      <p key={index} className="text-white/90 text-sm leading-relaxed">
+        {paragraph}
+      </p>
+    );
+  });
 };
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({
   message,
   index,
   isTimerRunning,
-  startMeditation,
+  startMeditation
 }) => {
-  const [selectedDuration, setSelectedDuration] = useState(300); // Default 5 minutes
-
-  const formatMeditationContent = (content: string) => {
-    if (content.includes("1.")) {
-      const parts = content.split(/(\d+\.\s.*?)(?=\d+\.|$)/g).filter(Boolean);
-      
-      return parts.map((part, i) => {
-        if (/^\d+\./.test(part)) {
-          return (
-            <div key={i} className="my-2 pl-2 border-l-2 border-softPurple">
-              <span className="font-semibold">{part}</span>
-            </div>
-          );
-        }
-        return (
-          <span key={i}>
-            {part.split("\n").map((line, j) => (
-              <React.Fragment key={j}>
-                {line}
-                {j < part.split("\n").length - 1 && <br />}
-              </React.Fragment>
-            ))}
-          </span>
-        );
-      });
-    }
-    
-    return content.split("\n").map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        {i < content.split("\n").length - 1 && <br />}
-      </React.Fragment>
-    ));
-  };
-
-  const handleStartMeditation = (customRecommendation?: MeditationRecommendation) => {
-    if (customRecommendation) {
-      startMeditation(customRecommendation);
-    } else {
-      // Create a custom recommendation with selected duration
-      const customRec: MeditationRecommendation = {
-        type: 'mindfulness',
-        duration: selectedDuration,
-        title: `${Math.floor(selectedDuration / 60)}-Minute Mindfulness`,
-        description: `A ${Math.floor(selectedDuration / 60)}-minute mindfulness meditation to center yourself and find inner peace.`
-      };
-      startMeditation(customRec);
-    }
-  };
+  const isUser = message.role === 'user';
+  const isAgent = message.role === 'agent';
 
   return (
     <motion.div
-      key={index}
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"} mb-4`}
+      transition={{ duration: 0.3, delay: index * 0.1 }}
+      className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
     >
-      <div
-        className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-          message.role === "user"
-            ? "bg-softPurple text-white"
-            : "bg-white/10 text-white"
-        }`}
-      >
-        <div className="text-sm md:text-base">
-          {formatMeditationContent(message.content)}
+      {isAgent && (
+        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1">
+          <img 
+            src="/lovable-uploads/2666064f-8909-4cd1-844b-4cfbed2e83f6.png"
+            alt="Rose of Jericho"
+            className="w-full h-full object-cover"
+          />
         </div>
-        <span className="text-xs opacity-70 mt-1 inline-block">
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
+      )}
+      
+      <div className={`max-w-[80%] ${isUser ? 'order-1' : 'order-2'}`}>
+        <div className={`
+          rounded-2xl px-4 py-3 text-sm
+          ${isUser 
+            ? 'bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white ml-auto' 
+            : 'bg-white/10 backdrop-blur-sm border border-white/20'
+          }
+        `}>
+          {isAgent ? (
+            <div className="space-y-3">
+              {formatMeditationContent(message.content)}
+            </div>
+          ) : (
+            <p className="text-white">{message.content}</p>
+          )}
+        </div>
+        
+        {message.showMeditationStart && !isTimerRunning && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, delay: 0.3 }}
+            className="mt-3 flex gap-2"
+          >
+            <Button
+              onClick={() => startMeditation(message.recommendation)}
+              className="bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 transition-opacity text-white text-xs px-3 py-1.5 h-auto"
+            >
+              <Play className="w-3 h-3 mr-1" />
+              Start Meditation
+            </Button>
+            
+            {message.recommendation && (
+              <div className="flex items-center gap-1 text-white/60 text-xs">
+                <Clock className="w-3 h-3" />
+                <span>{Math.floor(message.recommendation.duration / 60)} min</span>
+              </div>
+            )}
+          </motion.div>
+        )}
+        
+        <div className="text-xs text-white/40 mt-2">
+          {message.timestamp.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          })}
+        </div>
       </div>
-      
-      {message.recommendation && message.role === "agent" && !isTimerRunning && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-3 bg-black/30 backdrop-blur-sm border border-white/10 rounded-xl p-4 max-w-[90%]"
-        >
-          <h4 className="text-white font-medium text-base bg-gradient-to-r from-vibrantPurple to-vibrantOrange bg-clip-text text-transparent">
-            {message.recommendation.title}
-          </h4>
-          <p className="text-white/80 text-sm mt-2">
-            {message.recommendation.description}
-          </p>
-          <div className="flex items-center gap-4 mt-3">
-            <div className="flex items-center text-white/70 text-sm">
-              <Clock className="w-4 h-4 mr-1" />
-              {Math.floor(message.recommendation.duration / 60)} minutes
-            </div>
-            <div className="flex items-center text-white/70 text-sm">
-              <Calendar className="w-4 h-4 mr-1" />
-              {message.recommendation.type.replace('_', ' ')}
-            </div>
-          </div>
-          
-          <div className="mt-4 space-y-3">
-            <DurationSelector 
-              onSelect={setSelectedDuration}
-              currentDuration={selectedDuration}
-            />
-            <Button
-              onClick={() => handleStartMeditation({
-                ...message.recommendation!,
-                duration: selectedDuration
-              })}
-              className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 transition-all duration-300"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Start {Math.floor(selectedDuration / 60)}-Minute Session
-            </Button>
-          </div>
-        </motion.div>
-      )}
-      
-      {message.showMeditationStart && !isTimerRunning && !message.recommendation && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-3 bg-black/30 backdrop-blur-sm border border-white/10 rounded-xl p-4"
-        >
-          <div className="space-y-3">
-            <DurationSelector 
-              onSelect={setSelectedDuration}
-              currentDuration={selectedDuration}
-            />
-            <Button
-              onClick={() => handleStartMeditation()}
-              className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Start {Math.floor(selectedDuration / 60)}-Minute Meditation
-            </Button>
-          </div>
-        </motion.div>
-      )}
     </motion.div>
   );
 };

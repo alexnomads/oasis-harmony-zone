@@ -87,16 +87,31 @@ Respond naturally to the user's message while staying in character as Rose of Je
       lastUserMessage: message.substring(0, 50) + '...'
     })
 
-    // Try primary model: Mistral-7B-Instruct-v0.3 with retry logic
-    let aiResponse = await tryModelWithRetry(() => tryMistralModel(hfApiKey, messages), 'Mistral')
+    // Try models in order of preference with retry logic
+    let aiResponse = null
     
-    // Fallback to Falcon-7B-Instruct if Mistral fails
+    // 1. Try Mistral-7B-Instruct-v0.3 (best quality)
+    aiResponse = await tryModelWithRetry(() => tryMistralModel(hfApiKey, messages), 'Mistral', 2)
+    
+    // 2. Fallback to DialoGPT-large (reliable conversational model)
     if (!aiResponse) {
-      console.log('Mistral failed, trying Falcon-7B-Instruct...')
-      aiResponse = await tryModelWithRetry(() => tryFalconModel(hfApiKey, messages), 'Falcon')
+      console.log('Mistral failed, trying DialoGPT-large...')
+      aiResponse = await tryModelWithRetry(() => tryDialoGPTModel(hfApiKey, messages), 'DialoGPT', 2)
     }
 
-    // Final fallback to intelligent responses
+    // 3. Fallback to Flan-T5-large (instruction-following model)
+    if (!aiResponse) {
+      console.log('DialoGPT failed, trying Flan-T5-large...')
+      aiResponse = await tryModelWithRetry(() => tryFlanT5Model(hfApiKey, messages), 'Flan-T5', 2)
+    }
+
+    // 4. Final fallback to Falcon-7B-Instruct
+    if (!aiResponse) {
+      console.log('Flan-T5 failed, trying Falcon-7B-Instruct...')
+      aiResponse = await tryModelWithRetry(() => tryFalconModel(hfApiKey, messages), 'Falcon', 1)
+    }
+
+    // 5. Intelligent fallback if all models fail
     if (!aiResponse) {
       console.log('All models failed, using intelligent fallback...')
       aiResponse = getIntelligentFallback(message)
@@ -122,7 +137,7 @@ Respond naturally to the user's message while staying in character as Rose of Je
     console.error('Error in ai-meditation-chat function:', error)
     
     // Graceful fallback
-    const fallbackResponse = "I'm experiencing some technical difficulties, but I'm still here for you. How can I support your meditation practice today?"
+    const fallbackResponse = "I'm experiencing some technical difficulties, but I'm still here to support you. How can I help with your meditation practice today?"
     
     return new Response(
       JSON.stringify({ 
@@ -143,14 +158,14 @@ async function tryModelWithRetry(modelFunc: () => Promise<string | null>, modelN
     try {
       console.log(`Trying ${modelName} (attempt ${attempt}/${maxRetries})`)
       const result = await modelFunc()
-      if (result) {
+      if (result && result.length > 10) {
         console.log(`${modelName} succeeded on attempt ${attempt}`)
         return result
       }
     } catch (error) {
       console.error(`${modelName} attempt ${attempt} failed:`, error)
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt)) // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
       }
     }
   }
@@ -169,7 +184,7 @@ async function tryMistralModel(apiKey: string, messages: ConversationMessage[]):
         inputs: formatMessagesForMistral(messages),
         parameters: {
           temperature: 0.7,
-          max_new_tokens: 200,
+          max_new_tokens: 150,
           top_p: 0.9,
           repetition_penalty: 1.1,
           do_sample: true,
@@ -178,26 +193,94 @@ async function tryMistralModel(apiKey: string, messages: ConversationMessage[]):
       })
     })
 
-    console.log('Mistral API response status:', response.status)
-
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Mistral API error:', response.status, errorText)
-      throw new Error(`Mistral API error: ${response.status} ${errorText}`)
+      throw new Error(`Mistral API error: ${response.status}`)
     }
 
     const result = await response.json()
-    console.log('Mistral raw response:', result)
     
     if (Array.isArray(result) && result[0]?.generated_text) {
-      const cleaned = cleanResponse(result[0].generated_text)
-      console.log('Mistral cleaned response:', cleaned)
-      return cleaned
+      return cleanResponse(result[0].generated_text)
     }
     
     return null
   } catch (error) {
     console.error('Mistral model error:', error)
+    return null
+  }
+}
+
+async function tryDialoGPTModel(apiKey: string, messages: ConversationMessage[]): Promise<string | null> {
+  try {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: formatMessagesForDialoGPT(messages),
+        parameters: {
+          temperature: 0.7,
+          max_new_tokens: 100,
+          top_p: 0.9,
+          repetition_penalty: 1.1,
+          do_sample: true,
+          return_full_text: false
+        }
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`DialoGPT API error: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    if (Array.isArray(result) && result[0]?.generated_text) {
+      return cleanResponse(result[0].generated_text)
+    }
+    
+    return null
+  } catch (error) {
+    console.error('DialoGPT model error:', error)
+    return null
+  }
+}
+
+async function tryFlanT5Model(apiKey: string, messages: ConversationMessage[]): Promise<string | null> {
+  try {
+    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-large', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: formatMessagesForFlanT5(messages),
+        parameters: {
+          temperature: 0.7,
+          max_new_tokens: 100,
+          top_p: 0.9,
+          repetition_penalty: 1.1,
+          do_sample: true
+        }
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Flan-T5 API error: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    if (Array.isArray(result) && result[0]?.generated_text) {
+      return cleanResponse(result[0].generated_text)
+    }
+    
+    return null
+  } catch (error) {
+    console.error('Flan-T5 model error:', error)
     return null
   }
 }
@@ -214,7 +297,7 @@ async function tryFalconModel(apiKey: string, messages: ConversationMessage[]): 
         inputs: formatMessagesForFalcon(messages),
         parameters: {
           temperature: 0.7,
-          max_new_tokens: 200,
+          max_new_tokens: 100,
           top_p: 0.9,
           repetition_penalty: 1.1,
           do_sample: true,
@@ -223,21 +306,14 @@ async function tryFalconModel(apiKey: string, messages: ConversationMessage[]): 
       })
     })
 
-    console.log('Falcon API response status:', response.status)
-
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Falcon API error:', response.status, errorText)
-      throw new Error(`Falcon API error: ${response.status} ${errorText}`)
+      throw new Error(`Falcon API error: ${response.status}`)
     }
 
     const result = await response.json()
-    console.log('Falcon raw response:', result)
     
     if (Array.isArray(result) && result[0]?.generated_text) {
-      const cleaned = cleanResponse(result[0].generated_text)
-      console.log('Falcon cleaned response:', cleaned)
-      return cleaned
+      return cleanResponse(result[0].generated_text)
     }
     
     return null
@@ -248,7 +324,6 @@ async function tryFalconModel(apiKey: string, messages: ConversationMessage[]): 
 }
 
 function formatMessagesForMistral(messages: ConversationMessage[]): string {
-  // Improved Mistral-7B-Instruct format
   let formatted = ""
   
   for (let i = 0; i < messages.length; i++) {
@@ -266,17 +341,22 @@ function formatMessagesForMistral(messages: ConversationMessage[]): string {
     }
   }
   
-  // If the last message is from user, we need to close the instruction
-  if (messages[messages.length - 1].role === 'user') {
-    formatted += ""
-  }
-  
-  console.log('Mistral formatted input:', formatted.substring(0, 200) + '...')
   return formatted
 }
 
+function formatMessagesForDialoGPT(messages: ConversationMessage[]): string {
+  // DialoGPT works best with a simple conversational format
+  const userMessage = messages[messages.length - 1].content
+  return `You are Rose of Jericho, a compassionate AI meditation coach. Respond warmly and helpfully to: ${userMessage}`
+}
+
+function formatMessagesForFlanT5(messages: ConversationMessage[]): string {
+  // Flan-T5 works well with instruction-following format
+  const userMessage = messages[messages.length - 1].content
+  return `As Rose of Jericho, a caring meditation coach, respond to this person seeking wellness guidance: "${userMessage}"`
+}
+
 function formatMessagesForFalcon(messages: ConversationMessage[]): string {
-  // Improved Falcon-7B-Instruct format
   let formatted = ""
   
   for (const msg of messages) {
@@ -290,50 +370,35 @@ function formatMessagesForFalcon(messages: ConversationMessage[]): string {
   }
   
   formatted += "Assistant:"
-  console.log('Falcon formatted input:', formatted.substring(0, 200) + '...')
   return formatted
 }
 
 function cleanResponse(response: string): string {
-  // Enhanced response cleaning
+  // Less strict response cleaning
   let cleaned = response
     .replace(/\[INST\]|\[\/INST\]|<s>|<\/s>/g, '')
     .replace(/^(System:|User:|Assistant:)/gm, '')
-    .replace(/^\s*[\r\n]/gm, '') // Remove empty lines
+    .replace(/^\s*[\r\n]/gm, '')
     .trim()
 
-  // Remove any remaining formatting artifacts
+  // Remove formatting artifacts
   cleaned = cleaned.replace(/^[:\-\s]+/, '').trim()
 
-  // Ensure response isn't too long
-  if (cleaned.length > 300) {
+  // Ensure reasonable length but be less strict
+  if (cleaned.length > 400) {
     const sentences = cleaned.split(/[.!?]+/)
-    cleaned = sentences.slice(0, 2).join('. ')
+    cleaned = sentences.slice(0, 3).join('. ')
     if (cleaned && !cleaned.match(/[.!?]$/)) {
       cleaned += '.'
     }
   }
 
-  // If response is empty, too short, or contains repetitive patterns, return null for fallback
-  if (!cleaned || cleaned.length < 10 || isRepetitive(cleaned)) {
-    console.log('Response rejected:', { cleaned, length: cleaned.length, repetitive: isRepetitive(cleaned) })
+  // Only reject if truly empty or has obvious issues
+  if (!cleaned || cleaned.length < 5) {
     return null
   }
 
   return cleaned
-}
-
-function isRepetitive(text: string): boolean {
-  // Check for repetitive patterns
-  const words = text.toLowerCase().split(/\s+/)
-  const wordCount = {}
-  
-  for (const word of words) {
-    wordCount[word] = (wordCount[word] || 0) + 1
-  }
-  
-  // If any word appears more than 3 times in a short response, it's likely repetitive
-  return Object.values(wordCount).some(count => count > 3)
 }
 
 function getIntelligentFallback(userMessage: string): string {

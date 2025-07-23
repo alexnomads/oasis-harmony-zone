@@ -38,8 +38,8 @@ export default function AuthCallback() {
         // Handle password recovery - support both old and new format
         if (code) {
           console.log('Password recovery detected with code, redirecting to change-password page');
-          // Pass the code and other parameters to change-password page
-          const changePasswordUrl = `/change-password?${window.location.search}`;
+          // Pass the code parameter properly to change-password page
+          const changePasswordUrl = `/change-password?code=${encodeURIComponent(code)}`;
           navigate(changePasswordUrl);
           return;
         }

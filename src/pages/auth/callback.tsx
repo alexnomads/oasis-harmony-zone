@@ -36,18 +36,18 @@ export default function AuthCallback() {
         }
 
         // Handle password recovery - support both old and new format
-        if ((token_hash && type === 'recovery') || code) {
-          console.log('Password recovery detected, redirecting to change-password page');
-          // If we have a code (old format), redirect to change-password
-          // If we have token_hash with recovery type, redirect to reset-password
-          if (code) {
-            console.log('Using old format with code, redirecting to change-password');
-            navigate('/auth/change-password');
-          } else {
-            console.log('Using new format with token_hash, redirecting to reset-password');
-            const resetUrl = `/auth/reset-password?${window.location.search}`;
-            navigate(resetUrl);
-          }
+        if (code) {
+          console.log('Password recovery detected with code, redirecting to change-password page');
+          // Pass the code and other parameters to change-password page
+          const changePasswordUrl = `/auth/change-password?${window.location.search}`;
+          navigate(changePasswordUrl);
+          return;
+        }
+        
+        if (token_hash && type === 'recovery') {
+          console.log('Password recovery detected with token_hash, redirecting to reset-password page');
+          const resetUrl = `/auth/reset-password?${window.location.search}`;
+          navigate(resetUrl);
           return;
         }
 

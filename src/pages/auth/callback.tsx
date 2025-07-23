@@ -39,7 +39,7 @@ export default function AuthCallback() {
         if (code) {
           console.log('Password recovery detected with code, redirecting to change-password page');
           // Pass the code and other parameters to change-password page
-          const changePasswordUrl = `/auth/change-password?${window.location.search}`;
+          const changePasswordUrl = `/change-password?${window.location.search}`;
           navigate(changePasswordUrl);
           return;
         }

@@ -148,6 +148,30 @@ export const QuickMeditation: React.FC = () => {
     }
   };
 
+  const createDistractionMessage = (
+    earnedPoints: number,
+    distractionCount: number,
+    focusLost: number,
+    windowBlurs: number,
+    hasMovement: boolean
+  ) => {
+    // If no distractions, show encouraging message
+    if (distractionCount === 0) {
+      return `Perfect focus! You earned the full ${earnedPoints.toFixed(1)} points. Well done on maintaining complete presence during your meditation.`;
+    }
+
+    // Create distraction details
+    const distractionDetails = [];
+    if (focusLost > 0) distractionDetails.push(`${focusLost} tab switch${focusLost > 1 ? 'es' : ''}`);
+    if (windowBlurs > 0) distractionDetails.push(`${windowBlurs} window switch${windowBlurs > 1 ? 'es' : ''}`);
+    if (hasMovement) distractionDetails.push('movement detected');
+
+    const distractionText = distractionDetails.join(', ');
+
+    // Encouraging message with specific feedback
+    return `Great job completing your meditation! We noticed ${distractionText} during your session. You earned ${earnedPoints.toFixed(1)} points. Remember, staying present is a skill that improves with practice - each session is progress on your mindfulness journey!`;
+  };
+
   const startMeditation = async () => {
     if (!user) {
       toast({
@@ -212,10 +236,6 @@ export const QuickMeditation: React.FC = () => {
       // Play end sound
       await playSound(endSoundRef);
 
-      // Calculate session quality based on focus metrics
-      const distractionCount = distractions.mouseMovements + distractions.focusLost + distractions.windowBlurs;
-      const qualityFactor = Math.max(0, 1 - distractionCount * 0.1);
-
       // Complete the session in the database
       const { session, userPoints } = await SessionService.completeSession(sessionId, duration, distractions);
 
@@ -227,11 +247,17 @@ export const QuickMeditation: React.FC = () => {
       // Release wake lock
       await releaseWakeLock();
 
-      // Adjust points based on quality factor
-      const earnedPoints = session.points_earned;
-      const qualityMessage = qualityFactor < 1 ? 
-        `You earned ${earnedPoints.toFixed(1)} out of a possible ${Math.ceil(earnedPoints / qualityFactor).toFixed(1)} points due to distractions.` : 
-        `Well done on maintaining focus! You earned the full ${earnedPoints.toFixed(1)} points.`;
+      // Calculate total distractions for messaging
+      const distractionCount = distractions.mouseMovements + distractions.focusLost + distractions.windowBlurs;
+      
+      // Create encouraging message based on performance
+      const qualityMessage = createDistractionMessage(
+        session.points_earned,
+        distractionCount,
+        distractions.focusLost,
+        distractions.windowBlurs,
+        distractions.mouseMovements > 0
+      );
 
       // Show toast notification
       toast({

@@ -34,3 +34,87 @@ export interface UserProfile {
   created_at: string;
   updated_at: string;
 }
+
+// New interfaces for AI Coach enhancements
+export interface UserMood {
+  id: string;
+  user_id: string;
+  emotion: string;
+  intensity: number;
+  keywords: string[];
+  message_context: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PersonalizedMeditation {
+  id: string;
+  user_id: string;
+  title: string;
+  type: MeditationType;
+  duration: number;
+  focus: string;
+  script: MeditationScript;
+  audio_instructions: string[];
+  background_music: string;
+  user_level: 'beginner' | 'intermediate' | 'advanced';
+  usage_count: number;
+  rating?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MeditationScript {
+  phases: Array<{
+    name: string;
+    duration: number;
+    instructions: string;
+    guidance: string[];
+  }>;
+}
+
+export interface AIInteractionLog {
+  id: string;
+  user_id: string;
+  interaction_type: string;
+  user_message: string;
+  ai_response: string;
+  response_time: number;
+  mood_detected?: string;
+  mood_intensity?: number;
+  session_started: boolean;
+  user_satisfaction?: number;
+  created_at: string;
+}
+
+export interface MeditationInsights {
+  summary: {
+    totalSessions: number;
+    totalMinutes: number;
+    averageSession: number;
+    streak: number;
+    consistency: number;
+  };
+  patterns: {
+    preferredTimes: string[];
+    favoriteTypes: string[];
+    moodTrends: Array<{
+      emotion: string;
+      frequency: number;
+      improvement: number;
+    }>;
+  };
+  achievements: Array<{
+    type: string;
+    title: string;
+    description: string;
+    unlockedAt: string;
+  }>;
+  recommendations: Array<{
+    type: string;
+    title: string;
+    reason: string;
+    priority: number;
+  }>;
+  insights: string[];
+}

@@ -1,4 +1,3 @@
-
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import { UserPoints, MeditationType } from '../../types/database';
@@ -23,6 +22,11 @@ interface AIResponse {
   showMeditationOption: boolean;
   recommendation?: MeditationRecommendation;
   needsApiKey?: boolean;
+  moodAnalysis?: {
+    emotion: string;
+    intensity: number;
+    insights: string;
+  };
 }
 
 interface ConversationMessage {
@@ -31,64 +35,79 @@ interface ConversationMessage {
 }
 
 export class MeditationAgentService extends BaseService {
-  // Main method to handle AI responses using the upgraded LLM
+  // Enhanced main method with mood analysis integration
   static async getResponse(userMessage: string, previousMessages: MessageType[]): Promise<AIResponse> {
     try {
-      // Get user context if available
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Get user context
       const userContext = await this.getUserContext();
+      
+      // Analyze mood using new Edge Function
+      let moodAnalysis = null;
+      if (user) {
+        try {
+          const { data: moodData } = await supabase.functions.invoke('analyze-mood', {
+            body: {
+              message: userMessage,
+              userId: user.id,
+              previousMoods: await this.getRecentMoods(user.id)
+            }
+          });
+          
+          if (moodData && !moodData.error) {
+            moodAnalysis = moodData;
+            console.log('Mood analysis successful:', moodAnalysis);
+          }
+        } catch (error) {
+          console.log('Mood analysis unavailable, continuing with basic analysis');
+        }
+      }
       
       // Prepare conversation history
       const conversationHistory: ConversationMessage[] = previousMessages
-        .slice(-6) // Keep last 6 messages for context
+        .slice(-6)
         .map(msg => ({
           role: msg.role === 'agent' ? 'assistant' : 'user',
           content: msg.content
         }));
 
-      console.log('Sending request to AI service with context:', {
-        userMessage: userMessage.substring(0, 50),
-        historyLength: conversationHistory.length,
-        userContext
+      // Get AI response with enhanced context
+      const aiResponse = await this.getAIResponse(userMessage, conversationHistory, {
+        ...userContext,
+        moodAnalysis
       });
 
-      // Call the upgraded AI service
-      const aiResponse = await this.getAIResponse(userMessage, conversationHistory, userContext);
-
-      console.log('Received AI response:', {
-        responseLength: aiResponse.length,
-        preview: aiResponse.substring(0, 100)
-      });
-
-      // Analyze sentiment for meditation recommendations
-      const sentiment = this.analyzeSentiment(userMessage);
-      const recommendation = this.getRecommendation(sentiment);
+      // Use mood-based recommendation if available, otherwise fallback to basic analysis
+      const recommendation = moodAnalysis?.recommendation || 
+        this.getRecommendation(this.analyzeSentiment(userMessage));
       
-      // Determine if we should show meditation option
-      const shouldShowMeditation = this.shouldShowMeditationOption(aiResponse, sentiment);
+      // Determine if meditation should be offered
+      const shouldShowMeditation = this.shouldShowMeditationOption(aiResponse, moodAnalysis || this.analyzeSentiment(userMessage));
+
+      // Log interaction for quality monitoring
+      if (user) {
+        this.logInteraction(user.id, userMessage, aiResponse, moodAnalysis);
+      }
 
       return {
         message: aiResponse,
         showMeditationOption: shouldShowMeditation,
-        recommendation: shouldShowMeditation ? recommendation : undefined
+        recommendation: shouldShowMeditation ? recommendation : undefined,
+        moodAnalysis: moodAnalysis ? {
+          emotion: moodAnalysis.emotion,
+          intensity: moodAnalysis.intensity,
+          insights: moodAnalysis.insights
+        } : undefined
       };
       
     } catch (error) {
       console.error('Error in AI meditation chat:', error);
-      
-      // Check if it's an API key configuration error
-      if (error.message?.includes('API key') || error.message?.includes('configuration')) {
-        return {
-          message: "I need to be configured with an API key to provide personalized responses. Please set up your Hugging Face API key to get started.",
-          showMeditationOption: false,
-          needsApiKey: true
-        };
-      }
-      
-      return this.getFallbackResponse(userMessage);
+      return this.getContextualResponse(userMessage);
     }
   }
 
-  // Enhanced AI call with retry logic and better error handling
+  // Enhanced AI response with retry logic and mood context
   private static async getAIResponse(
     userMessage: string, 
     conversationHistory: ConversationMessage[], 
@@ -100,7 +119,7 @@ export class MeditationAgentService extends BaseService {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const { data, error } = await supabase.functions.invoke('ai-meditation-chat', {
           body: {
@@ -113,46 +132,52 @@ export class MeditationAgentService extends BaseService {
         clearTimeout(timeoutId);
 
         if (error) {
-          console.error(`AI service error (attempt ${attempt}):`, error);
           lastError = error;
-          
           if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
             continue;
           }
-          throw new Error(`AI service failed: ${error.message}`);
+          throw error;
         }
 
         if (!data?.response) {
           throw new Error('No response from AI service');
         }
 
-        // Check if response indicates API key issues
-        if (data.response.includes('API key') || data.isFallback) {
-          console.log('AI service returned fallback response:', data);
-          if (data.error?.includes('API key')) {
-            throw new Error('API key configuration required');
-          }
-        }
-
         return data.response;
       } catch (error) {
-        console.error(`Error calling AI service (attempt ${attempt}):`, error);
+        console.error(`AI service attempt ${attempt} failed:`, error);
         lastError = error;
         
         if (attempt < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
           continue;
         }
       }
     }
 
-    // All retries failed, return intelligent fallback
-    console.warn('All AI service attempts failed, using local fallback');
-    return this.getContextualResponse(userMessage);
+    // All attempts failed, return intelligent contextual response
+    return this.getIntelligentContextualResponse(userMessage, userContext);
   }
 
-  // Get user context for personalized responses
+  // Get recent moods for context
+  private static async getRecentMoods(userId: string) {
+    try {
+      const { data } = await supabase
+        .from('user_moods')
+        .select('emotion, intensity, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching recent moods:', error);
+      return [];
+    }
+  }
+
+  // Enhanced user context with mood history
   private static async getUserContext() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -164,10 +189,15 @@ export class MeditationAgentService extends BaseService {
         .eq('user_id', user.id)
         .single();
 
+      const recentMoods = await this.getRecentMoods(user.id);
+      const dominantMood = recentMoods.length > 0 ? recentMoods[0].emotion : 'neutral';
+
       return {
         meditationStreak: userPoints?.meditation_streak || 0,
         totalPoints: userPoints?.total_points || 0,
-        preferredMeditationType: 'mindfulness'
+        preferredMeditationType: 'mindfulness',
+        dominantMood,
+        recentMoodTrend: this.analyzeMoodTrend(recentMoods)
       };
     } catch (error) {
       console.error('Error getting user context:', error);
@@ -175,8 +205,171 @@ export class MeditationAgentService extends BaseService {
     }
   }
 
-  // Determine if meditation option should be shown
-  private static shouldShowMeditationOption(response: string, sentiment: UserSentiment): boolean {
+  // Analyze mood trend from recent data
+  private static analyzeMoodTrend(recentMoods: any[]) {
+    if (recentMoods.length < 2) return 'stable';
+    
+    const recent = recentMoods.slice(0, 3);
+    const older = recentMoods.slice(3, 6);
+    
+    const recentAvg = recent.reduce((sum, mood) => sum + mood.intensity, 0) / recent.length;
+    const olderAvg = older.length > 0 ? older.reduce((sum, mood) => sum + mood.intensity, 0) / older.length : recentAvg;
+    
+    const difference = recentAvg - olderAvg;
+    
+    if (difference > 0.5) return 'improving';
+    if (difference < -0.5) return 'declining';
+    return 'stable';
+  }
+
+  // Enhanced contextual response with mood awareness
+  private static getIntelligentContextualResponse(userMessage: string, userContext: any): string {
+    const message = userMessage.toLowerCase();
+    
+    // Use mood context if available
+    if (userContext?.dominantMood) {
+      const moodResponses = {
+        stressed: "I can sense you're dealing with stress. Let's work together to find some calm through mindful breathing.",
+        tired: "Feeling tired can be challenging. A gentle meditation might help restore your energy naturally.",
+        frustrated: "Frustration is a sign that you care deeply. Let's channel that energy into a centering practice.",
+        happy: "It's wonderful that you're feeling positive! This is a perfect time to deepen your practice.",
+        calm: "You're in a beautiful state of calm. Let's use this as a foundation for deeper awareness."
+      };
+      
+      if (moodResponses[userContext.dominantMood]) {
+        return moodResponses[userContext.dominantMood];
+      }
+    }
+
+    // Enhanced contextual responses
+    if (message.includes('stress') || message.includes('anxious')) {
+      return "Stress is a signal from your body and mind. A short breathing meditation can help you respond rather than react. Shall we try together?";
+    }
+    
+    if (message.includes('sleep') || message.includes('tired')) {
+      return "Sleep challenges often reflect an overactive mind. A gentle body scan meditation before bed can help quiet your thoughts. Ready to try?";
+    }
+    
+    if (message.includes('trading') || message.includes('crypto') || message.includes('market')) {
+      return "Market volatility can create emotional turbulence. Regular meditation helps you maintain clarity and make decisions from a centered place. Would you like to practice?";
+    }
+    
+    if (message.includes('hello') || message.includes('hi')) {
+      return "Hello! I'm Rose of Jericho, your AI meditation companion. I'm here to help you find peace and clarity through mindful practice. How are you feeling today?";
+    }
+
+    return "I'm here to support your journey toward inner peace. Every moment of mindfulness is valuable. Would you like to explore a meditation practice together?";
+  }
+
+  // Log interaction for quality monitoring
+  private static async logInteraction(userId: string, userMessage: string, aiResponse: string, moodAnalysis: any) {
+    try {
+      await supabase.from('ai_interaction_logs').insert({
+        user_id: userId,
+        interaction_type: 'meditation_chat',
+        user_message: userMessage.substring(0, 500),
+        ai_response: aiResponse.substring(0, 500),
+        mood_detected: moodAnalysis?.emotion || null,
+        mood_intensity: moodAnalysis?.intensity || null,
+        response_time: Date.now() // Simplified - would need proper timing
+      });
+    } catch (error) {
+      console.error('Error logging interaction:', error);
+    }
+  }
+
+  // Generate personalized meditation using new Edge Function
+  static async generatePersonalizedMeditation(
+    userId: string, 
+    type: MeditationType, 
+    duration: number, 
+    currentMood?: { emotion: string; intensity: number }
+  ) {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-meditation', {
+        body: {
+          userId,
+          type,
+          duration,
+          focus: this.getFocusFromMood(currentMood),
+          userLevel: 'intermediate', // Could be determined from user history
+          currentMood,
+          preferences: {
+            voiceStyle: 'gentle',
+            pace: 'moderate',
+            guidance: 'supportive'
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Error generating personalized meditation:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error calling generate-meditation function:', error);
+      return null;
+    }
+  }
+
+  // Get meditation insights using new Edge Function
+  static async getMeditationInsights(userId: string, timeframe: 'week' | 'month' | 'quarter' = 'week') {
+    try {
+      const { data, error } = await supabase.functions.invoke('meditation-insights', {
+        body: {
+          userId,
+          timeframe,
+          includeRecommendations: true
+        }
+      });
+
+      if (error) {
+        console.error('Error getting meditation insights:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error calling meditation-insights function:', error);
+      return null;
+    }
+  }
+
+  // Helper method to determine focus from mood
+  private static getFocusFromMood(mood?: { emotion: string; intensity: number }): string {
+    if (!mood) return 'general awareness';
+    
+    const focusMap = {
+      stressed: 'calming breath work',
+      tired: 'energy restoration',
+      frustrated: 'emotional release',
+      sad: 'gentle awareness',
+      excited: 'grounding practice',
+      happy: 'gratitude meditation',
+      focused: 'sustained attention',
+      calm: 'deepening peace',
+      confused: 'mental clarity'
+    };
+    
+    return focusMap[mood.emotion] || 'general awareness';
+  }
+
+  // Enhanced fallback response
+  private static getContextualResponse(userMessage: string): AIResponse {
+    const sentiment = this.analyzeSentiment(userMessage);
+    const recommendation = this.getRecommendation(sentiment);
+    
+    return {
+      message: this.getIntelligentContextualResponse(userMessage, null),
+      showMeditationOption: true,
+      recommendation
+    };
+  }
+
+  // Keep existing methods for backwards compatibility
+  private static shouldShowMeditationOption(response: string, sentiment: any): boolean {
     const meditationKeywords = /meditat|breath|relax|calm|center|focus|mindful|session|practice|try/i;
     const questionIndicators = /would you like|shall we|how about|ready for|interested in|let's/i;
     
@@ -188,59 +381,15 @@ export class MeditationAgentService extends BaseService {
     );
   }
 
-  // Intelligent contextual response (no technical issues mentioned)
-  private static getContextualResponse(userMessage: string): string {
-    const message = userMessage.toLowerCase();
-    
-    if (message.includes('stress') || message.includes('anxious') || message.includes('worried')) {
-      return "I can sense you're feeling stressed. A short breathing meditation might help you find some calm. Would you like to try a 5-minute mindfulness session?";
-    }
-    
-    if (message.includes('sleep') || message.includes('tired') || message.includes('insomnia')) {
-      return "Sleep concerns can be challenging. A gentle meditation before bed often helps quiet the mind. Shall we do a relaxing session together?";
-    }
-    
-    if (message.includes('trading') || message.includes('market') || message.includes('crypto')) {
-      return "Market volatility can create emotional turbulence. Regular meditation helps maintain clarity in decision-making. Ready for a centering practice?";
-    }
-    
-    if (message.includes('meditation') || message.includes('meditate')) {
-      return "Wonderful that you're interested in meditation! It's one of the most powerful tools for inner peace. Would you like to start with a beginner-friendly session?";
-    }
-    
-    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-      return "Hello! I'm Rose of Jericho, your meditation companion. I'm here to help you find moments of peace and mindfulness. How are you feeling today?";
-    }
-    
-    if (message.includes('how') && message.includes('feel')) {
-      return "I appreciate you sharing. Sometimes just acknowledging our feelings is the first step toward balance. A short meditation can help process emotions mindfully.";
-    }
-    
-    return "I'm here to support your meditation journey. Every moment of mindfulness is valuable. Would you like to explore a meditation practice together?";
-  }
-
-  // Enhanced fallback response when AI service fails
-  private static getFallbackResponse(userMessage: string): AIResponse {
-    const sentiment = this.analyzeSentiment(userMessage);
-    const recommendation = this.getRecommendation(sentiment);
-    
-    return {
-      message: this.getContextualResponse(userMessage),
-      showMeditationOption: true,
-      recommendation
-    };
-  }
-
   private static analyzeSentiment(userMessage: string): UserSentiment {
     const input = userMessage.toLowerCase();
     let mainEmotion = 'neutral';
     let intensity = 5;
     let cryptoRelated = false;
   
-    // Prioritize crypto-related checks
     if (input.includes('crypto') || input.includes('market') || input.includes('trading')) {
       cryptoRelated = true;
-      intensity = 7; // Assume higher intensity for crypto-related stress
+      intensity = 7;
       mainEmotion = 'stressed';
     } else if (input.includes('stressed') || input.includes('anxious') || input.includes('overwhelmed')) {
       mainEmotion = 'stressed';
@@ -262,16 +411,16 @@ export class MeditationAgentService extends BaseService {
   
   private static getRecommendation(sentiment: UserSentiment): MeditationRecommendation {
     let type: MeditationType = 'mindfulness';
-    let duration = 300; // 5 minutes default
+    let duration = 300;
     let title = 'Mindfulness Meditation';
     let description = 'A guided mindfulness meditation to center yourself.';
   
     if (sentiment.mainEmotion === 'stressed') {
-      duration = 600; // 10 minutes
+      duration = 600;
       title = 'Stress Relief Meditation';
       description = 'Release tension and find calm with this guided meditation.';
     } else if (sentiment.mainEmotion === 'tired') {
-      duration = 180; // 3 minutes
+      duration = 180;
       type = 'body_scan';
       title = 'Quick Body Scan for Energy';
       description = 'Recharge with a quick body scan meditation.';

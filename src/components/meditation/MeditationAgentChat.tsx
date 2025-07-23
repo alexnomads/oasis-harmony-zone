@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ChatInterface } from "./ChatInterface";
@@ -164,60 +165,62 @@ export const MeditationAgentChat: React.FC = () => {
       />
       
       <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 h-[600px] flex flex-col">
-      <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
-      <CardHeader className="border-b border-white/20 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden">
-            <img
-              src="/lovable-uploads/2666064f-8909-4cd1-844b-4cfbed2e83f6.png"
-              alt="Rose of Jericho"
-              className="w-full h-full object-cover"
+        <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
+        <CardHeader className="border-b border-white/20 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              <img
+                src="/lovable-uploads/2666064f-8909-4cd1-844b-4cfbed2e83f6.png"
+                alt="Rose of Jericho"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-white">AI Meditation Coach</h3>
+              <p className="text-sm text-white/70">Personalized guidance for your practice</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 flex-1 overflow-hidden flex flex-col h-full max-h-[calc(600px-140px)]">
+          {isRunning ? (
+            <div className="hidden">
+              <MeditationTimer
+                initialDuration={selectedDuration}
+                initialType="mindfulness"
+                onComplete={(duration, distractions) => {
+                  if (!sessionId) return;
+                  MeditationService.completeSession(
+                    sessionId, 
+                    duration,
+                    distractions
+                  );
+                  resetTimer();
+                }}
+                sessionId={sessionId || ""}
+              />
+            </div>
+          ) : sessionCompleted ? (
+            <CompletedSession
+              pointsEarned={pointsEarned}
+              totalPoints={totalPoints}
+              resetTimer={resetTimer}
+              sessionId={sessionId}
             />
-          </div>
-          <div>
-            <h3 className="text-lg font-medium text-white">AI Meditation Coach</h3>
-            <p className="text-sm text-white/70">Personalized guidance for your practice</p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-6 flex-1 overflow-hidden flex flex-col h-full max-h-[calc(600px-140px)]">
-        {isRunning ? (
-          <MeditationTimer
-            initialDuration={selectedDuration}
-            initialType="mindfulness"
-            onComplete={(duration, distractions) => {
-              if (!sessionId) return;
-              MeditationService.completeSession(
-                sessionId, 
-                duration,
-                distractions
-              );
-              resetTimer();
-            }}
-            sessionId={sessionId || ""}
-          />
-        ) : sessionCompleted ? (
-          <CompletedSession
-            pointsEarned={pointsEarned}
-            totalPoints={totalPoints}
-            resetTimer={resetTimer}
-            sessionId={sessionId}
-          />
-        ) : (
-          <div ref={chatContainerRef} className="flex flex-col h-full overflow-hidden">
-            <ChatInterface
-              messages={messages}
-              isTyping={isTyping}
-              isTimerRunning={isRunning}
-              selectedDuration={selectedDuration}
-              setSelectedDuration={setSelectedDuration}
-              startMeditation={startMeditation}
-              onSubmit={handleSubmit}
-            />
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          ) : (
+            <div ref={chatContainerRef} className="flex flex-col h-full overflow-hidden">
+              <ChatInterface
+                messages={messages}
+                isTyping={isTyping}
+                isTimerRunning={isRunning}
+                selectedDuration={selectedDuration}
+                setSelectedDuration={setSelectedDuration}
+                startMeditation={startMeditation}
+                onSubmit={handleSubmit}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </>
   );
 };

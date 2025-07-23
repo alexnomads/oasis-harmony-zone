@@ -1,16 +1,18 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { Play, PauseIcon, Timer, Shield } from "lucide-react";
+import { Play, Shield } from "lucide-react";
 import { SessionService } from "@/lib/services/sessionService";
 import { DurationSelector } from "./DurationSelector";
 import { MeditationTimer } from "./MeditationTimer";
 import { ImmersiveMeditationOverlay } from "./ImmersiveMeditationOverlay";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { usePet } from "@/hooks/usePet";
+
 export const QuickMeditation: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -19,6 +21,8 @@ export const QuickMeditation: React.FC = () => {
   const [selectedDuration, setSelectedDuration] = useState(300); // Default 5 min
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState(selectedDuration);
+  const [totalDuration, setTotalDuration] = useState(selectedDuration);
   const {
     isWakeLockActive,
     isSupported,
@@ -35,7 +39,6 @@ export const QuickMeditation: React.FC = () => {
   const [windowBlurs, setWindowBlurs] = useState(0);
   const [hasMovement, setHasMovement] = useState(false);
   const [lastActiveTimestamp, setLastActiveTimestamp] = useState<Date | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState(selectedDuration);
 
   // Initialize audio elements
   useEffect(() => {
@@ -96,10 +99,12 @@ export const QuickMeditation: React.FC = () => {
         variant: "destructive"
       });
     };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
     window.addEventListener('blur', handleWindowBlur);
+
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("mousemove", handleActivity);
@@ -107,6 +112,7 @@ export const QuickMeditation: React.FC = () => {
       window.removeEventListener('blur', handleWindowBlur);
     };
   }, [isTimerRunning, lastActiveTimestamp, toast]);
+
   const playSound = async (audioRef: React.RefObject<HTMLAudioElement>) => {
     if (!audioRef.current) return;
     try {
@@ -117,6 +123,7 @@ export const QuickMeditation: React.FC = () => {
       console.error("Error playing sound:", error);
     }
   };
+
   const startMeditation = async () => {
     if (!user) {
       toast({
@@ -126,6 +133,7 @@ export const QuickMeditation: React.FC = () => {
       });
       return;
     }
+
     try {
       // Reset focus tracking metrics
       setFocusLost(0);
@@ -139,6 +147,7 @@ export const QuickMeditation: React.FC = () => {
       setIsTimerRunning(true);
       setShowImmersiveOverlay(true);
       setTimeRemaining(selectedDuration);
+      setTotalDuration(selectedDuration);
 
       // Request wake lock to prevent screen from turning off
       const wakeLockAcquired = await requestWakeLock();
@@ -167,12 +176,14 @@ export const QuickMeditation: React.FC = () => {
       });
     }
   };
+
   const handleMeditationComplete = async (duration: number, distractions: {
     mouseMovements: number;
     focusLost: number;
     windowBlurs: number;
   }) => {
     if (!user || !sessionId) return;
+
     try {
       // Play end sound
       await playSound(endSoundRef);
@@ -182,10 +193,7 @@ export const QuickMeditation: React.FC = () => {
       const qualityFactor = Math.max(0, 1 - distractionCount * 0.1);
 
       // Complete the session in the database
-      const {
-        session,
-        userPoints
-      } = await SessionService.completeSession(sessionId, duration, distractions);
+      const { session, userPoints } = await SessionService.completeSession(sessionId, duration, distractions);
 
       // Reset timer state
       setIsTimerRunning(false);
@@ -197,7 +205,9 @@ export const QuickMeditation: React.FC = () => {
 
       // Adjust points based on quality factor
       const earnedPoints = session.points_earned;
-      const qualityMessage = qualityFactor < 1 ? `You earned ${earnedPoints.toFixed(1)} out of a possible ${Math.ceil(earnedPoints / qualityFactor).toFixed(1)} points due to distractions.` : `Well done on maintaining focus! You earned the full ${earnedPoints.toFixed(1)} points.`;
+      const qualityMessage = qualityFactor < 1 ? 
+        `You earned ${earnedPoints.toFixed(1)} out of a possible ${Math.ceil(earnedPoints / qualityFactor).toFixed(1)} points due to distractions.` : 
+        `Well done on maintaining focus! You earned the full ${earnedPoints.toFixed(1)} points.`;
 
       // Show toast notification
       toast({
@@ -234,7 +244,7 @@ export const QuickMeditation: React.FC = () => {
       <ImmersiveMeditationOverlay
         isActive={showImmersiveOverlay}
         timeRemaining={timeRemaining}
-        totalDuration={selectedDuration}
+        totalDuration={totalDuration}
         isTimerRunning={isTimerRunning}
         pet={pet}
         petEmotion={petEmotion}
@@ -242,38 +252,57 @@ export const QuickMeditation: React.FC = () => {
       />
       
       <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20">
-      
-      
-      <CardContent className="p-6">
-        {isTimerRunning && sessionId ? <MeditationTimer initialType="mindfulness" initialDuration={selectedDuration} onComplete={handleMeditationComplete} sessionId={sessionId} /> : <div className="space-y-6">
-            <div className="space-y-4">
+        <CardContent className="p-6">
+          {isTimerRunning && sessionId ? (
+            <div className="hidden">
+              <MeditationTimer
+                initialType="mindfulness"
+                initialDuration={selectedDuration}
+                onComplete={handleMeditationComplete}
+                sessionId={sessionId}
+              />
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <DurationSelector
+                  selectedDuration={selectedDuration}
+                  setSelectedDuration={setSelectedDuration}
+                  isRunning={isTimerRunning}
+                />
+              </div>
               
-              <DurationSelector selectedDuration={selectedDuration} setSelectedDuration={setSelectedDuration} isRunning={isTimerRunning} />
+              <div className="flex justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    onClick={startMeditation}
+                    className="bg-gradient-to-r from-vibrantOrange to-vibrantPurple hover:opacity-90 text-lg px-6 py-6"
+                    size="lg"
+                  >
+                    <Play className="mr-2 h-5 w-5" />
+                    {selectedDuration === 30 ? "Start 30-Second Meditation" : `Start ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
+                  </Button>
+                </motion.div>
+              </div>
+              
+              <div className="text-center space-y-2">
+                <p className="text-white/60 text-sm">
+                  Stay focused to earn max points. Movement, tab switching, or leaving the page will reduce points earned.
+                </p>
+                {isWakeLockActive && (
+                  <div className="flex items-center justify-center gap-2 text-vibrantOrange text-xs">
+                    <Shield className="w-3 h-3" />
+                    <span>Screen sleep prevented - meditation protected</span>
+                  </div>
+                )}
+              </div>
             </div>
-            
-            <div className="flex justify-center">
-              <motion.div whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }}>
-                <Button onClick={startMeditation} className="bg-gradient-to-r from-vibrantOrange to-vibrantPurple hover:opacity-90 text-lg px-6 py-6" size="lg">
-                  <Play className="mr-2 h-5 w-5" />
-                  {selectedDuration === 30 ? "Start 30-Second Meditation" : `Start ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
-                </Button>
-              </motion.div>
-            </div>
-            
-            <div className="text-center space-y-2">
-              <p className="text-white/60 text-sm">Stay focused to earn max points. Movement, tab switching, or leaving the page will reduce points earned.</p>
-              {isSupported}
-              {isWakeLockActive && <div className="flex items-center justify-center gap-2 text-vibrantOrange text-xs">
-                  <Shield className="w-3 h-3" />
-                  <span>Screen sleep prevented - meditation protected</span>
-                </div>}
-            </div>
-          </div>}
-      </CardContent>
-    </Card>
-    </>);
+          )}
+        </CardContent>
+      </Card>
+    </>
+  );
 };

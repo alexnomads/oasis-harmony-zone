@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minimize2 } from "lucide-react";
+import { X } from "lucide-react";
 import { CompanionPetComponent } from "../pet/CompanionPet";
 import { CompanionPet } from "@/types/pet";
 import { Button } from "@/components/ui/button";
@@ -99,7 +100,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  const progress = totalDuration > 0 ? ((totalDuration - timeRemaining) / totalDuration) * 100 : 0;
+  const progress = totalDuration > 0 ? Math.round(((totalDuration - timeRemaining) / totalDuration) * 100) : 0;
 
   const getPetAnimationScale = () => {
     const breathingCycle = Math.sin(Date.now() / 2000) * 0.1 + 1; // Breathing rhythm
@@ -121,7 +122,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
     <AnimatePresence>
       {isActive && (
         <motion.div
-          className="fixed inset-0 z-[9999] overflow-hidden"
+          className="fixed inset-0 z-[9999] overflow-hidden bg-black"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -129,25 +130,28 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
           onMouseEnter={() => setShowExitButton(true)}
           onMouseLeave={() => setShowExitButton(false)}
         >
-          {/* Cosmic Background */}
+          {/* Cosmic Background - Subtle overlay on black */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue"
+            className="absolute inset-0 opacity-20"
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.3) 0%, rgba(25, 25, 112, 0.2) 50%, transparent 100%)',
+            }}
             animate={{
-              backgroundPosition: ['0% 0%', '100% 100%'],
+              opacity: [0.1, 0.3, 0.1],
             }}
             transition={{
-              duration: 60,
+              duration: 20,
               repeat: Infinity,
               repeatType: 'reverse',
             }}
           />
 
           {/* Ambient Particles */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 opacity-40">
             {[...Array(pet?.evolution_stage ? (pet.evolution_stage + 1) * 8 : 16)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-white rounded-full opacity-60"
+                className="absolute w-1 h-1 bg-white rounded-full"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
@@ -257,7 +261,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
                   animate={{ opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  {Math.round(progress)}% Complete
+                  {progress}% Complete
                 </motion.div>
 
                 {/* Breathing Guidance */}

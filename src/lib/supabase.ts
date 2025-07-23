@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Get the current site URL for redirects, handling both local and production environments
-const getSiteUrl = () => {
+export const getSiteUrl = () => {
   // For local development
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'http://localhost:5173'
@@ -18,7 +18,7 @@ const getSiteUrl = () => {
   return window.location.origin
 }
 
-// Set up redirect URL for authentication
+// Set up redirect URL for authentication callback
 export const getRedirectUrl = () => {
   return `${getSiteUrl()}/auth/callback`;
 }

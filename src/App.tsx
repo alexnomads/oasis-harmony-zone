@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,7 @@ import GlobalDashboard from "./pages/GlobalDashboard";
 import UserProfile from "./pages/UserProfile";
 import AuthCallback from "./pages/auth/callback";
 import ResetPassword from "./pages/auth/reset-password";
+import ChangePassword from "./pages/auth/change-password";
 import AuthTest from "./pages/auth/test";
 import AuthDebug from "./pages/auth/debug";
 import DirectTest from "./pages/auth/direct-test";
@@ -36,6 +36,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/change-password" element={<ChangePassword />} />
               <Route path="/auth/test" element={<AuthTest />} />
               <Route path="/auth/debug" element={<AuthDebug />} />
               <Route path="/auth/direct" element={<DirectTest />} />

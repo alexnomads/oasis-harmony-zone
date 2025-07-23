@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { supabase, getRedirectUrl } from '@/lib/supabase';
+import { supabase, getRedirectUrl, getSiteUrl } from '@/lib/supabase';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 const MAX_RETRIES = 3;
@@ -219,7 +219,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      const redirectUrl = getRedirectUrl();
+      const redirectUrl = `${getSiteUrl()}/change-password`;
       console.log('Using redirect URL for password reset:', redirectUrl);
       
       const { error } = await retryOperation(() => 

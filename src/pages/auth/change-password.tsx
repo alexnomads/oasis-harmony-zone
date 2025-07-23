@@ -38,33 +38,59 @@ export default function ChangePassword() {
   });
 
   useEffect(() => {
-    const checkSession = async () => {
+    const handlePasswordReset = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
         
-        console.log('Change password session check:', {
-          hasSession: !!session,
-          error: error?.message,
-          timestamp: new Date().toISOString()
+        console.log('Change password parameters:', { 
+          code: code ? 'present' : 'missing',
+          fullUrl: window.location.href
         });
 
-        if (error) {
-          console.error('Session check error:', error);
-          setIsAuthenticated(false);
-        } else if (session) {
-          setIsAuthenticated(true);
+        if (code) {
+          // Exchange the code for a session
+          console.log('Exchanging code for session...');
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          
+          if (error) {
+            console.error('Code exchange error:', error);
+            setIsAuthenticated(false);
+          } else if (data.session) {
+            console.log('Successfully exchanged code for session');
+            setIsAuthenticated(true);
+          } else {
+            console.error('No session after code exchange');
+            setIsAuthenticated(false);
+          }
         } else {
-          setIsAuthenticated(false);
+          // Check existing session
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          console.log('Change password session check:', {
+            hasSession: !!session,
+            error: error?.message,
+            timestamp: new Date().toISOString()
+          });
+
+          if (error) {
+            console.error('Session check error:', error);
+            setIsAuthenticated(false);
+          } else if (session) {
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
         }
       } catch (error) {
-        console.error('Session check failed:', error);
+        console.error('Password reset handling failed:', error);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkSession();
+    handlePasswordReset();
   }, []);
 
   const onSubmit = async (data: ChangePasswordData) => {

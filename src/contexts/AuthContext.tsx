@@ -219,7 +219,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
       
-      const redirectUrl = getRedirectUrl(); // Use auth callback URL for proper routing
+      const redirectUrl = `${getSiteUrl()}/auth/change-password`; // Direct to change-password page
       console.log('Using redirect URL for password reset:', redirectUrl);
       
       const { error } = await retryOperation(() => 

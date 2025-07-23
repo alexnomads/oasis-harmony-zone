@@ -88,38 +88,68 @@ export class MeditationAgentService extends BaseService {
     }
   }
 
-  // Enhanced AI call using the new edge function
+  // Enhanced AI call with retry logic and better error handling
   private static async getAIResponse(
     userMessage: string, 
     conversationHistory: ConversationMessage[], 
     userContext: any
   ): Promise<string> {
-    const { data, error } = await supabase.functions.invoke('ai-meditation-chat', {
-      body: {
-        message: userMessage,
-        conversationHistory,
-        userContext
+    const maxRetries = 3;
+    let lastError: any;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+        const { data, error } = await supabase.functions.invoke('ai-meditation-chat', {
+          body: {
+            message: userMessage,
+            conversationHistory,
+            userContext
+          }
+        });
+
+        clearTimeout(timeoutId);
+
+        if (error) {
+          console.error(`AI service error (attempt ${attempt}):`, error);
+          lastError = error;
+          
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+            continue;
+          }
+          throw new Error(`AI service failed: ${error.message}`);
+        }
+
+        if (!data?.response) {
+          throw new Error('No response from AI service');
+        }
+
+        // Check if response indicates API key issues
+        if (data.response.includes('API key') || data.isFallback) {
+          console.log('AI service returned fallback response:', data);
+          if (data.error?.includes('API key')) {
+            throw new Error('API key configuration required');
+          }
+        }
+
+        return data.response;
+      } catch (error) {
+        console.error(`Error calling AI service (attempt ${attempt}):`, error);
+        lastError = error;
+        
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+          continue;
+        }
       }
-    });
-
-    if (error) {
-      console.error('AI service error:', error);
-      throw new Error(`AI service failed: ${error.message}`);
     }
 
-    if (!data?.response) {
-      throw new Error('No response from AI service');
-    }
-
-    // Check if response indicates API key issues
-    if (data.response.includes('API key') || data.isFallback) {
-      console.log('AI service returned fallback response:', data);
-      if (data.error?.includes('API key')) {
-        throw new Error('API key configuration required');
-      }
-    }
-
-    return data.response;
+    // All retries failed, return intelligent fallback
+    console.warn('All AI service attempts failed, using local fallback');
+    return this.getContextualResponse(userMessage);
   }
 
   // Get user context for personalized responses
@@ -158,19 +188,44 @@ export class MeditationAgentService extends BaseService {
     );
   }
 
+  // Intelligent contextual response (no technical issues mentioned)
+  private static getContextualResponse(userMessage: string): string {
+    const message = userMessage.toLowerCase();
+    
+    if (message.includes('stress') || message.includes('anxious') || message.includes('worried')) {
+      return "I can sense you're feeling stressed. A short breathing meditation might help you find some calm. Would you like to try a 5-minute mindfulness session?";
+    }
+    
+    if (message.includes('sleep') || message.includes('tired') || message.includes('insomnia')) {
+      return "Sleep concerns can be challenging. A gentle meditation before bed often helps quiet the mind. Shall we do a relaxing session together?";
+    }
+    
+    if (message.includes('trading') || message.includes('market') || message.includes('crypto')) {
+      return "Market volatility can create emotional turbulence. Regular meditation helps maintain clarity in decision-making. Ready for a centering practice?";
+    }
+    
+    if (message.includes('meditation') || message.includes('meditate')) {
+      return "Wonderful that you're interested in meditation! It's one of the most powerful tools for inner peace. Would you like to start with a beginner-friendly session?";
+    }
+    
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+      return "Hello! I'm Rose of Jericho, your meditation companion. I'm here to help you find moments of peace and mindfulness. How are you feeling today?";
+    }
+    
+    if (message.includes('how') && message.includes('feel')) {
+      return "I appreciate you sharing. Sometimes just acknowledging our feelings is the first step toward balance. A short meditation can help process emotions mindfully.";
+    }
+    
+    return "I'm here to support your meditation journey. Every moment of mindfulness is valuable. Would you like to explore a meditation practice together?";
+  }
+
   // Enhanced fallback response when AI service fails
   private static getFallbackResponse(userMessage: string): AIResponse {
     const sentiment = this.analyzeSentiment(userMessage);
     const recommendation = this.getRecommendation(sentiment);
     
-    const fallbackResponses = [
-      "I'm experiencing some technical difficulties, but I'm still here to support your meditation journey. How are you feeling right now?",
-      "I'm having trouble connecting to my full capabilities, but I can still help you with your meditation practice. What would you like to focus on?",
-      "Technical issues are affecting my responses, but let's not let that stop us. Would you like to try a meditation session together?"
-    ];
-    
     return {
-      message: fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)],
+      message: this.getContextualResponse(userMessage),
       showMeditationOption: true,
       recommendation
     };

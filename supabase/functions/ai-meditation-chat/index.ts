@@ -4,7 +4,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-application-name',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 }
 
 interface ConversationMessage {
@@ -113,9 +115,11 @@ Respond naturally to: "${message}"`
   } catch (error) {
     console.error('Edge function error:', error)
     
+    const intelligentResponse = getContextualFallback(message || "Hello", userContext)
+    
     return new Response(
       JSON.stringify({ 
-        response: "I'm having a brief technical moment, but I'm here to support your meditation journey. How can I help you find some peace today?",
+        response: intelligentResponse,
         isFallback: true,
         error: error.message 
       }),

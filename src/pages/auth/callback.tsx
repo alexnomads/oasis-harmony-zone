@@ -35,14 +35,8 @@ export default function AuthCallback() {
           throw new Error(error_description);
         }
 
-        // Handle password recovery - support both old and new format
-        if (code) {
-          console.log('Password recovery detected with code, redirecting to change-password page');
-          // Pass the code parameter properly to change-password page
-          const changePasswordUrl = `/change-password?code=${encodeURIComponent(code)}`;
-          navigate(changePasswordUrl);
-          return;
-        }
+        // Password recovery is now handled directly by /change-password page
+        // No need to route through callback
         
         if (token_hash && type === 'recovery') {
           console.log('Password recovery detected with token_hash, redirecting to reset-password page');

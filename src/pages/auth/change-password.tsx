@@ -41,46 +41,36 @@ export default function ChangePassword() {
     const handlePasswordReset = async () => {
       try {
         const params = new URLSearchParams(window.location.search);
-        const code = params.get('code');
+        const token_hash = params.get('token_hash');
+        const type = params.get('type');
         
         console.log('Change password parameters:', { 
-          code: code ? 'present' : 'missing',
+          token_hash: token_hash ? 'present' : 'missing',
+          type,
           fullUrl: window.location.href
         });
 
-        if (code) {
-          // Exchange the code for a session
-          console.log('Exchanging code for session...');
-          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (token_hash && type === 'recovery') {
+          // Verify the recovery token
+          console.log('Verifying recovery token...');
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: 'recovery',
+          });
           
           if (error) {
-            console.error('Code exchange error:', error);
+            console.error('Token verification error:', error);
             setIsAuthenticated(false);
           } else if (data.session) {
-            console.log('Successfully exchanged code for session');
+            console.log('Successfully verified recovery token');
             setIsAuthenticated(true);
           } else {
-            console.error('No session after code exchange');
+            console.error('No session after token verification');
             setIsAuthenticated(false);
           }
         } else {
-          // Check existing session
-          const { data: { session }, error } = await supabase.auth.getSession();
-          
-          console.log('Change password session check:', {
-            hasSession: !!session,
-            error: error?.message,
-            timestamp: new Date().toISOString()
-          });
-
-          if (error) {
-            console.error('Session check error:', error);
-            setIsAuthenticated(false);
-          } else if (session) {
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-          }
+          console.error('Missing required recovery parameters');
+          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Password reset handling failed:', error);

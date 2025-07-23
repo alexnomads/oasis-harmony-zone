@@ -56,6 +56,30 @@ export const QuickMeditation: React.FC = () => {
     };
   }, []);
 
+  // Timer countdown effect
+  useEffect(() => {
+    if (!isTimerRunning) return;
+
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          // Timer complete
+          const duration = totalDuration;
+          const distractions = {
+            mouseMovements: hasMovement ? 1 : 0,
+            focusLost,
+            windowBlurs
+          };
+          handleMeditationComplete(duration, distractions);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerRunning, hasMovement, focusLost, windowBlurs, totalDuration]);
+
   // Focus tracking for meditation sessions
   useEffect(() => {
     if (!isTimerRunning) return;

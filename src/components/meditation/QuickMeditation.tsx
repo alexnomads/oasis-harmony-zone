@@ -8,14 +8,14 @@ import { Play, PauseIcon, Timer, Shield } from "lucide-react";
 import { SessionService } from "@/lib/services/sessionService";
 import { DurationSelector } from "./DurationSelector";
 import { MeditationTimer } from "./MeditationTimer";
+import { ImmersiveMeditationOverlay } from "./ImmersiveMeditationOverlay";
 import { useWakeLock } from "@/hooks/useWakeLock";
+import { usePet } from "@/hooks/usePet";
 export const QuickMeditation: React.FC = () => {
-  const {
-    user
-  } = useAuth();
-  const {
-    toast
-  } = useToast();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { pet, isLoading: petLoading, getCurrentMood, getPetEmotion } = usePet(user?.id);
+  const [showImmersiveOverlay, setShowImmersiveOverlay] = useState(false);
   const [selectedDuration, setSelectedDuration] = useState(300); // Default 5 min
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -35,6 +35,7 @@ export const QuickMeditation: React.FC = () => {
   const [windowBlurs, setWindowBlurs] = useState(0);
   const [hasMovement, setHasMovement] = useState(false);
   const [lastActiveTimestamp, setLastActiveTimestamp] = useState<Date | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState(selectedDuration);
 
   // Initialize audio elements
   useEffect(() => {
@@ -136,6 +137,8 @@ export const QuickMeditation: React.FC = () => {
       const session = await SessionService.startSession(user.id, 'mindfulness');
       setSessionId(session.id);
       setIsTimerRunning(true);
+      setShowImmersiveOverlay(true);
+      setTimeRemaining(selectedDuration);
 
       // Request wake lock to prevent screen from turning off
       const wakeLockAcquired = await requestWakeLock();
@@ -187,6 +190,7 @@ export const QuickMeditation: React.FC = () => {
       // Reset timer state
       setIsTimerRunning(false);
       setSessionId(null);
+      setShowImmersiveOverlay(false);
 
       // Release wake lock
       await releaseWakeLock();
@@ -207,6 +211,7 @@ export const QuickMeditation: React.FC = () => {
 
       // Release wake lock even on error
       await releaseWakeLock();
+      setShowImmersiveOverlay(false);
       toast({
         title: "Session Completion Error",
         description: "There was an error saving your session. Your progress might not be recorded.",
@@ -214,7 +219,29 @@ export const QuickMeditation: React.FC = () => {
       });
     }
   };
-  return <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20">
+
+  const handleOverlayExit = () => {
+    setShowImmersiveOverlay(false);
+    setIsTimerRunning(false);
+    setSessionId(null);
+    releaseWakeLock();
+  };
+
+  const petEmotion = getPetEmotion();
+
+  return (
+    <>
+      <ImmersiveMeditationOverlay
+        isActive={showImmersiveOverlay}
+        timeRemaining={timeRemaining}
+        totalDuration={selectedDuration}
+        isTimerRunning={isTimerRunning}
+        pet={pet}
+        petEmotion={petEmotion}
+        onExit={handleOverlayExit}
+      />
+      
+      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20">
       
       
       <CardContent className="p-6">
@@ -247,5 +274,6 @@ export const QuickMeditation: React.FC = () => {
             </div>
           </div>}
       </CardContent>
-    </Card>;
+    </Card>
+    </>);
 };

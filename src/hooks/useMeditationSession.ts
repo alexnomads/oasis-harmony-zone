@@ -241,6 +241,8 @@ export const useMeditationSession = (userId: string | undefined) => {
     calculateProgress,
     toggleTimer,
     resetTimer,
-    toastShownRef
+    toastShownRef,
+    timeRemaining: selectedDuration - time,
+    totalDuration: selectedDuration,
   };
 };

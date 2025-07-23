@@ -9,10 +9,14 @@ import { MessageType } from "./ChatMessage";
 import { MeditationRecommendation, MeditationAgentService } from "@/lib/services/meditationAgentService";
 import { MeditationService } from "@/lib/meditationService";
 import { useMeditationSession } from "@/hooks/useMeditationSession";
+import { ImmersiveMeditationOverlay } from "./ImmersiveMeditationOverlay";
+import { usePet } from "@/hooks/usePet";
 
 export const MeditationAgentChat: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { pet, isLoading: petLoading, getCurrentMood, getPetEmotion } = usePet(user?.id);
+  const [showImmersiveOverlay, setShowImmersiveOverlay] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([
     {
@@ -37,6 +41,8 @@ export const MeditationAgentChat: React.FC = () => {
     isLoading,
     toggleTimer,
     resetTimer,
+    timeRemaining,
+    totalDuration,
   } = useMeditationSession(user?.id);
 
   useEffect(() => {
@@ -121,6 +127,7 @@ export const MeditationAgentChat: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
+    setShowImmersiveOverlay(true);
     toggleTimer();
   };
 
@@ -137,8 +144,26 @@ export const MeditationAgentChat: React.FC = () => {
     }
   }, [sessionCompleted, pointsEarned, totalPoints]);
 
+  const handleOverlayExit = () => {
+    setShowImmersiveOverlay(false);
+    resetTimer();
+  };
+
+  const petEmotion = getPetEmotion();
+
   return (
-    <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 h-[600px] flex flex-col">
+    <>
+      <ImmersiveMeditationOverlay
+        isActive={showImmersiveOverlay}
+        timeRemaining={timeRemaining}
+        totalDuration={totalDuration}
+        isTimerRunning={isRunning}
+        pet={pet}
+        petEmotion={petEmotion}
+        onExit={handleOverlayExit}
+      />
+      
+      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 h-[600px] flex flex-col">
       <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
       <CardHeader className="border-b border-white/20 pb-4">
         <div className="flex items-center gap-3">
@@ -193,5 +218,6 @@ export const MeditationAgentChat: React.FC = () => {
         )}
       </CardContent>
     </Card>
+    </>
   );
 };

@@ -14,12 +14,14 @@ export default function AuthCallback() {
         const params = new URLSearchParams(window.location.search);
         const token_hash = params.get('token_hash');
         const type = params.get('type');
+        const code = params.get('code');
         const error_description = params.get('error_description');
         const next_url = params.get('next') || '/dashboard';
         
         // Debug info for verification process
         console.log('Auth callback parameters:', {
           token_hash: token_hash ? 'present' : 'not present',
+          code: code ? 'present' : 'not present',
           type,
           error_description,
           next_url,
@@ -33,13 +35,19 @@ export default function AuthCallback() {
           throw new Error(error_description);
         }
 
-        // Handle password recovery - preserve ALL URL parameters
-        if (token_hash && type === 'recovery') {
-          console.log('Password recovery detected, redirecting to reset password page with parameters');
-          // Build the complete URL with all parameters to ensure nothing is lost
-          const resetUrl = `/reset-password?${window.location.search}`;
-          console.log('Redirecting to:', resetUrl);
-          navigate(resetUrl);
+        // Handle password recovery - support both old and new format
+        if ((token_hash && type === 'recovery') || code) {
+          console.log('Password recovery detected, redirecting to change-password page');
+          // If we have a code (old format), redirect to change-password
+          // If we have token_hash with recovery type, redirect to reset-password
+          if (code) {
+            console.log('Using old format with code, redirecting to change-password');
+            navigate('/auth/change-password');
+          } else {
+            console.log('Using new format with token_hash, redirecting to reset-password');
+            const resetUrl = `/auth/reset-password?${window.location.search}`;
+            navigate(resetUrl);
+          }
           return;
         }
 

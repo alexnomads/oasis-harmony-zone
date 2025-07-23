@@ -57,18 +57,28 @@ serve(async (req) => {
       )
     }
 
-    // Create enhanced system prompt
+    // Create enhanced system prompt with conversation history
+    const recentContext = conversationHistory.slice(-4).map(msg => 
+      `${msg.role}: ${msg.content}`
+    ).join('\n');
+
     const systemPrompt = `You are Rose of Jericho, a compassionate AI wellness coach specializing in meditation and mindfulness. You help people, especially those dealing with stress from trading and financial markets.
 
 Your personality:
 - Warm and understanding
+- Conversational and engaging (ask follow-up questions)
 - Concise but meaningful responses (2-3 sentences max)
 - Focus on practical meditation guidance
-- Encourage regular practice
+- Remember and build on previous conversation
 
-${userContext ? `User info: ${userContext.meditationStreak || 0} day streak, ${userContext.totalPoints || 0} points` : ''}
+${userContext ? `User info: ${userContext.meditationStreak || 0} day streak, ${userContext.totalPoints || 0} points, dominant mood: ${userContext.dominantMood || 'unknown'}` : ''}
 
-Respond naturally to: "${message}"`
+Recent conversation:
+${recentContext}
+
+Current message: "${message}"
+
+Respond naturally and personally, building on the conversation context:`
 
     console.log('Attempting AI response generation...')
     
@@ -281,6 +291,19 @@ function cleanResponse(response: string): string {
 function getContextualFallback(userMessage: string, userContext: any): string {
   const input = userMessage.toLowerCase()
   
+  // Question-based responses for better engagement
+  if (input.includes('how') || input.includes('what') || input.includes('why') || input.includes('when')) {
+    if (input.includes('meditat')) {
+      return "Meditation is about training your attention to stay present. The key is consistency - even 5 minutes daily can make a difference. What specific aspect would you like to explore?"
+    }
+    if (input.includes('start') || input.includes('begin')) {
+      return "Starting is simple: find a quiet spot, sit comfortably, and focus on your breath. Would you like me to guide you through your first session?"
+    }
+    if (input.includes('help')) {
+      return "I can help you with breathing techniques, stress relief meditations, or building a daily practice. What would be most useful for you right now?"
+    }
+  }
+  
   // Stress-related
   if (input.includes('stress') || input.includes('anxious') || input.includes('overwhelmed')) {
     return "I understand you're feeling stressed. Let's focus on your breath together - even 30 seconds of mindful breathing can help center you. Would you like to try a short session?"
@@ -296,12 +319,17 @@ function getContextualFallback(userMessage: string, userContext: any): string {
     return "That's wonderful that you're interested in meditation! Regular practice, even just a few minutes daily, can transform how you handle stress. Ready to start a session?"
   }
 
-  // General encouragement
-  const encouragements = [
-    "Thank you for reaching out. I'm here to support your wellness journey. What's on your mind today?",
-    "Every moment is a chance to reconnect with yourself through mindfulness. How are you feeling right now?",
-    "I'm here to help you find peace and balance. What would be most helpful for you today?"
+  if (input.includes('thank') || input.includes('appreciate')) {
+    return "You're very welcome! It's my joy to support your wellness journey. What would be most helpful for you right now?"
+  }
+
+  // More engaging responses that ask questions
+  const engagingResponses = [
+    "I'm here to support your wellness journey. What's bringing you to meditation today?",
+    "Every moment is an opportunity for mindfulness. What would be most helpful for you right now?", 
+    "I'd love to help you find the right practice for your needs. How are you feeling today?",
+    "Meditation can help with stress, sleep, focus, and emotional balance. What draws you to practice?"
   ]
   
-  return encouragements[Math.floor(Math.random() * encouragements.length)]
+  return engagingResponses[Math.floor(Math.random() * engagingResponses.length)]
 }

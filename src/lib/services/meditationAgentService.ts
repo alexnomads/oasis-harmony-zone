@@ -64,9 +64,9 @@ export class MeditationAgentService extends BaseService {
         }
       }
       
-      // Prepare conversation history
+      // Prepare conversation history with more context (last 12 messages)
       const conversationHistory: ConversationMessage[] = previousMessages
-        .slice(-6)
+        .slice(-12)
         .map(msg => ({
           role: msg.role === 'agent' ? 'assistant' : 'user',
           content: msg.content
@@ -222,7 +222,7 @@ export class MeditationAgentService extends BaseService {
     return 'stable';
   }
 
-  // Enhanced contextual response with mood awareness
+  // Enhanced contextual response with mood awareness and better conversation flow
   private static getIntelligentContextualResponse(userMessage: string, userContext: any): string {
     const message = userMessage.toLowerCase();
     
@@ -241,24 +241,53 @@ export class MeditationAgentService extends BaseService {
       }
     }
 
+    // Question-based responses for better engagement
+    if (message.includes('how') || message.includes('what') || message.includes('why') || message.includes('when')) {
+      if (message.includes('meditat')) {
+        return "Meditation is about training your attention to stay present. The key is consistency - even 5 minutes daily can make a difference. What specific aspect interests you?";
+      }
+      if (message.includes('start') || message.includes('begin')) {
+        return "Starting a meditation practice is simple: find a quiet spot, sit comfortably, and focus on your breath. Would you like me to guide you through your first session?";
+      }
+      if (message.includes('help') || message.includes('work')) {
+        return "Meditation helps by calming your nervous system and training your mind to respond rather than react. It's like exercise for your awareness. What would you like help with specifically?";
+      }
+    }
+
     // Enhanced contextual responses
-    if (message.includes('stress') || message.includes('anxious')) {
+    if (message.includes('stress') || message.includes('anxious') || message.includes('worry')) {
       return "Stress is a signal from your body and mind. A short breathing meditation can help you respond rather than react. Shall we try together?";
     }
     
-    if (message.includes('sleep') || message.includes('tired')) {
+    if (message.includes('sleep') || message.includes('tired') || message.includes('insomnia')) {
       return "Sleep challenges often reflect an overactive mind. A gentle body scan meditation before bed can help quiet your thoughts. Ready to try?";
     }
     
-    if (message.includes('trading') || message.includes('crypto') || message.includes('market')) {
+    if (message.includes('trading') || message.includes('crypto') || message.includes('market') || message.includes('finance')) {
       return "Market volatility can create emotional turbulence. Regular meditation helps you maintain clarity and make decisions from a centered place. Would you like to practice?";
     }
     
-    if (message.includes('hello') || message.includes('hi')) {
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
       return "Hello! I'm Rose of Jericho, your AI meditation companion. I'm here to help you find peace and clarity through mindful practice. How are you feeling today?";
     }
 
-    return "I'm here to support your journey toward inner peace. Every moment of mindfulness is valuable. Would you like to explore a meditation practice together?";
+    if (message.includes('thank') || message.includes('appreciate')) {
+      return "You're very welcome! It's my joy to support your wellness journey. What would be most helpful for you right now?";
+    }
+
+    if (message.includes('pain') || message.includes('hurt') || message.includes('difficult')) {
+      return "I hear that you're going through a challenging time. Meditation can help us hold difficult experiences with more compassion. Would you like to try a gentle practice together?";
+    }
+
+    // More engaging default response that asks a question
+    const engagingResponses = [
+      "I'm here to support your wellness journey. What's bringing you to meditation today?",
+      "Every moment is an opportunity for mindfulness. What would be most helpful for you right now?",
+      "I'd love to help you find the right practice for your needs. How are you feeling today?",
+      "Meditation can help in many ways - stress relief, better sleep, emotional balance. What draws you to practice?"
+    ];
+    
+    return engagingResponses[Math.floor(Math.random() * engagingResponses.length)];
   }
 
   // Log interaction for quality monitoring

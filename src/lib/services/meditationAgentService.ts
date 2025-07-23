@@ -1,3 +1,4 @@
+
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
 import { UserPoints, MeditationType } from '../../types/database';
@@ -21,6 +22,7 @@ interface AIResponse {
   message: string;
   showMeditationOption: boolean;
   recommendation?: MeditationRecommendation;
+  needsApiKey?: boolean;
 }
 
 interface ConversationMessage {
@@ -43,8 +45,19 @@ export class MeditationAgentService extends BaseService {
           content: msg.content
         }));
 
+      console.log('Sending request to AI service with context:', {
+        userMessage: userMessage.substring(0, 50),
+        historyLength: conversationHistory.length,
+        userContext
+      });
+
       // Call the upgraded AI service
       const aiResponse = await this.getAIResponse(userMessage, conversationHistory, userContext);
+
+      console.log('Received AI response:', {
+        responseLength: aiResponse.length,
+        preview: aiResponse.substring(0, 100)
+      });
 
       // Analyze sentiment for meditation recommendations
       const sentiment = this.analyzeSentiment(userMessage);
@@ -61,11 +74,21 @@ export class MeditationAgentService extends BaseService {
       
     } catch (error) {
       console.error('Error in AI meditation chat:', error);
+      
+      // Check if it's an API key configuration error
+      if (error.message?.includes('API key') || error.message?.includes('configuration')) {
+        return {
+          message: "I need to be configured with an API key to provide personalized responses. Please set up your Hugging Face API key to get started.",
+          showMeditationOption: false,
+          needsApiKey: true
+        };
+      }
+      
       return this.getFallbackResponse(userMessage);
     }
   }
 
-  // Upgraded AI call using the new edge function
+  // Enhanced AI call using the new edge function
   private static async getAIResponse(
     userMessage: string, 
     conversationHistory: ConversationMessage[], 
@@ -81,11 +104,19 @@ export class MeditationAgentService extends BaseService {
 
     if (error) {
       console.error('AI service error:', error);
-      throw new Error('AI service failed');
+      throw new Error(`AI service failed: ${error.message}`);
     }
 
     if (!data?.response) {
       throw new Error('No response from AI service');
+    }
+
+    // Check if response indicates API key issues
+    if (data.response.includes('API key') || data.isFallback) {
+      console.log('AI service returned fallback response:', data);
+      if (data.error?.includes('API key')) {
+        throw new Error('API key configuration required');
+      }
     }
 
     return data.response;
@@ -127,7 +158,7 @@ export class MeditationAgentService extends BaseService {
     );
   }
 
-  // Fallback response when AI service fails
+  // Enhanced fallback response when AI service fails
   private static getFallbackResponse(userMessage: string): AIResponse {
     const sentiment = this.analyzeSentiment(userMessage);
     const recommendation = this.getRecommendation(sentiment);

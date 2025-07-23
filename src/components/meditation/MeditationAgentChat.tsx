@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ChatInterface } from "./ChatInterface";
@@ -19,6 +18,7 @@ export const MeditationAgentChat: React.FC = () => {
   const { pet, isLoading: petLoading, getCurrentMood, getPetEmotion } = usePet(user?.id);
   const [showImmersiveOverlay, setShowImmersiveOverlay] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [needsApiKey, setNeedsApiKey] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([
     {
       role: "agent",
@@ -65,9 +65,18 @@ export const MeditationAgentChat: React.FC = () => {
 
     setMessages((prev) => [...prev, newMessage]);
     setIsTyping(true);
+    setNeedsApiKey(false);
 
     try {
       const aiResponse = await MeditationAgentService.getResponse(message, messages);
+      
+      // Check if API key setup is needed
+      if (aiResponse.needsApiKey) {
+        setNeedsApiKey(true);
+        setIsTyping(false);
+        return;
+      }
+
       const newAgentMessage: MessageType = {
         role: "agent",
         content: aiResponse.message,
@@ -83,9 +92,16 @@ export const MeditationAgentChat: React.FC = () => {
       setTimeout(() => {
         setMessages((prev) => [...prev, newAgentMessage]);
         setIsTyping(false);
-      }, 1500); // Slightly longer delay for more natural feel
+      }, 1500);
     } catch (error) {
       console.error("Error getting AI response:", error);
+      
+      // Check if it's an API key issue
+      if (error.message?.includes('API key') || error.message?.includes('configuration')) {
+        setNeedsApiKey(true);
+        setIsTyping(false);
+        return;
+      }
       
       // Graceful fallback with encouraging message
       const fallbackMessage: MessageType = {
@@ -106,6 +122,15 @@ export const MeditationAgentChat: React.FC = () => {
         variant: "default",
       });
     }
+  };
+
+  const handleApiKeySet = () => {
+    setNeedsApiKey(false);
+    toast({
+      title: "Setup Complete",
+      description: "Try sending a message to test the AI Coach!",
+      variant: "default",
+    });
   };
 
   const startMeditation = (customRecommendation?: MeditationRecommendation) => {
@@ -177,12 +202,40 @@ export const MeditationAgentChat: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg font-medium text-white">AI Meditation Coach</h3>
-              <p className="text-sm text-white/70">Personalized guidance for your practice</p>
+              <p className="text-sm text-white/70">
+                {needsApiKey ? "Setup Required" : "Personalized guidance for your practice"}
+              </p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-6 flex-1 overflow-hidden flex flex-col h-full max-h-[calc(600px-140px)]">
-          {isRunning ? (
+          {needsApiKey ? (
+            <div className="flex-1 flex flex-col">
+              <div className="flex-1 overflow-y-auto mb-4">
+                <div className="text-center text-white/80 mb-4">
+                  <p>The AI Coach needs to be configured with your API key to provide personalized responses.</p>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-white/10 rounded-lg p-4 space-y-3">
+                    <h4 className="font-medium text-white">Quick Setup Steps:</h4>
+                    <ol className="text-sm text-white/80 space-y-2 list-decimal list-inside">
+                      <li>Get a free API key from <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-vibrantOrange hover:underline">Hugging Face</a></li>
+                      <li>Open your <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-vibrantOrange hover:underline">Supabase Dashboard</a></li>
+                      <li>Go to Project Settings → Edge Functions → Secrets</li>
+                      <li>Add secret: <code className="bg-black/20 px-1 rounded text-xs">HUGGING_FACE_API_KEY</code></li>
+                      <li>Refresh and test the AI Coach</li>
+                    </ol>
+                    <button
+                      onClick={handleApiKeySet}
+                      className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity mt-3"
+                    >
+                      I've Set Up My API Key
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : isRunning ? (
             <div className="hidden">
               <MeditationTimer
                 initialDuration={selectedDuration}

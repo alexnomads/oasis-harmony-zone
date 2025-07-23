@@ -33,8 +33,28 @@ serve(async (req) => {
 
     // Get Hugging Face API key from secrets
     const hfApiKey = Deno.env.get('HUGGING_FACE_API_KEY')
+    
+    console.log('Environment check:', {
+      hasApiKey: !!hfApiKey,
+      keyLength: hfApiKey?.length || 0,
+      userId: userId || 'anonymous',
+      messageLength: message.length,
+      historyLength: conversationHistory.length
+    })
+
     if (!hfApiKey) {
-      throw new Error('HUGGING_FACE_API_KEY not found in environment variables')
+      console.error('HUGGING_FACE_API_KEY not found in environment variables')
+      return new Response(
+        JSON.stringify({ 
+          response: "I need to be configured with an API key to provide personalized responses. Please add your Hugging Face API key to get started.",
+          isFallback: true,
+          error: "Missing API key configuration"
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200
+        }
+      )
     }
 
     // Create system prompt with user context
@@ -61,13 +81,19 @@ Respond naturally to the user's message while staying in character as Rose of Je
       { role: 'user', content: message }
     ]
 
-    // Try primary model: Mistral-7B-Instruct-v0.3
-    let aiResponse = await tryMistralModel(hfApiKey, messages)
+    console.log('Prepared messages for AI:', {
+      messageCount: messages.length,
+      systemPromptLength: systemPrompt.length,
+      lastUserMessage: message.substring(0, 50) + '...'
+    })
+
+    // Try primary model: Mistral-7B-Instruct-v0.3 with retry logic
+    let aiResponse = await tryModelWithRetry(() => tryMistralModel(hfApiKey, messages), 'Mistral')
     
     // Fallback to Falcon-7B-Instruct if Mistral fails
     if (!aiResponse) {
       console.log('Mistral failed, trying Falcon-7B-Instruct...')
-      aiResponse = await tryFalconModel(hfApiKey, messages)
+      aiResponse = await tryModelWithRetry(() => tryFalconModel(hfApiKey, messages), 'Falcon')
     }
 
     // Final fallback to intelligent responses
@@ -75,6 +101,12 @@ Respond naturally to the user's message while staying in character as Rose of Je
       console.log('All models failed, using intelligent fallback...')
       aiResponse = getIntelligentFallback(message)
     }
+
+    console.log('Final response:', {
+      responseLength: aiResponse.length,
+      isFallback: !aiResponse || aiResponse.includes('technical difficulties'),
+      preview: aiResponse.substring(0, 100) + '...'
+    })
 
     return new Response(
       JSON.stringify({ 
@@ -106,6 +138,25 @@ Respond naturally to the user's message while staying in character as Rose of Je
   }
 })
 
+async function tryModelWithRetry(modelFunc: () => Promise<string | null>, modelName: string, maxRetries = 2): Promise<string | null> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`Trying ${modelName} (attempt ${attempt}/${maxRetries})`)
+      const result = await modelFunc()
+      if (result) {
+        console.log(`${modelName} succeeded on attempt ${attempt}`)
+        return result
+      }
+    } catch (error) {
+      console.error(`${modelName} attempt ${attempt} failed:`, error)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt)) // Exponential backoff
+      }
+    }
+  }
+  return null
+}
+
 async function tryMistralModel(apiKey: string, messages: ConversationMessage[]): Promise<string | null> {
   try {
     const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3', {
@@ -127,14 +178,21 @@ async function tryMistralModel(apiKey: string, messages: ConversationMessage[]):
       })
     })
 
+    console.log('Mistral API response status:', response.status)
+
     if (!response.ok) {
-      throw new Error(`Mistral API error: ${response.status}`)
+      const errorText = await response.text()
+      console.error('Mistral API error:', response.status, errorText)
+      throw new Error(`Mistral API error: ${response.status} ${errorText}`)
     }
 
     const result = await response.json()
+    console.log('Mistral raw response:', result)
     
     if (Array.isArray(result) && result[0]?.generated_text) {
-      return cleanResponse(result[0].generated_text)
+      const cleaned = cleanResponse(result[0].generated_text)
+      console.log('Mistral cleaned response:', cleaned)
+      return cleaned
     }
     
     return null
@@ -165,14 +223,21 @@ async function tryFalconModel(apiKey: string, messages: ConversationMessage[]): 
       })
     })
 
+    console.log('Falcon API response status:', response.status)
+
     if (!response.ok) {
-      throw new Error(`Falcon API error: ${response.status}`)
+      const errorText = await response.text()
+      console.error('Falcon API error:', response.status, errorText)
+      throw new Error(`Falcon API error: ${response.status} ${errorText}`)
     }
 
     const result = await response.json()
+    console.log('Falcon raw response:', result)
     
     if (Array.isArray(result) && result[0]?.generated_text) {
-      return cleanResponse(result[0].generated_text)
+      const cleaned = cleanResponse(result[0].generated_text)
+      console.log('Falcon cleaned response:', cleaned)
+      return cleaned
     }
     
     return null
@@ -183,29 +248,40 @@ async function tryFalconModel(apiKey: string, messages: ConversationMessage[]): 
 }
 
 function formatMessagesForMistral(messages: ConversationMessage[]): string {
-  // Mistral-7B-Instruct uses a specific chat format
+  // Improved Mistral-7B-Instruct format
   let formatted = ""
   
-  for (const msg of messages) {
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i]
     if (msg.role === 'system') {
-      formatted += `<s>[INST] ${msg.content} [/INST]`
+      formatted += `<s>[INST] ${msg.content}\n\n`
     } else if (msg.role === 'user') {
-      formatted += `[INST] ${msg.content} [/INST]`
+      if (i === 0) {
+        formatted += `${msg.content} [/INST]`
+      } else {
+        formatted += `<s>[INST] ${msg.content} [/INST]`
+      }
     } else if (msg.role === 'assistant') {
       formatted += ` ${msg.content}</s>`
     }
   }
   
+  // If the last message is from user, we need to close the instruction
+  if (messages[messages.length - 1].role === 'user') {
+    formatted += ""
+  }
+  
+  console.log('Mistral formatted input:', formatted.substring(0, 200) + '...')
   return formatted
 }
 
 function formatMessagesForFalcon(messages: ConversationMessage[]): string {
-  // Falcon-7B-Instruct uses a different format
+  // Improved Falcon-7B-Instruct format
   let formatted = ""
   
   for (const msg of messages) {
     if (msg.role === 'system') {
-      formatted += `System: ${msg.content}\n`
+      formatted += `System: ${msg.content}\n\n`
     } else if (msg.role === 'user') {
       formatted += `User: ${msg.content}\n`
     } else if (msg.role === 'assistant') {
@@ -214,28 +290,50 @@ function formatMessagesForFalcon(messages: ConversationMessage[]): string {
   }
   
   formatted += "Assistant:"
+  console.log('Falcon formatted input:', formatted.substring(0, 200) + '...')
   return formatted
 }
 
 function cleanResponse(response: string): string {
-  // Clean up the response
+  // Enhanced response cleaning
   let cleaned = response
     .replace(/\[INST\]|\[\/INST\]|<s>|<\/s>/g, '')
     .replace(/^(System:|User:|Assistant:)/gm, '')
+    .replace(/^\s*[\r\n]/gm, '') // Remove empty lines
     .trim()
+
+  // Remove any remaining formatting artifacts
+  cleaned = cleaned.replace(/^[:\-\s]+/, '').trim()
 
   // Ensure response isn't too long
   if (cleaned.length > 300) {
-    const sentences = cleaned.split('. ')
-    cleaned = sentences.slice(0, 2).join('. ') + (sentences.length > 2 ? '.' : '')
+    const sentences = cleaned.split(/[.!?]+/)
+    cleaned = sentences.slice(0, 2).join('. ')
+    if (cleaned && !cleaned.match(/[.!?]$/)) {
+      cleaned += '.'
+    }
   }
 
-  // If response is empty or too short, return null for fallback
-  if (!cleaned || cleaned.length < 10) {
+  // If response is empty, too short, or contains repetitive patterns, return null for fallback
+  if (!cleaned || cleaned.length < 10 || isRepetitive(cleaned)) {
+    console.log('Response rejected:', { cleaned, length: cleaned.length, repetitive: isRepetitive(cleaned) })
     return null
   }
 
   return cleaned
+}
+
+function isRepetitive(text: string): boolean {
+  // Check for repetitive patterns
+  const words = text.toLowerCase().split(/\s+/)
+  const wordCount = {}
+  
+  for (const word of words) {
+    wordCount[word] = (wordCount[word] || 0) + 1
+  }
+  
+  // If any word appears more than 3 times in a short response, it's likely repetitive
+  return Object.values(wordCount).some(count => count > 3)
 }
 
 function getIntelligentFallback(userMessage: string): string {

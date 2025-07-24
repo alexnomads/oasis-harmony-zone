@@ -21,19 +21,29 @@ export class ReflectionService extends BaseService {
         updated_at: new Date().toISOString()
       };
       
-      const result = await supabase
+      const { data, error } = await supabase
         .from('session_reflections')
         .upsert(upsertData, { 
-          onConflict: 'session_id',
+          onConflict: 'session_id,user_id',
           ignoreDuplicates: false 
         })
         .select('*')
         .single();
       
-      return this.executeQuery<SessionReflection>(() => Promise.resolve(result));
+      if (error) {
+        console.error('Supabase error creating/updating reflection:', error);
+        throw new Error(`Could not save reflection: ${error.message}`);
+      }
+      
+      if (!data) {
+        throw new Error('No data returned after saving reflection');
+      }
+      
+      console.log('Successfully created/updated reflection:', data);
+      return data;
     } catch (error) {
       console.error('Error creating/updating reflection:', error);
-      throw new Error('Could not save reflection. Please try again.');
+      throw error instanceof Error ? error : new Error('Could not save reflection. Please try again.');
     }
   }
 
@@ -62,16 +72,19 @@ export class ReflectionService extends BaseService {
   // Delete a reflection
   static async deleteReflection(sessionId: string, userId: string): Promise<void> {
     try {
-      const result = await supabase
+      const { error } = await supabase
         .from('session_reflections')
         .delete()
         .eq('session_id', sessionId)
         .eq('user_id', userId);
       
-      await this.executeQuery(() => Promise.resolve(result));
+      if (error) {
+        console.error('Supabase error deleting reflection:', error);
+        throw new Error(`Could not delete reflection: ${error.message}`);
+      }
     } catch (error) {
       console.error('Error deleting reflection:', error);
-      throw new Error('Could not delete reflection. Please try again.');
+      throw error instanceof Error ? error : new Error('Could not delete reflection. Please try again.');
     }
   }
 }

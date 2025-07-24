@@ -11,6 +11,11 @@ interface SessionReflectionModalProps {
   onClose: () => void;
   onSave: (data: { emoji: string; notes: string; notes_public: boolean }) => void;
   pointsEarned: number;
+  initialData?: {
+    emoji: string;
+    notes: string;
+    notes_public: boolean;
+  };
 }
 
 const MEDITATION_EMOJIS = [
@@ -22,11 +27,12 @@ export const SessionReflectionModal = ({
   isOpen, 
   onClose, 
   onSave, 
-  pointsEarned 
+  pointsEarned,
+  initialData
 }: SessionReflectionModalProps) => {
-  const [selectedEmoji, setSelectedEmoji] = useState('🧘');
-  const [notes, setNotes] = useState('');
-  const [notesPublic, setNotesPublic] = useState(false);
+  const [selectedEmoji, setSelectedEmoji] = useState(initialData?.emoji || '🧘');
+  const [notes, setNotes] = useState(initialData?.notes || '');
+  const [notesPublic, setNotesPublic] = useState(initialData?.notes_public || false);
 
   const handleSave = () => {
     onSave({
@@ -51,11 +57,13 @@ export const SessionReflectionModal = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center">
-            Meditation Complete! 🎉
+            {initialData ? 'Edit Your Session' : 'Meditation Complete! 🎉'}
           </DialogTitle>
-          <p className="text-center text-muted-foreground">
-            You earned {pointsEarned.toFixed(1)} points!
-          </p>
+          {!initialData && (
+            <p className="text-center text-muted-foreground">
+              You earned {pointsEarned.toFixed(1)} points!
+            </p>
+          )}
         </DialogHeader>
 
         <div className="space-y-6">

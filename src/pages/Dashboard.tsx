@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -14,10 +14,15 @@ import { toast } from '@/components/ui/use-toast';
 import MeditationTrendChart from '@/components/dashboard/MeditationTrendChart';
 import { DashboardImageGenerator } from '@/components/dashboard/DashboardImageGenerator';
 import { PetSection } from '@/components/pet/PetSection';
+import { MoodSessionEntry } from '@/components/dashboard/MoodSessionEntry';
+import { usePet } from '@/hooks/usePet';
+import { Badge } from '@/components/ui/badge';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { moodHistory } = usePet(user?.id);
+  const [sessionFilter, setSessionFilter] = useState<'all' | 'meditation' | 'mood'>('all');
 
   useEffect(() => {
     if (!user) return;
@@ -111,6 +116,27 @@ export default function Dashboard() {
   if (loading || loadingData) return null;
 
   const recentSessions = userData?.sessions.slice(0, 5) || [];
+  const recentMoods = moodHistory.slice(0, 5) || [];
+  
+  // Combine and sort recent activities
+  const combinedActivities = [
+    ...recentSessions.map(session => ({
+      type: 'meditation' as const,
+      data: session,
+      date: new Date(session.created_at)
+    })),
+    ...recentMoods.map(mood => ({
+      type: 'mood' as const,
+      data: mood,
+      date: new Date(mood.created_at)
+    }))
+  ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8);
+  
+  // Filter activities based on selected filter
+  const filteredActivities = combinedActivities.filter(activity => {
+    if (sessionFilter === 'all') return true;
+    return activity.type === sessionFilter;
+  });
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -265,36 +291,69 @@ export default function Dashboard() {
               >
                 <Card className="bg-zinc-900/50 border-zinc-800">
                   <div className="p-5 sm:p-6 border-b border-zinc-800">
-                    <h2 className="text-xl sm:text-2xl font-bold">Recent Sessions</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <h2 className="text-xl sm:text-2xl font-bold">Recent Activity</h2>
+                      <div className="flex gap-2">
+                        <Badge 
+                          variant={sessionFilter === 'all' ? 'default' : 'secondary'}
+                          className="cursor-pointer"
+                          onClick={() => setSessionFilter('all')}
+                        >
+                          All
+                        </Badge>
+                        <Badge 
+                          variant={sessionFilter === 'meditation' ? 'default' : 'secondary'}
+                          className="cursor-pointer"
+                          onClick={() => setSessionFilter('meditation')}
+                        >
+                          Meditation
+                        </Badge>
+                        <Badge 
+                          variant={sessionFilter === 'mood' ? 'default' : 'secondary'}
+                          className="cursor-pointer"
+                          onClick={() => setSessionFilter('mood')}
+                        >
+                          Mood
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
                   <CardContent className="p-0">
-                    {recentSessions.length > 0 ? (
+                    {filteredActivities.length > 0 ? (
                       <div className="divide-y divide-zinc-800/70">
-                        {recentSessions.map((session, index) => (
-                          <motion.div
-                            key={session.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index }}
-                            className="p-4 sm:p-5 hover:bg-white/5 transition-colors"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium text-sm sm:text-base">{session.type}</p>
-                                <p className="text-xs sm:text-sm text-zinc-400">
-                                  {formatDate(session.created_at)}
-                                </p>
+                        {filteredActivities.map((activity, index) => (
+                          activity.type === 'meditation' ? (
+                            <motion.div
+                              key={`meditation-${activity.data.id}`}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.1 * index }}
+                              className="p-4 sm:p-5 hover:bg-white/5 transition-colors"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium text-sm sm:text-base">{activity.data.type}</p>
+                                  <p className="text-xs sm:text-sm text-zinc-400">
+                                    {formatDate(activity.data.created_at)}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-medium text-sm sm:text-base">
+                                    {formatDurationDetails(activity.data.duration)}
+                                  </p>
+                                  <p className="text-xs sm:text-sm text-vibrantOrange">
+                                    +{activity.data.points_earned.toFixed(1)} points
+                                  </p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium text-sm sm:text-base">
-                                  {formatDurationDetails(session.duration)}
-                                </p>
-                                <p className="text-xs sm:text-sm text-vibrantOrange">
-                                  +{session.points_earned.toFixed(1)} points
-                                </p>
-                              </div>
-                            </div>
-                          </motion.div>
+                            </motion.div>
+                          ) : (
+                            <MoodSessionEntry 
+                              key={`mood-${activity.data.id}`}
+                              moodLog={activity.data}
+                              index={index}
+                            />
+                          )
                         ))}
                       </div>
                     ) : (
@@ -305,14 +364,22 @@ export default function Dashboard() {
                           transition={{ delay: 0.2 }}
                         >
                           <Timer className="h-12 w-12 mx-auto mb-3 text-zinc-600" />
-                          <p className="text-lg">No meditation sessions yet.</p>
-                          <p className="mt-2 text-sm">Start your journey today!</p>
-                          <Button
-                            onClick={() => navigate('/meditate')}
-                            className="mt-6 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
-                          >
-                            Begin Meditation
-                          </Button>
+                          <p className="text-lg">
+                            {sessionFilter === 'mood' ? 'No mood logs yet.' : 
+                             sessionFilter === 'meditation' ? 'No meditation sessions yet.' : 
+                             'No activity yet.'}
+                          </p>
+                          <p className="mt-2 text-sm">
+                            {sessionFilter === 'mood' ? 'Check in with yourself in the pet section!' : 'Start your journey today!'}
+                          </p>
+                          {sessionFilter !== 'mood' && (
+                            <Button
+                              onClick={() => navigate('/meditate')}
+                              className="mt-6 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
+                            >
+                              Begin Meditation
+                            </Button>
+                          )}
                         </motion.div>
                       </div>
                     )}

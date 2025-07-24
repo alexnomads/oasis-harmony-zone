@@ -3,15 +3,16 @@
 CREATE TABLE meditation_sessions (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users NOT NULL,
-    start_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    duration INTEGER NOT NULL,
-    completed BOOLEAN DEFAULT FALSE,
     type TEXT NOT NULL,
-    points_earned INTEGER DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'in_progress',
+    duration INTEGER DEFAULT 0,
+    points_earned NUMERIC(10,1) DEFAULT 0,
+    shared BOOLEAN DEFAULT FALSE,
     emoji TEXT,
     notes TEXT,
     notes_public BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    completed_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Create user_points table

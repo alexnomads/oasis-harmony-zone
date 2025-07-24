@@ -36,7 +36,7 @@ export class SessionService extends BaseService {
     mouseMovements: number,
     focusLost: number,
     windowBlurs: number
-  }, sessionData?: { emoji?: string; notes?: string; notes_public?: boolean }) {
+  }) {
     try {
       console.log('Completing session:', sessionId, 'duration:', duration, 'distractions:', distractions);
       
@@ -76,10 +76,7 @@ export class SessionService extends BaseService {
         status: 'completed' as MeditationStatus,
         duration,
         points_earned: Math.round(points * 10) / 10, // Round to 1 decimal place
-        completed_at: new Date().toISOString(),
-        ...(sessionData?.emoji && { emoji: sessionData.emoji }),
-        ...(sessionData?.notes && { notes: sessionData.notes }),
-        ...(sessionData?.notes_public !== undefined && { notes_public: sessionData.notes_public })
+        completed_at: new Date().toISOString()
       };
       
       const sessionResult = await supabase
@@ -183,37 +180,4 @@ export class SessionService extends BaseService {
     }
   }
 
-  // Update reflection data for an existing completed session
-  static async updateSessionReflection(sessionId: string, reflectionData: { 
-    emoji?: string; 
-    notes?: string; 
-    notes_public?: boolean 
-  }) {
-    try {
-      console.log('Updating session reflection for:', sessionId, reflectionData);
-      
-      const updateData = {
-        ...(reflectionData.emoji !== undefined && { emoji: reflectionData.emoji }),
-        ...(reflectionData.notes !== undefined && { notes: reflectionData.notes }),
-        ...(reflectionData.notes_public !== undefined && { notes_public: reflectionData.notes_public })
-      };
-      
-      console.log('Update data being sent to database:', updateData);
-      
-      const sessionResult = await supabase
-        .from('meditation_sessions')
-        .update(updateData)
-        .eq('id', sessionId)
-        .select('*')
-        .single();
-      
-      const updatedSession = await this.executeQuery<MeditationSession>(() => Promise.resolve(sessionResult));
-      console.log('Session reflection updated successfully:', updatedSession);
-      
-      return updatedSession;
-    } catch (error) {
-      console.error('Error updating session reflection:', error);
-      throw new Error('Could not update session reflection. Please try again.');
-    }
-  }
 }

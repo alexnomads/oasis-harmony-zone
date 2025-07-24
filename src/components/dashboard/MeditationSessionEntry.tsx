@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, Lock, Edit3 } from "lucide-react";
 import type { MeditationSession } from "@/types/database";
+import type { SessionReflection } from "@/types/reflection";
 import { SessionReflectionModal } from "@/components/meditation/SessionReflectionModal";
-import { SessionService } from "@/lib/services/sessionService";
+import { ReflectionService } from "@/lib/services/reflectionService";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MeditationSessionEntryProps {
   session: MeditationSession;
@@ -14,7 +16,21 @@ interface MeditationSessionEntryProps {
 
 export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntryProps) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [reflection, setReflection] = useState<SessionReflection | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Load reflection data when component mounts
+  useEffect(() => {
+    const loadReflection = async () => {
+      if (user && session.status === 'completed') {
+        const reflectionData = await ReflectionService.getReflection(session.id, user.id);
+        setReflection(reflectionData);
+      }
+    };
+    
+    loadReflection();
+  }, [session.id, session.status, user]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -37,22 +53,28 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
   };
 
   const getMeditationTypeDisplay = () => {
-    const emoji = session.emoji || '🧘';
+    const emoji = reflection?.emoji || '🧘';
     const type = session.type.replace('_', ' ');
     return `${emoji} ${type}`;
   };
 
   const handleEditSave = async (reflectionData: { emoji: string; notes: string; notes_public: boolean }) => {
     try {
-      await SessionService.updateSessionReflection(session.id, reflectionData);
+      if (!user) throw new Error('User not authenticated');
+      
+      const updatedReflection = await ReflectionService.createOrUpdateReflection(
+        session.id, 
+        user.id, 
+        reflectionData
+      );
+      
+      setReflection(updatedReflection);
+      setShowEditModal(false);
       
       toast({
         title: "Session updated! ✨",
         description: "Your meditation reflection has been saved.",
       });
-      
-      // Refresh the page to show updated data
-      window.location.reload();
     } catch (error) {
       toast({
         title: "Error updating session",
@@ -88,20 +110,20 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
               <span>{formatDate(session.created_at)}</span>
             </div>
 
-            {session.notes && (
+            {reflection?.notes && (
               <div className="mt-2">
                 <div className="flex items-center gap-1 mb-1">
-                  {session.notes_public ? (
+                  {reflection.notes_public ? (
                     <Users className="w-3 h-3 text-green-500" />
                   ) : (
                     <Lock className="w-3 h-3 text-muted-foreground" />
                   )}
                   <span className="text-xs text-muted-foreground">
-                    {session.notes_public ? 'Public reflection' : 'Private reflection'}
+                    {reflection.notes_public ? 'Public reflection' : 'Private reflection'}
                   </span>
                 </div>
                 <p className="text-sm text-card-foreground bg-muted/50 p-2 rounded text-left">
-                  {session.notes}
+                  {reflection.notes}
                 </p>
               </div>
             )}
@@ -121,9 +143,9 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
         onSave={handleEditSave}
         pointsEarned={session.points_earned}
         initialData={{
-          emoji: session.emoji || '🧘',
-          notes: session.notes || '',
-          notes_public: session.notes_public || false
+          emoji: reflection?.emoji || '🧘',
+          notes: reflection?.notes || '',
+          notes_public: reflection?.notes_public || false
         }}
       />
     </>

@@ -12,8 +12,8 @@ export class MeditationService {
     mouseMovements: number,
     focusLost: number,
     windowBlurs: number
-  }, sessionData?: { emoji?: string; notes?: string; notes_public?: boolean }) {
-    return SessionService.completeSession(sessionId, duration, distractions, sessionData);
+  }) {
+    return SessionService.completeSession(sessionId, duration, distractions);
   }
   
   static async getUserHistory(userId: string) {

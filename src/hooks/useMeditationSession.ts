@@ -114,12 +114,11 @@ export const useMeditationSession = (userId: string | undefined) => {
     if (!sessionId) return;
 
     try {
-      // Update the session with reflection data
+      // Complete the session (no reflection data here anymore)
       await SessionService.completeSession(
         sessionId, 
         time, 
-        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 },
-        reflectionData
+        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 }
       );
 
       setSessionCompleted(true);

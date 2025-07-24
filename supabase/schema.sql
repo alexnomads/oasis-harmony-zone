@@ -8,11 +8,21 @@ CREATE TABLE meditation_sessions (
     duration INTEGER DEFAULT 0,
     points_earned NUMERIC(10,1) DEFAULT 0,
     shared BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    completed_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create session_reflections table
+CREATE TABLE session_reflections (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    session_id UUID REFERENCES meditation_sessions(id) NOT NULL,
+    user_id UUID REFERENCES auth.users NOT NULL,
     emoji TEXT,
     notes TEXT,
     notes_public BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    completed_at TIMESTAMP WITH TIME ZONE
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(session_id)
 );
 
 -- Create user_points table
@@ -39,6 +49,7 @@ CREATE TABLE user_profiles (
 
 -- Enable Row Level Security
 ALTER TABLE meditation_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE session_reflections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_points ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
@@ -56,6 +67,28 @@ CREATE POLICY "Users can create own meditation sessions"
 CREATE POLICY "Users can update own meditation sessions"
     ON meditation_sessions
     FOR UPDATE
+    USING (auth.uid() = user_id);
+
+-- Create policies for session_reflections
+CREATE POLICY "Users can view own session reflections"
+    ON session_reflections
+    FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own session reflections"
+    ON session_reflections
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own session reflections"
+    ON session_reflections
+    FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own session reflections"
+    ON session_reflections
+    FOR DELETE
     USING (auth.uid() = user_id);
 
 -- Create policies for user_points

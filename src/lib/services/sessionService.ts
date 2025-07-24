@@ -182,4 +182,36 @@ export class SessionService extends BaseService {
       throw new Error('Could not award sharing point. Please try again later.');
     }
   }
+
+  // Update reflection data for an existing completed session
+  static async updateSessionReflection(sessionId: string, reflectionData: { 
+    emoji?: string; 
+    notes?: string; 
+    notes_public?: boolean 
+  }) {
+    try {
+      console.log('Updating session reflection for:', sessionId, reflectionData);
+      
+      const updateData = {
+        ...(reflectionData.emoji && { emoji: reflectionData.emoji }),
+        ...(reflectionData.notes !== undefined && { notes: reflectionData.notes }),
+        ...(reflectionData.notes_public !== undefined && { notes_public: reflectionData.notes_public })
+      };
+      
+      const sessionResult = await supabase
+        .from('meditation_sessions')
+        .update(updateData)
+        .eq('id', sessionId)
+        .select('*')
+        .single();
+      
+      const updatedSession = await this.executeQuery<MeditationSession>(() => Promise.resolve(sessionResult));
+      console.log('Session reflection updated successfully:', updatedSession);
+      
+      return updatedSession;
+    } catch (error) {
+      console.error('Error updating session reflection:', error);
+      throw new Error('Could not update session reflection. Please try again.');
+    }
+  }
 }

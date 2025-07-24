@@ -44,12 +44,7 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
 
   const handleEditSave = async (reflectionData: { emoji: string; notes: string; notes_public: boolean }) => {
     try {
-      await SessionService.completeSession(
-        session.id,
-        session.duration,
-        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 },
-        reflectionData
-      );
+      await SessionService.updateSessionReflection(session.id, reflectionData);
       
       toast({
         title: "Session updated! ✨",

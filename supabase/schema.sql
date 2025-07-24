@@ -22,7 +22,7 @@ CREATE TABLE session_reflections (
     notes_public BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE(session_id)
+    UNIQUE(session_id, user_id)
 );
 
 -- Create user_points table

@@ -10,7 +10,18 @@ export class ReflectionService extends BaseService {
     reflectionData: { emoji?: string; notes?: string; notes_public?: boolean }
   ): Promise<SessionReflection> {
     try {
-      console.log('Creating/updating reflection for session:', sessionId, reflectionData);
+      // Validate required fields
+      if (!sessionId || !userId) {
+        throw new Error('Session ID and User ID are required');
+      }
+
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(sessionId) || !uuidRegex.test(userId)) {
+        throw new Error('Invalid session ID or user ID format');
+      }
+
+      console.log('Creating/updating reflection for session:', sessionId, 'user:', userId, 'data:', reflectionData);
       
       const upsertData = {
         session_id: sessionId,
@@ -20,6 +31,8 @@ export class ReflectionService extends BaseService {
         notes_public: reflectionData.notes_public || false,
         updated_at: new Date().toISOString()
       };
+      
+      console.log('UPSERT data being sent to Supabase:', upsertData);
       
       const { data, error } = await supabase
         .from('session_reflections')
@@ -31,8 +44,22 @@ export class ReflectionService extends BaseService {
         .single();
       
       if (error) {
-        console.error('Supabase error creating/updating reflection:', error);
-        throw new Error(`Could not save reflection: ${error.message}`);
+        console.error('Supabase error creating/updating reflection:', {
+          error,
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        
+        const errorMessage = error.message || 'Unknown database error occurred';
+        if (error.code === '23505') {
+          throw new Error('A reflection for this session already exists');
+        } else if (error.code === '23503') {
+          throw new Error('Session or user not found');
+        } else {
+          throw new Error(`Could not save reflection: ${errorMessage}`);
+        }
       }
       
       if (!data) {
@@ -43,7 +70,12 @@ export class ReflectionService extends BaseService {
       return data;
     } catch (error) {
       console.error('Error creating/updating reflection:', error);
-      throw error instanceof Error ? error : new Error('Could not save reflection. Please try again.');
+      
+      if (error instanceof Error) {
+        throw error;
+      } else {
+        throw new Error('Could not save reflection. Please try again.');
+      }
     }
   }
 

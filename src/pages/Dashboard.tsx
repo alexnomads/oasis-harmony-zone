@@ -15,6 +15,7 @@ import MeditationTrendChart from '@/components/dashboard/MeditationTrendChart';
 import { DashboardImageGenerator } from '@/components/dashboard/DashboardImageGenerator';
 import { PetSection } from '@/components/pet/PetSection';
 import { MoodSessionEntry } from '@/components/dashboard/MoodSessionEntry';
+import { MeditationSessionEntry } from '@/components/dashboard/MeditationSessionEntry';
 import { usePet } from '@/hooks/usePet';
 import { Badge } from '@/components/ui/badge';
 
@@ -321,40 +322,21 @@ export default function Dashboard() {
                   <CardContent className="p-0">
                     {filteredActivities.length > 0 ? (
                       <div className="divide-y divide-zinc-800/70">
-                        {filteredActivities.map((activity, index) => (
-                          activity.type === 'meditation' ? (
-                            <motion.div
-                              key={`meditation-${activity.data.id}`}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.1 * index }}
-                              className="p-4 sm:p-5 hover:bg-white/5 transition-colors"
-                            >
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="font-medium text-sm sm:text-base">{activity.data.type}</p>
-                                  <p className="text-xs sm:text-sm text-zinc-400">
-                                    {formatDate(activity.data.created_at)}
-                                  </p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="font-medium text-sm sm:text-base">
-                                    {formatDurationDetails(activity.data.duration)}
-                                  </p>
-                                  <p className="text-xs sm:text-sm text-vibrantOrange">
-                                    +{activity.data.points_earned.toFixed(1)} points
-                                  </p>
-                                </div>
-                              </div>
-                            </motion.div>
-                          ) : (
-                            <MoodSessionEntry 
-                              key={`mood-${activity.data.id}`}
-                              moodLog={activity.data}
-                              index={index}
-                            />
-                          )
-                        ))}
+                         {filteredActivities.map((activity, index) => (
+                           activity.type === 'meditation' ? (
+                             <MeditationSessionEntry
+                               key={`meditation-${activity.data.id}`}
+                               session={activity.data}
+                               index={index}
+                             />
+                           ) : (
+                             <MoodSessionEntry 
+                               key={`mood-${activity.data.id}`}
+                               moodLog={activity.data}
+                               index={index}
+                             />
+                           )
+                         ))}
                       </div>
                     ) : (
                       <div className="text-center py-10 text-zinc-400">

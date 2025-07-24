@@ -11,6 +11,9 @@ export interface MeditationSession {
   duration: number;
   points_earned: number;
   shared: boolean;
+  emoji?: string;
+  notes?: string;
+  notes_public: boolean;
   created_at: string;
   completed_at?: string;
 }

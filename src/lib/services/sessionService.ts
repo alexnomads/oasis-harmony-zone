@@ -36,7 +36,7 @@ export class SessionService extends BaseService {
     mouseMovements: number,
     focusLost: number,
     windowBlurs: number
-  }) {
+  }, sessionData?: { emoji?: string; notes?: string; notes_public?: boolean }) {
     try {
       console.log('Completing session:', sessionId, 'duration:', duration, 'distractions:', distractions);
       
@@ -76,7 +76,10 @@ export class SessionService extends BaseService {
         status: 'completed' as MeditationStatus,
         duration,
         points_earned: Math.round(points * 10) / 10, // Round to 1 decimal place
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
+        ...(sessionData?.emoji && { emoji: sessionData.emoji }),
+        ...(sessionData?.notes && { notes: sessionData.notes }),
+        ...(sessionData?.notes_public !== undefined && { notes_public: sessionData.notes_public })
       };
       
       const sessionResult = await supabase

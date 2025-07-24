@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { TimerControls } from './TimerControls';
 import { TimerDisplay } from './TimerDisplay';
 import { CompletedSession } from './CompletedSession';
+import { SessionReflectionModal } from './SessionReflectionModal';
 import { useMeditationSession } from '@/hooks/useMeditationSession';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -18,10 +19,12 @@ export const Timer = () => {
     sessionCompleted,
     pointsEarned,
     totalPoints,
+    showReflectionModal,
     calculateProgress,
     formatTime,
     toggleTimer,
-    resetTimer
+    resetTimer,
+    handleReflectionSave
   } = useMeditationSession(user?.id);
 
   const [isMounted, setIsMounted] = useState(false);
@@ -67,6 +70,13 @@ export const Timer = () => {
           sessionId={sessionId}
         />
       )}
+
+      <SessionReflectionModal
+        isOpen={showReflectionModal}
+        onClose={() => handleReflectionSave({ emoji: '🧘', notes: '', notes_public: false })}
+        onSave={handleReflectionSave}
+        pointsEarned={pointsEarned}
+      />
     </div>
   );
 };

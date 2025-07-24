@@ -15,6 +15,7 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [pointsEarned, setPointsEarned] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [showReflectionModal, setShowReflectionModal] = useState(false);
   const toastShownRef = useRef(false);
   const startSoundRef = useRef<HTMLAudioElement | null>(null);
   const endSoundRef = useRef<HTMLAudioElement | null>(null);
@@ -68,44 +69,78 @@ export const useMeditationSession = (userId: string | undefined) => {
       console.error("Error playing end sound:", e);
     }
 
+    // First complete the basic session without reflection data
+    const basicCompletion = async () => {
+      try {
+        const { session, userPoints } = await SessionService.completeSession(
+          sessionId, 
+          time, 
+          { mouseMovements: 0, focusLost: 0, windowBlurs: 0 }
+        );
+        setPointsEarned(session.points_earned);
+        setTotalPoints(userPoints.total_points);
+        
+        // Award pet experience and currency for meditation
+        if (userId) {
+          try {
+            await PetService.addExperience(userId, Math.floor(time / 60) * 5); // 5 XP per minute
+            await PetService.addCurrency(userId, 10, 0); // 10 ROJ points for meditation
+            await PetService.updatePetEvolution(userId); // Check for evolution
+          } catch (petError) {
+            console.error('Error updating pet after meditation:', petError);
+          }
+        }
+        
+        // Release wake lock
+        await releaseWakeLock();
+        setIsRunning(false);
+        
+        // Show reflection modal
+        setShowReflectionModal(true);
+        
+      } catch (error) {
+        toast({
+          title: "Error completing session",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+          variant: "destructive",
+        });
+      }
+    };
+
+    await basicCompletion();
+  }, [sessionId, time, userId, toast, releaseWakeLock]);
+
+  const handleReflectionSave = useCallback(async (reflectionData: { emoji: string; notes: string; notes_public: boolean }) => {
+    if (!sessionId) return;
+
     try {
-      const { session, userPoints } = await SessionService.completeSession(
+      // Update the session with reflection data
+      await SessionService.completeSession(
         sessionId, 
         time, 
-        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 }
+        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 },
+        reflectionData
       );
-      setPointsEarned(session.points_earned);
-      setTotalPoints(userPoints.total_points);
+
       setSessionCompleted(true);
-      
-      // Award pet experience and currency for meditation
-      if (userId) {
-        try {
-          await PetService.addExperience(userId, Math.floor(time / 60) * 5); // 5 XP per minute
-          await PetService.addCurrency(userId, 10, 0); // 10 ROJ points for meditation
-          await PetService.updatePetEvolution(userId); // Check for evolution
-        } catch (petError) {
-          console.error('Error updating pet after meditation:', petError);
-        }
-      }
-      
-      // Release wake lock
-      await releaseWakeLock();
+      setShowReflectionModal(false);
       
       toast({
-        title: "Meditation Complete! 🎉",
-        description: `You earned ${session.points_earned.toFixed(1)} points! Your pet gained XP too! 🌸`,
+        title: "Session Saved! 🎉",
+        description: `You earned ${pointsEarned.toFixed(1)} points! Your pet gained XP too! 🌸`,
       });
       
-      setIsRunning(false);
     } catch (error) {
       toast({
-        title: "Error completing session",
+        title: "Error saving reflection",
         description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       });
+      // Still complete the session even if reflection fails
+      setSessionCompleted(true);
+      setShowReflectionModal(false);
     }
-  }, [sessionId, time, userId, toast]);
+  }, [sessionId, time, pointsEarned, toast]);
 
   const startMeditation = async () => {
     try {
@@ -178,6 +213,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     setSessionId(null);
     setSessionCompleted(false);
     setPointsEarned(0);
+    setShowReflectionModal(false);
     toastShownRef.current = false;
     // Release wake lock when resetting
     releaseWakeLock();
@@ -237,10 +273,12 @@ export const useMeditationSession = (userId: string | undefined) => {
     totalPoints,
     setTotalPoints,
     isLoading,
+    showReflectionModal,
     formatTime,
     calculateProgress,
     toggleTimer,
     resetTimer,
+    handleReflectionSave,
     toastShownRef,
     timeRemaining: selectedDuration - time,
     totalDuration: selectedDuration,

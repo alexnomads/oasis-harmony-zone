@@ -8,6 +8,9 @@ CREATE TABLE meditation_sessions (
     completed BOOLEAN DEFAULT FALSE,
     type TEXT NOT NULL,
     points_earned INTEGER DEFAULT 0,
+    emoji TEXT,
+    notes TEXT,
+    notes_public BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

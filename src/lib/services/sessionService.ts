@@ -193,10 +193,12 @@ export class SessionService extends BaseService {
       console.log('Updating session reflection for:', sessionId, reflectionData);
       
       const updateData = {
-        ...(reflectionData.emoji && { emoji: reflectionData.emoji }),
+        ...(reflectionData.emoji !== undefined && { emoji: reflectionData.emoji }),
         ...(reflectionData.notes !== undefined && { notes: reflectionData.notes }),
         ...(reflectionData.notes_public !== undefined && { notes_public: reflectionData.notes_public })
       };
+      
+      console.log('Update data being sent to database:', updateData);
       
       const sessionResult = await supabase
         .from('meditation_sessions')

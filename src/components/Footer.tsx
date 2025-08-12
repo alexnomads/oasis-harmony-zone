@@ -78,7 +78,7 @@ export const Footer = () => {
                 variant="outline" 
                 size="icon"
                 className="border-white/10 text-white hover:bg-white/10"
-                onClick={() => window.open('https://www.linkedin.com/showcase/roseofjericho/', '_blank')}
+                onClick={() => window.open('https://www.linkedin.com/company/roseofjericho-roj/', '_blank')}
               >
                 <Linkedin className="h-4 w-4" />
               </Button>

@@ -83,6 +83,11 @@ export const Footer = () => {
                 <Linkedin className="h-4 w-4" />
               </Button>
             </div>
+            <div className="mt-2">
+              <a href="https://www.producthunt.com/products/rose-of-jericho-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-rose&#0045;of&#0045;jericho&#0045;2" target="_blank" rel="noopener noreferrer">
+                <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1004503&theme=light&t=1755011209617" alt="Rose&#0032;of&#0032;Jericho - AI&#0032;Agent&#0032;giving&#0032;web3&#0032;rewards&#0032;when&#0032;you&#0032;meditate🌹🧘🏻 | Product Hunt" width="250" height="54" loading="lazy" />
+              </a>
+            </div>
             <p className="text-white/50 text-xs mt-4">
               © {currentYear} Rose of Jericho. All rights reserved.
             </p>

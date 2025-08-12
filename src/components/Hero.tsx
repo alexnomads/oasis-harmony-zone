@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -95,7 +94,7 @@ export const Hero = () => {
               {slides[currentSlide]}
             </motion.div>
           </div>
-          <div className="flex flex-col lg:flex-row justify-center items-center gap-3 sm:gap-6 px-2 sm:px-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 px-2 sm:px-4">
             <Button
               onClick={handleMainButtonClick}
               className="bg-white/10 hover:bg-white/20 text-white px-8 sm:px-12 py-4 sm:py-6 text-lg sm:text-xl rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -109,31 +108,17 @@ export const Hero = () => {
                 "Sign In"
               )}
             </Button>
-            <div className="flex flex-col sm:flex-row gap-3 items-center">
-              <Button
-                onClick={handleFollow}
-                className="bg-black/30 hover:bg-black/40 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
-              >
-                <img 
-                  src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
-                  alt="X Logo" 
-                  className="w-4 h-4 sm:w-5 sm:h-5 mr-2 invert"
-                /> 
-                <span className="whitespace-nowrap">Follow @ROJOasis</span>
-              </Button>
-              <div className="bg-black/30 rounded-full p-2 border border-white/20 hover:border-white/40 transition-all duration-300">
-                <iframe 
-                  style={{border: 'none', borderRadius: '12px'}} 
-                  src="https://cards.producthunt.com/cards/products/1097444" 
-                  width="240" 
-                  height="200" 
-                  frameBorder="0" 
-                  scrolling="no" 
-                  allowFullScreen
-                  className="rounded-lg"
-                />
-              </div>
-            </div>
+            <Button
+              onClick={handleFollow}
+              className="bg-black/30 hover:bg-black/40 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
+            >
+              <img 
+                src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
+                alt="X Logo" 
+                className="w-4 h-4 sm:w-5 sm:h-5 mr-2 invert"
+              /> 
+              <span className="whitespace-nowrap">Follow @ROJOasis</span>
+            </Button>
           </div>
         </motion.div>
       </div>

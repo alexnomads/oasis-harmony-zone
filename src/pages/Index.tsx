@@ -9,7 +9,7 @@ import { Newsletter } from "@/components/Newsletter";
 import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 import { GetInTouch } from "@/components/GetInTouch";
 import { Testimonials } from "@/components/Testimonials";
-import { Footer } from "@/components/Footer";
+
 import { Awards } from "@/components/Awards";
 
 const Index = () => {
@@ -56,7 +56,7 @@ const Index = () => {
           <GetInTouch />
         </section>
       </main>
-      <Footer />
+      
     </div>
   );
 };

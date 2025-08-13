@@ -1,5 +1,5 @@
 
-import { Linkedin } from "lucide-react";
+import { Linkedin, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
 
@@ -81,6 +81,28 @@ export const Footer = () => {
                 onClick={() => window.open('https://www.linkedin.com/company/roseofjericho-roj/', '_blank')}
               >
                 <Linkedin className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="border-white/10 text-white hover:bg-white/10"
+                onClick={() => window.open('https://www.youtube.com/@ROJOasis', '_blank')}
+                aria-label="Visit our YouTube channel"
+              >
+                <Youtube className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="border-white/10 text-white hover:bg-white/10"
+                onClick={() => window.open('https://t.me/@RoseOfJerichoweb3', '_blank')}
+                aria-label="Join us on Telegram"
+              >
+                <img 
+                  src="/lovable-uploads/telegram.svg" 
+                  alt="Telegram logo" 
+                  className="h-4 w-4 invert" 
+                />
               </Button>
             </div>
             <div className="mt-2">

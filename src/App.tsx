@@ -18,6 +18,7 @@ import ChangePassword from "./pages/auth/change-password";
 import AuthTest from "./pages/auth/test";
 import AuthDebug from "./pages/auth/debug";
 import DirectTest from "./pages/auth/direct-test";
+import { Footer } from "@/components/Footer";
 
 const queryClient = new QueryClient();
 // Google Analytics Measurement ID
@@ -59,6 +60,7 @@ const App = () => (
                 }
               />
             </Routes>
+            <Footer />
           </Web3Provider>
         </AuthProvider>
       </BrowserRouter>

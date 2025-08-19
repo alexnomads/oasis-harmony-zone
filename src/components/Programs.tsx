@@ -6,9 +6,18 @@ import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { TokenBuyButton } from "@/components/TokenBuyButton";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const Programs = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   const programs = [
     {
@@ -66,69 +75,140 @@ export const Programs = () => {
             Discover AI Agents designed to enhance your mental & physical well-being
           </p>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {programs.map((program, index) => (
-            <motion.div
-              key={program.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="h-full"
-            >
-              <Card className="bg-black/20 border-white/10 h-full flex flex-col">
-                <CardContent className="p-6 flex flex-col h-full">
-                  <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
-                  <p className="text-white/80 mb-4">{program.description}</p>
-                  <ul className="space-y-2 mb-4 flex-grow">
-                    {program.benefits.map((benefit) => (
-                      <li key={benefit} className="text-white/70">
-                        • {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardFooter className="px-6 pb-6 pt-0">
-                  {program.title === "Guided Meditation" && (
-                    user ? (
+        {isMobile ? (
+          <Carousel className="w-full max-w-sm mx-auto" opts={{ align: "center" }}>
+            <CarouselContent>
+              {programs.map((program, index) => (
+                <CarouselItem key={program.title}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="h-full"
+                  >
+                    <Card className="bg-black/20 border-white/10 h-full flex flex-col">
+                      <CardContent className="p-6 flex flex-col h-full">
+                        <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
+                        <p className="text-white/80 mb-4">{program.description}</p>
+                        <ul className="space-y-2 mb-4 flex-grow">
+                          {program.benefits.map((benefit) => (
+                            <li key={benefit} className="text-white/70">
+                              • {benefit}
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                      <CardFooter className="px-6 pb-6 pt-0">
+                        {program.title === "Guided Meditation" && (
+                          user ? (
+                            <Button 
+                              className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
+                              asChild
+                            >
+                              <Link to="/meditate">
+                                <Play className="w-4 h-4 mr-2" />
+                                Meditate & Accrue Points Now
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button 
+                              className="w-full bg-white/10 hover:bg-white/20 text-white"
+                              onClick={() => window.location.href = "/?login=true"}
+                            >
+                              <LogIn className="w-4 h-4 mr-2" />
+                              Log In
+                            </Button>
+                          )
+                        )}
+                        
+                        {program.title === "Fitness Programs" && (
+                          <TokenBuyButton />
+                        )}
+                        
+                        {program.title === "Community Sessions" && (
+                          <Button 
+                            className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
+                            onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Join Our Telegram Group
+                          </Button>
+                        )}
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-white border-white/20 hover:bg-white/10" />
+            <CarouselNext className="text-white border-white/20 hover:bg-white/10" />
+          </Carousel>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {programs.map((program, index) => (
+              <motion.div
+                key={program.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="h-full"
+              >
+                <Card className="bg-black/20 border-white/10 h-full flex flex-col">
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <program.icon className="w-12 h-12 text-softOrange mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-3 text-white">{program.title}</h3>
+                    <p className="text-white/80 mb-4">{program.description}</p>
+                    <ul className="space-y-2 mb-4 flex-grow">
+                      {program.benefits.map((benefit) => (
+                        <li key={benefit} className="text-white/70">
+                          • {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="px-6 pb-6 pt-0">
+                    {program.title === "Guided Meditation" && (
+                      user ? (
+                        <Button 
+                          className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
+                          asChild
+                        >
+                          <Link to="/meditate">
+                            <Play className="w-4 h-4 mr-2" />
+                            Meditate & Accrue Points Now
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button 
+                          className="w-full bg-white/10 hover:bg-white/20 text-white"
+                          onClick={() => window.location.href = "/?login=true"}
+                        >
+                          <LogIn className="w-4 h-4 mr-2" />
+                          Log In
+                        </Button>
+                      )
+                    )}
+                    
+                    {program.title === "Fitness Programs" && (
+                      <TokenBuyButton />
+                    )}
+                    
+                    {program.title === "Community Sessions" && (
                       <Button 
                         className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
-                        asChild
+                        onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                       >
-                        <Link to="/meditate">
-                          <Play className="w-4 h-4 mr-2" />
-                          Meditate & Accrue Points Now
-                        </Link>
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Join Our Telegram Group
                       </Button>
-                    ) : (
-                      <Button 
-                        className="w-full bg-white/10 hover:bg-white/20 text-white"
-                        onClick={() => window.location.href = "/?login=true"}
-                      >
-                        <LogIn className="w-4 h-4 mr-2" />
-                        Log In
-                      </Button>
-                    )
-                  )}
-                  
-                  {program.title === "Fitness Programs" && (
-                    <TokenBuyButton />
-                  )}
-                  
-                  {program.title === "Community Sessions" && (
-                    <Button 
-                      className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
-                      onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Join Our Telegram Group
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                    )}
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

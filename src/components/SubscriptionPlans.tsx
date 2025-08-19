@@ -6,6 +6,14 @@ import { PlanCard } from "./subscription/PlanCard";
 import { PlanHeader } from "./subscription/PlanHeader";
 import { SubscriptionDialog } from "./subscription/SubscriptionDialog";
 import { plans } from "@/data/subscriptionPlans";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const SubscriptionPlans = () => {
   const [isYearly, setIsYearly] = useState(false);
@@ -16,6 +24,7 @@ export const SubscriptionPlans = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { account } = useWeb3();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handlePurchase = async () => {
     if (!selectedPlan) return;
@@ -53,17 +62,36 @@ export const SubscriptionPlans = () => {
       <div className="container mx-auto px-6">
         <PlanHeader isYearly={isYearly} setIsYearly={setIsYearly} />
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan, index) => (
-            <PlanCard
-              key={plan.title}
-              plan={plan}
-              isYearly={isYearly}
-              index={index}
-              onSelectPlan={handleSelectPlan}
-            />
-          ))}
-        </div>
+        {isMobile ? (
+          <Carousel className="w-full max-w-sm mx-auto" opts={{ align: "center" }}>
+            <CarouselContent>
+              {plans.map((plan, index) => (
+                <CarouselItem key={plan.title}>
+                  <PlanCard
+                    plan={plan}
+                    isYearly={isYearly}
+                    index={index}
+                    onSelectPlan={handleSelectPlan}
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-white border-white/20 hover:bg-white/10" />
+            <CarouselNext className="text-white border-white/20 hover:bg-white/10" />
+          </Carousel>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {plans.map((plan, index) => (
+              <PlanCard
+                key={plan.title}
+                plan={plan}
+                isYearly={isYearly}
+                index={index}
+                onSelectPlan={handleSelectPlan}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <SubscriptionDialog

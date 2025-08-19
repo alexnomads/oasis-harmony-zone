@@ -128,10 +128,16 @@
   }
   
   .mobile-chat-container {
-    height: calc(100vh - env(safe-area-inset-bottom) - 120px);
-    height: calc(100dvh - env(safe-area-inset-bottom) - 120px);
-    max-height: calc(100vh - env(safe-area-inset-bottom) - 120px);
-    max-height: calc(100dvh - env(safe-area-inset-bottom) - 120px);
+    height: calc(100vh - env(safe-area-inset-bottom) - 200px);
+    height: calc(100dvh - env(safe-area-inset-bottom) - 200px);
+    max-height: calc(100vh - env(safe-area-inset-bottom) - 200px);
+    max-height: calc(100dvh - env(safe-area-inset-bottom) - 200px);
+  }
+  
+  .mobile-meditation-container {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
+    min-height: calc(100vh - env(safe-area-inset-bottom) - 200px);
+    min-height: calc(100dvh - env(safe-area-inset-bottom) - 200px);
   }
   
   .pb-safe {
@@ -144,10 +150,16 @@
   
   @media (max-width: 768px) {
     .mobile-chat-container {
-      height: calc(100vh - env(safe-area-inset-bottom) - 160px);
-      height: calc(100dvh - env(safe-area-inset-bottom) - 160px);
-      max-height: calc(100vh - env(safe-area-inset-bottom) - 160px);
-      max-height: calc(100dvh - env(safe-area-inset-bottom) - 160px);
+      height: calc(100vh - env(safe-area-inset-bottom) - 250px);
+      height: calc(100dvh - env(safe-area-inset-bottom) - 250px);
+      max-height: calc(100vh - env(safe-area-inset-bottom) - 250px);
+      max-height: calc(100dvh - env(safe-area-inset-bottom) - 250px);
+    }
+    
+    .mobile-meditation-container {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 160px);
+      min-height: calc(100vh - env(safe-area-inset-bottom) - 250px);
+      min-height: calc(100dvh - env(safe-area-inset-bottom) - 250px);
     }
   }
 }

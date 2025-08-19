@@ -62,7 +62,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </button>)}
         </div>}
 
-      <form onSubmit={handleSubmit} className="relative mt-auto flex-shrink-0 pb-safe">
+      <div className="sticky bottom-0 bg-gradient-to-t from-black/50 to-transparent pt-4 pb-safe">
+        <form onSubmit={handleSubmit} className="relative flex-shrink-0">
         <input 
           type="text" 
           value={inputValue} 
@@ -78,7 +79,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         >
           <Send className="w-4 h-4" />
         </button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

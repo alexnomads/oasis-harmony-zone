@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, MessageCircle, User, Coins } from "lucide-react";
 import { MeditationAgentChat } from "./MeditationAgentChat";
+import { WelcomeMessage } from "./WelcomeMessage";
+import { PersonalizedRecommendations } from "./PersonalizedRecommendations";
+import { UserPointsDisplay } from "./UserPointsDisplay";
 import { QuickMeditation } from "./QuickMeditation";
 import { UserProfile } from "../profile/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,7 +33,13 @@ export const MeditationContainer = () => {
   return (
     <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[calc(100vh-2rem)]">
+        {/* Welcome Message */}
+        <WelcomeMessage />
+        
+        {/* Personalized Recommendations */}
+        <PersonalizedRecommendations />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[calc(100vh-2rem)] mt-4">
           {/* Pet & Currency Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* Pet Display */}
@@ -55,12 +64,8 @@ export const MeditationContainer = () => {
               </CardContent>
             </Card>
 
-            {/* Currency Display */}
-            {currency && (
-              <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
-                
-              </Card>
-            )}
+            {/* Points Display */}
+            <UserPointsDisplay />
 
             {/* Daily Mood Logger */}
             {user && (

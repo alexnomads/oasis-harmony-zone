@@ -1,0 +1,206 @@
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Heart, Brain, Zap, Moon, Sparkles } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
+
+interface Recommendation {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  icon: React.ReactNode;
+  reason: string;
+}
+
+export const PersonalizedRecommendations = () => {
+  const { user } = useAuth();
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    generateRecommendations();
+  }, [user]);
+
+  const generateRecommendations = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Fetch user's meditation history
+      const { data: sessions } = await supabase
+        .from('meditation_sessions')
+        .select('duration, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      // Fetch user's mood logs
+      const { data: moods } = await supabase
+        .from('daily_moods')
+        .select('mood_rating, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(7);
+
+      const recs = generatePersonalizedRecommendations(sessions || [], moods || []);
+      setRecommendations(recs);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setRecommendations(getDefaultRecommendations());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generatePersonalizedRecommendations = (sessions: any[], moods: any[]): Recommendation[] => {
+    const recs: Recommendation[] = [];
+    const currentHour = new Date().getHours();
+
+    // Time-based recommendations
+    if (currentHour < 10) {
+      recs.push({
+        id: 'morning-energy',
+        title: 'Morning Energy Boost',
+        description: 'Start your day with focused breathing',
+        duration: 300,
+        icon: <Zap className="w-4 h-4" />,
+        reason: 'Perfect for morning motivation'
+      });
+    } else if (currentHour > 20) {
+      recs.push({
+        id: 'evening-calm',
+        title: 'Evening Wind Down',
+        description: 'Gentle meditation to prepare for rest',
+        duration: 600,
+        icon: <Moon className="w-4 h-4" />,
+        reason: 'Great for evening relaxation'
+      });
+    }
+
+    // Based on session history
+    if (sessions.length > 0) {
+      const avgDuration = sessions.reduce((sum, s) => sum + s.duration, 0) / sessions.length;
+      const preferredDuration = Math.round(avgDuration / 60) * 60; // Round to nearest minute
+
+      recs.push({
+        id: 'preferred-duration',
+        title: 'Your Usual Practice',
+        description: `${preferredDuration / 60}-minute focused meditation`,
+        duration: preferredDuration,
+        icon: <Brain className="w-4 h-4" />,
+        reason: `Based on your ${Math.round(avgDuration / 60)}-minute average sessions`
+      });
+    }
+
+    // Based on mood patterns
+    if (moods.length > 0) {
+      const recentMood = moods[0]?.mood_rating || 3;
+      if (recentMood < 3) {
+        recs.push({
+          id: 'mood-boost',
+          title: 'Stress Relief',
+          description: 'Calming meditation to lift your spirits',
+          duration: 600,
+          icon: <Heart className="w-4 h-4" />,
+          reason: 'Recommended for stress relief'
+        });
+      }
+    }
+
+    // Fill with defaults if needed
+    while (recs.length < 2) {
+      const defaults = getDefaultRecommendations();
+      const newRec = defaults.find(d => !recs.some(r => r.id === d.id));
+      if (newRec) recs.push(newRec);
+      else break;
+    }
+
+    return recs.slice(0, 2);
+  };
+
+  const getDefaultRecommendations = (): Recommendation[] => [
+    {
+      id: 'beginner-breath',
+      title: 'Mindful Breathing',
+      description: 'Simple breathing exercise for beginners',
+      duration: 300,
+      icon: <Brain className="w-4 h-4" />,
+      reason: 'Great for getting started'
+    },
+    {
+      id: 'stress-relief',
+      title: 'Stress Relief',
+      description: 'Gentle meditation to reduce tension',
+      duration: 600,
+      icon: <Heart className="w-4 h-4" />,
+      reason: 'Popular choice for relaxation'
+    }
+  ];
+
+  if (loading) {
+    return (
+      <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+        <CardContent className="p-4">
+          <div className="text-center text-muted-foreground">
+            Preparing your personalized recommendations...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+        <CardContent className="p-4">
+          <div className="text-center text-muted-foreground">
+            Sign in to get personalized meditation recommendations
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg text-foreground flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-accent" />
+          Recommended for You
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 pt-0 space-y-3">
+        {recommendations.map((rec) => (
+          <div
+            key={rec.id}
+            className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-accent">{rec.icon}</div>
+              <div>
+                <h4 className="font-medium text-foreground">{rec.title}</h4>
+                <p className="text-sm text-muted-foreground">{rec.description}</p>
+                <Badge variant="secondary" className="text-xs mt-1">
+                  {rec.reason}
+                </Badge>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-muted-foreground">
+                {Math.round(rec.duration / 60)} min
+              </div>
+              <Button size="sm" variant="outline" className="mt-1">
+                Start
+              </Button>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};

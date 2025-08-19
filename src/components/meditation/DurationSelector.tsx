@@ -18,9 +18,6 @@ export const DurationSelector = ({
   isRunning
 }: DurationSelectorProps) => {
   const durations: DurationOption[] = [{
-    label: '30 sec',
-    value: 30
-  }, {
     label: '1 min',
     value: 60
   }, {

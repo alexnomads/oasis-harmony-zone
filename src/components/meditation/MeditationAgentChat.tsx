@@ -189,9 +189,9 @@ export const MeditationAgentChat: React.FC = () => {
         onExit={handleOverlayExit}
       />
       
-      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 h-[600px] flex flex-col">
+      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 h-[600px] lg:h-[600px] mobile-chat-container flex flex-col">
         <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
-        <CardHeader className="border-b border-white/20 pb-4">
+        <CardHeader className="border-b border-white/20 pb-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden">
               <img
@@ -208,7 +208,7 @@ export const MeditationAgentChat: React.FC = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6 flex-1 overflow-hidden flex flex-col h-full max-h-[calc(600px-140px)]">
+        <CardContent className="p-4 lg:p-6 flex-1 overflow-hidden flex flex-col min-h-0">
           {needsApiKey ? (
             <div className="flex-1 flex flex-col">
               <div className="flex-1 overflow-y-auto mb-4">
@@ -260,7 +260,7 @@ export const MeditationAgentChat: React.FC = () => {
               sessionId={sessionId}
             />
           ) : (
-            <div ref={chatContainerRef} className="flex flex-col h-full overflow-hidden">
+            <div ref={chatContainerRef} className="flex flex-col flex-1 min-h-0">
               <ChatInterface
                 messages={messages}
                 isTyping={isTyping}

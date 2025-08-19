@@ -36,10 +36,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   // Quick response suggestions
   const quickResponses = ["I'm feeling stressed about the market", "Need help focusing on my trades", "Feeling tired after chart watching", "Market volatility is making me anxious"];
-  return <>
-      
-      
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2 overscroll-contain">
         {messages.map((message, index) => <ChatMessage key={index} message={message} index={index} isTimerRunning={isTimerRunning} startMeditation={startMeditation} />)}
         {isTyping && <motion.div initial={{
         opacity: 0
@@ -63,11 +62,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </button>)}
         </div>}
 
-      <form onSubmit={handleSubmit} className="relative mt-auto">
-        <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="How are you feeling today?" disabled={isTyping || isTimerRunning} className={`w-full bg-white/10 rounded-full px-4 pr-16 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-softPurple transition-opacity ${isTyping || isTimerRunning ? "opacity-50 cursor-not-allowed" : ""}`} />
-        <button type="submit" disabled={isTyping || isTimerRunning || !inputValue.trim()} className={`absolute right-1.5 top-1/2 -translate-y-1/2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-sm transition-all ${isTyping || isTimerRunning || !inputValue.trim() ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}`}>
+      <form onSubmit={handleSubmit} className="relative mt-auto flex-shrink-0 pb-safe">
+        <input 
+          type="text" 
+          value={inputValue} 
+          onChange={e => setInputValue(e.target.value)} 
+          placeholder="How are you feeling today?" 
+          disabled={isTyping || isTimerRunning} 
+          className={`w-full bg-white/10 rounded-full px-4 pr-16 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-softPurple transition-opacity ${isTyping || isTimerRunning ? "opacity-50 cursor-not-allowed" : ""}`} 
+        />
+        <button 
+          type="submit" 
+          disabled={isTyping || isTimerRunning || !inputValue.trim()} 
+          className={`absolute right-1.5 top-1/2 -translate-y-1/2 bg-gradient-to-r from-vibrantPurple to-vibrantOrange text-white px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-sm transition-all ${isTyping || isTimerRunning || !inputValue.trim() ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}`}
+        >
           <Send className="w-4 h-4" />
         </button>
       </form>
-    </>;
+    </div>
+  );
 };

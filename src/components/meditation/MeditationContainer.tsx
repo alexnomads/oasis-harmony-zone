@@ -28,9 +28,9 @@ export const MeditationContainer = () => {
   const petEmotion = getPetEmotion();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
+    <div className="mobile-safe-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-2rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mobile-chat-container lg:h-[calc(100vh-2rem)]">
           {/* Pet & Currency Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* Pet Display */}

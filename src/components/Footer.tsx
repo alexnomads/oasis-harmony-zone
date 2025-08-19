@@ -95,7 +95,7 @@ export const Footer = () => {
                 variant="outline" 
                 size="icon"
                 className="border-white/10 text-white hover:bg-white/10"
-                onClick={() => window.open('https://t.me/@RoseOfJerichoweb3', '_blank')}
+                onClick={() => window.open('https://t.me/RoseOfJerichoweb3', '_blank')}
                 aria-label="Join us on Telegram"
               >
                 <img 

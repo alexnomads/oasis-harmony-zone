@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,6 +29,25 @@ export const MeditationContainer = () => {
 
   const hasLoggedMoodToday = !!getCurrentMood();
   const petEmotion = getPetEmotion();
+
+  // Listen for recommended meditation start events
+  useEffect(() => {
+    const handleStartRecommendedMeditation = (event: CustomEvent) => {
+      const { duration } = event.detail;
+      // Switch to Quick Meditation tab
+      setActiveTab("quick");
+      // The QuickMeditation component will handle the session start
+      window.dispatchEvent(new CustomEvent('setMeditationDuration', { 
+        detail: { duration } 
+      }));
+    };
+
+    window.addEventListener('startRecommendedMeditation', handleStartRecommendedMeditation as EventListener);
+    
+    return () => {
+      window.removeEventListener('startRecommendedMeditation', handleStartRecommendedMeditation as EventListener);
+    };
+  }, []);
 
   return (
     <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">

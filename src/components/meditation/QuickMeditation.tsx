@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,6 +55,77 @@ export const QuickMeditation: React.FC = () => {
       endSoundRef.current = null;
     };
   }, []);
+
+  const startMeditation = useCallback(async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to start a meditation session and earn points.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Reset focus tracking metrics
+      setFocusLost(0);
+      setWindowBlurs(0);
+      setHasMovement(false);
+      setLastActiveTimestamp(new Date());
+
+      // Create session in database
+      const session = await SessionService.startSession(user.id, 'mindfulness');
+      setSessionId(session.id);
+      setIsTimerRunning(true);
+      setShowImmersiveOverlay(true);
+      setTimeRemaining(selectedDuration);
+      setTotalDuration(selectedDuration);
+
+      // Request wake lock to prevent screen from turning off
+      const wakeLockAcquired = await requestWakeLock();
+      if (wakeLockAcquired && isSupported) {
+        toast({
+          title: "Screen Sleep Prevented",
+          description: "Your screen will stay on during meditation."
+        });
+      }
+
+      // Play start sound
+      await playSound(startSoundRef);
+
+      // Display duration in the appropriate format (30 seconds or X minutes)
+      const displayDuration = selectedDuration === 30 ? "30-second" : `${Math.floor(selectedDuration / 60)}-minute`;
+      toast({
+        title: "Meditation Started",
+        description: `Starting ${displayDuration} mindfulness meditation.`
+      });
+    } catch (error) {
+      console.error('Error starting meditation session:', error);
+      toast({
+        title: "Failed to start session",
+        description: "There was an error starting your meditation session. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }, [user, selectedDuration, toast, requestWakeLock, isSupported]);
+
+  // Listen for recommended meditation duration events
+  useEffect(() => {
+    const handleSetMeditationDuration = (event: CustomEvent) => {
+      const { duration } = event.detail;
+      setSelectedDuration(duration);
+      // Small delay to ensure the duration is set before starting
+      setTimeout(() => {
+        startMeditation();
+      }, 100);
+    };
+
+    window.addEventListener('setMeditationDuration', handleSetMeditationDuration as EventListener);
+    
+    return () => {
+      window.removeEventListener('setMeditationDuration', handleSetMeditationDuration as EventListener);
+    };
+  }, [startMeditation]);
 
   // Timer countdown effect
   useEffect(() => {
@@ -172,58 +243,6 @@ export const QuickMeditation: React.FC = () => {
     return `Great job completing your meditation! We noticed ${distractionText} during your session. You earned ${earnedPoints.toFixed(1)} points. Remember, staying present is a skill that improves with practice - each session is progress on your mindfulness journey!`;
   };
 
-  const startMeditation = async () => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to start a meditation session and earn points.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      // Reset focus tracking metrics
-      setFocusLost(0);
-      setWindowBlurs(0);
-      setHasMovement(false);
-      setLastActiveTimestamp(new Date());
-
-      // Create session in database
-      const session = await SessionService.startSession(user.id, 'mindfulness');
-      setSessionId(session.id);
-      setIsTimerRunning(true);
-      setShowImmersiveOverlay(true);
-      setTimeRemaining(selectedDuration);
-      setTotalDuration(selectedDuration);
-
-      // Request wake lock to prevent screen from turning off
-      const wakeLockAcquired = await requestWakeLock();
-      if (wakeLockAcquired && isSupported) {
-        toast({
-          title: "Screen Sleep Prevented",
-          description: "Your screen will stay on during meditation."
-        });
-      }
-
-      // Play start sound
-      await playSound(startSoundRef);
-
-      // Display duration in the appropriate format (30 seconds or X minutes)
-      const displayDuration = selectedDuration === 30 ? "30-second" : `${Math.floor(selectedDuration / 60)}-minute`;
-      toast({
-        title: "Meditation Started",
-        description: `Starting ${displayDuration} mindfulness meditation.`
-      });
-    } catch (error) {
-      console.error('Error starting meditation session:', error);
-      toast({
-        title: "Failed to start session",
-        description: "There was an error starting your meditation session. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
 
   const handleMeditationComplete = async (duration: number, distractions: {
     mouseMovements: number;

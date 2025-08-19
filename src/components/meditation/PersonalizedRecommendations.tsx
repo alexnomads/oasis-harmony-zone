@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Heart, Brain, Zap, Moon, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { SessionService } from '@/lib/services/sessionService';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Recommendation {
   id: string;
@@ -17,8 +19,10 @@ interface Recommendation {
 
 export const PersonalizedRecommendations = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [startingSession, setStartingSession] = useState<string | null>(null);
 
   useEffect(() => {
     generateRecommendations();
@@ -142,6 +146,47 @@ export const PersonalizedRecommendations = () => {
     }
   ];
 
+  const startMeditationSession = async (duration: number, title: string) => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to start a meditation session.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setStartingSession(title);
+      
+      // Create session in database
+      const session = await SessionService.startSession(user.id, 'mindfulness');
+      
+      // Show success message
+      const displayDuration = duration === 30 ? "30-second" : `${Math.floor(duration / 60)}-minute`;
+      toast({
+        title: "Starting Meditation",
+        description: `${title} - ${displayDuration} session starting now.`
+      });
+
+      // Switch to Quick Meditation tab and trigger the session
+      // You can emit a custom event that the parent component can listen to
+      window.dispatchEvent(new CustomEvent('startRecommendedMeditation', { 
+        detail: { duration, sessionId: session.id, title } 
+      }));
+
+    } catch (error) {
+      console.error('Error starting meditation session:', error);
+      toast({
+        title: "Failed to start session",
+        description: "There was an error starting your meditation session. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setStartingSession(null);
+    }
+  };
+
   if (loading) {
     return (
       <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
@@ -194,8 +239,14 @@ export const PersonalizedRecommendations = () => {
               <div className="text-sm text-muted-foreground">
                 {Math.round(rec.duration / 60)} min
               </div>
-              <Button size="sm" variant="outline" className="mt-1">
-                Start
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="mt-1"
+                onClick={() => startMeditationSession(rec.duration, rec.title)}
+                disabled={startingSession === rec.title}
+              >
+                {startingSession === rec.title ? 'Starting...' : 'Start'}
               </Button>
             </div>
           </div>

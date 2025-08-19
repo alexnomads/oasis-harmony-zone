@@ -82,7 +82,7 @@ export const Hero = () => {
             Rose of Jericho
           </h1>
           <div className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-white/90 h-[80px] sm:h-[120px] flex flex-col items-center justify-center">
-            <p className="mb-2 text-sm sm:text-base md:text-xl">An AI Agent that rewards you with crypto when focusing on</p>
+            <p className="mb-2 text-sm sm:text-base md:text-xl">An AI Agent that rewards you when focusing on</p>
             <motion.div
               key={currentSlide}
               initial={{ opacity: 0, y: 20 }}

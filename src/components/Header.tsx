@@ -3,7 +3,7 @@ import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { AuthForm } from "./auth/AuthForm";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,20 @@ export const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [points, setPoints] = useState(0);
+
+  // Check for login URL parameter to trigger sign-in modal
+  useEffect(() => {
+    const loginParam = searchParams.get('login');
+    if (loginParam === 'true' && !user) {
+      setShowSignIn(true);
+      // Clean up the URL parameter
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.delete('login');
+      setSearchParams(newSearchParams, { replace: true });
+    }
+  }, [searchParams, user, setSearchParams]);
 
   useEffect(() => {
     const loadUserPoints = async () => {

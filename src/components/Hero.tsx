@@ -36,12 +36,8 @@ export const Hero = () => {
       navigate('/meditate');
     } else {
       trackEvent('user', 'sign_in_attempt', 'hero_button');
-      const signInButton = document.querySelector('[aria-label="Sign In"]');
-      if (signInButton) {
-        (signInButton as HTMLButtonElement).click();
-      } else {
-        navigate('/');
-      }
+      // Use URL parameter to trigger sign-in modal
+      navigate('/?login=true');
     }
   };
 

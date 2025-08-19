@@ -1,4 +1,12 @@
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 const awards = [{
   name: "Thrive Protocol",
   logo: "https://pbs.twimg.com/profile_images/1838974918848897025/sulX6L3i_400x400.jpg",
@@ -13,6 +21,7 @@ const awards = [{
   link: "https://x.com/soonami_io/status/1890440940772352257"
 }];
 export const Awards = () => {
+  const isMobile = useIsMobile();
   return <section className="py-8 bg-black/30 backdrop-blur-sm border-y border-white/10">
       <div className="container mx-auto px-4">
         <motion.div initial={{
@@ -29,38 +38,56 @@ export const Awards = () => {
           </span>
         </motion.div>
         
-        <div className="flex flex-row justify-center items-center gap-3 sm:gap-8">
-          {awards.map((award, index) => (
-            <motion.a 
-              key={award.name}
-              href={award.link} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              initial={{
-                opacity: 0,
-                scale: 0.8
-              }} 
-              whileInView={{
-                opacity: 1,
-                scale: 1
-              }} 
-              whileHover={{
-                scale: 1.05
-              }} 
-              transition={{
-                duration: 0.4,
-                delay: index * 0.2
-              }} 
-              className="bg-black/20 backdrop-blur-sm p-2 sm:p-4 rounded-xl border border-white/20 w-24 h-24 sm:w-36 sm:h-36 flex items-center justify-center"
-            >
-              <img 
-                src={award.logo} 
-                alt={award.name} 
-                className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg object-contain" 
-              />
-            </motion.a>
-          ))}
-        </div>
+        {isMobile ? (
+          <Carousel className="w-full max-w-xs mx-auto" opts={{ align: "center" }}>
+            <CarouselContent>
+              {awards.map((award, index) => (
+                <CarouselItem key={award.name}>
+                  <motion.a 
+                    href={award.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    initial={{ opacity: 0, scale: 0.8 }} 
+                    whileInView={{ opacity: 1, scale: 1 }} 
+                    whileHover={{ scale: 1.05 }} 
+                    transition={{ duration: 0.4, delay: index * 0.2 }} 
+                    className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-36 h-36 flex items-center justify-center mx-auto"
+                  >
+                    <img 
+                      src={award.logo} 
+                      alt={award.name} 
+                      className="w-24 h-24 rounded-lg object-contain" 
+                    />
+                  </motion.a>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-white border-white/20 hover:bg-white/10" />
+            <CarouselNext className="text-white border-white/20 hover:bg-white/10" />
+          </Carousel>
+        ) : (
+          <div className="flex flex-row justify-center items-center gap-3 sm:gap-8">
+            {awards.map((award, index) => (
+              <motion.a 
+                key={award.name}
+                href={award.link} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                initial={{ opacity: 0, scale: 0.8 }} 
+                whileInView={{ opacity: 1, scale: 1 }} 
+                whileHover={{ scale: 1.05 }} 
+                transition={{ duration: 0.4, delay: index * 0.2 }} 
+                className="bg-black/20 backdrop-blur-sm p-2 sm:p-4 rounded-xl border border-white/20 w-24 h-24 sm:w-36 sm:h-36 flex items-center justify-center"
+              >
+                <img 
+                  src={award.logo} 
+                  alt={award.name} 
+                  className="w-16 h-16 sm:w-24 sm:h-24 rounded-lg object-contain" 
+                />
+              </motion.a>
+            ))}
+          </div>
+        )}
       </div>
     </section>;
 };

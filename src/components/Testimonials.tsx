@@ -1,8 +1,29 @@
 
 import { motion } from "framer-motion";
 import { Tweet } from 'react-tweet';
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const Testimonials = () => {
+  const isMobile = useIsMobile();
+  
+  const testimonials = [
+    { id: "1940408069831418021", delay: 0.1 },
+    { id: "1890440940772352257", delay: 0.2 },
+    { id: "1915387070433939723", delay: 0.3 },
+    { id: "1884682972248371583", delay: 0.4 },
+    { 
+      type: "linkedin", 
+      src: "https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7294695290186432512",
+      delay: 0.5 
+    }
+  ];
   return <section className="py-16 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
       <div className="container mx-auto px-6">
         <motion.div initial={{
@@ -23,72 +44,68 @@ export const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.6,
-          delay: 0.1
-        }} className="bg-black/20 rounded-xl p-4">
-            <Tweet id="1940408069831418021" />
-          </motion.div>
-          
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.6,
-          delay: 0.2
-        }} className="bg-black/20 rounded-xl p-4">
-            <Tweet id="1890440940772352257" />
-          </motion.div>
-          
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.6,
-          delay: 0.3
-        }} className="bg-black/20 rounded-xl p-4">
-            <Tweet id="1915387070433939723" />
-          </motion.div>
-          
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.6,
-          delay: 0.4
-        }} className="bg-black/20 rounded-xl p-4">
-            <Tweet id="1884682972248371583" />
-          </motion.div>
-
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.6,
-          delay: 0.5
-        }} className="bg-black/20 rounded-xl p-4 h-[600px] overflow-hidden">
-            <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7294695290186432512" height="600" width="100%" frameBorder="0" allowFullScreen title="Embedded LinkedIn post" className="max-w-full -mt-16" />
-          </motion.div>
-        </div>
+        {isMobile ? (
+          <Carousel className="w-full max-w-xs mx-auto" opts={{ align: "center" }}>
+            <CarouselContent>
+              {testimonials.map((testimonial, index) => (
+                <CarouselItem key={testimonial.id || index}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: testimonial.delay }}
+                    className="bg-black/20 rounded-xl p-4"
+                  >
+                    {testimonial.type === "linkedin" ? (
+                      <div className="h-[600px] overflow-hidden">
+                        <iframe 
+                          src={testimonial.src} 
+                          height="600" 
+                          width="100%" 
+                          frameBorder="0" 
+                          allowFullScreen 
+                          title="Embedded LinkedIn post" 
+                          className="max-w-full -mt-16" 
+                        />
+                      </div>
+                    ) : (
+                      <Tweet id={testimonial.id} />
+                    )}
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-white border-white/20 hover:bg-white/10" />
+            <CarouselNext className="text-white border-white/20 hover:bg-white/10" />
+          </Carousel>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.id || index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: testimonial.delay }}
+                className="bg-black/20 rounded-xl p-4"
+              >
+                {testimonial.type === "linkedin" ? (
+                  <div className="h-[600px] overflow-hidden">
+                    <iframe 
+                      src={testimonial.src} 
+                      height="600" 
+                      width="100%" 
+                      frameBorder="0" 
+                      allowFullScreen 
+                      title="Embedded LinkedIn post" 
+                      className="max-w-full -mt-16" 
+                    />
+                  </div>
+                ) : (
+                  <Tweet id={testimonial.id} />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>;
 };

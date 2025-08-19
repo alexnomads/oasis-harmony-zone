@@ -5,33 +5,33 @@
 
 @layer base {
   :root {
-    --background: 35 100% 50%;
+    --background: 0 0% 7%;
     --foreground: 0 0% 100%;
 
-    --card: 35 100% 50%;
+    --card: 0 0% 7%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 35 100% 50%;
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 291 100% 42%;
+    --primary: 292 100% 42%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 100% 50%;
+    --secondary: 0 0% 20%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 291 47% 60%;
-    --muted-foreground: 0 0% 100%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 35 100% 62%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 45 100% 51%;
+    --accent-foreground: 0 0% 20%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 291 47% 60%;
-    --input: 291 47% 60%;
-    --ring: 291 47% 60%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 292 100% 42%;
 
     --radius: 0.5rem;
   }
@@ -77,10 +77,10 @@
     padding: 0;
     min-height: 100vh;
     width: 100%;
-    background: linear-gradient(to bottom right, #9C27B0, #FF8A00);
+    background: linear-gradient(135deg, #9C27B0, #BA68C8);
     background-attachment: fixed;
     background-repeat: no-repeat;
-    color: white;
+    color: #FFFFFF;
     overflow-x: hidden;
   }
 

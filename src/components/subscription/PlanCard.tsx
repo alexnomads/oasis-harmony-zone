@@ -111,7 +111,7 @@ export const PlanCard = ({ plan, isYearly, index, onSelectPlan }: PlanCardProps)
                 Meditate & Accrue Points Now
               </>
             ) : (
-              account ? "Get Started" : "Connect Wallet"
+              account ? "Get Started" : "Sign In"
             )}
           </Button>
         ) : (

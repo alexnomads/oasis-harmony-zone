@@ -89,7 +89,16 @@ export const PersonalizedRecommendations = () => {
     // Based on session history
     if (sessions.length > 0) {
       const avgDuration = sessions.reduce((sum, s) => sum + s.duration, 0) / sessions.length;
-      const preferredDuration = Math.round(avgDuration / 60) * 60; // Round to nearest minute
+      let preferredDuration = Math.round(avgDuration / 60) * 60; // Round to nearest minute
+      
+      // Ensure minimum 1 minute, prefer 1 or 5 minutes
+      if (preferredDuration < 60) {
+        preferredDuration = 60; // Default to 1 minute
+      } else if (preferredDuration < 300) {
+        preferredDuration = Math.round(preferredDuration / 60) === 1 ? 60 : 300; // 1 or 5 minutes
+      } else {
+        preferredDuration = Math.max(300, preferredDuration); // At least 5 minutes for longer sessions
+      }
 
       recs.push({
         id: 'preferred-duration',

@@ -61,6 +61,20 @@ export const PersonalizedRecommendations = () => {
     }
   };
 
+  const getUniqueRecommendations = (recommendations: Recommendation[]): Recommendation[] => {
+    const uniqueRecommendations: Recommendation[] = [];
+    const seenDurations = new Set<number>();
+
+    for (const recommendation of recommendations) {
+      if (!seenDurations.has(recommendation.duration)) {
+        uniqueRecommendations.push(recommendation);
+        seenDurations.add(recommendation.duration);
+      }
+    }
+
+    return uniqueRecommendations;
+  };
+
   const generatePersonalizedRecommendations = (sessions: any[], moods: any[]): Recommendation[] => {
     const recs: Recommendation[] = [];
     const currentHour = new Date().getHours();
@@ -133,7 +147,9 @@ export const PersonalizedRecommendations = () => {
       else break;
     }
 
-    return recs.slice(0, 2);
+    // Filter out duplicate durations and return unique recommendations
+    const uniqueRecs = getUniqueRecommendations(recs);
+    return uniqueRecs.slice(0, 2);
   };
 
   const getDefaultRecommendations = (): Recommendation[] => [

@@ -42,7 +42,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-5 sm:pt-6">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-5 sm:pt-6 w-full">
       <div className="absolute inset-0 w-full h-full">
         <video
           autoPlay
@@ -59,7 +59,7 @@ export const Hero = () => {
         </video>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-16 text-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-16 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -90,15 +90,15 @@ export const Hero = () => {
               {slides[currentSlide]}
             </motion.div>
           </div>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 px-2 sm:px-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 w-full">
             <Button
               onClick={handleMainButtonClick}
-              className="bg-white/10 hover:bg-white/20 text-white px-12 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105 min-w-[200px]"
+              className="bg-white/10 hover:bg-white/20 text-white px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto max-w-[280px] sm:max-w-none"
             >
               {user ? (
                 <>
                   <Clock className="mr-2" size={20} />
-                  Meditate & Accrue Points Now
+                  <span className="truncate">Meditate & Accrue Points Now</span>
                 </>
               ) : (
                 "Sign In"
@@ -106,7 +106,7 @@ export const Hero = () => {
             </Button>
             <Button
               onClick={handleFollow}
-              className="bg-black/30 hover:bg-black/40 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40"
+              className="bg-black/30 hover:bg-black/40 text-white px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40 w-full sm:w-auto max-w-[200px] sm:max-w-none"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 

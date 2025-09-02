@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { CompanionPetComponent } from "../pet/CompanionPet";
 import { CompanionPet } from "@/types/pet";
 import { Button } from "@/components/ui/button";
+import { useWakeLock } from "@/hooks/useWakeLock";
 
 interface ImmersiveMeditationOverlayProps {
   isActive: boolean;
@@ -27,6 +28,21 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
 }) => {
   const [showExitButton, setShowExitButton] = useState(false);
   const [showBreathingText, setShowBreathingText] = useState(true);
+  const { requestWakeLock, releaseWakeLock } = useWakeLock();
+
+  // Handle wake lock when overlay becomes active
+  useEffect(() => {
+    if (isActive && isTimerRunning) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      releaseWakeLock();
+    };
+  }, [isActive, isTimerRunning, requestWakeLock, releaseWakeLock]);
 
   // Hide breathing text after initial cycles
   useEffect(() => {

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MeditationType } from "@/types/database";
 import { TimerDisplay } from "./TimerDisplay";
 import { useToast } from "@/components/ui/use-toast";
+import { useWakeLock } from "@/hooks/useWakeLock";
 
 interface TimerProps {
   initialDuration: number;
@@ -25,10 +26,25 @@ export const MeditationTimer: React.FC<TimerProps> = ({
   const [focusLost, setFocusLost] = useState(0);
   const [windowBlurs, setWindowBlurs] = useState(0);
   const { toast } = useToast();
+  const { requestWakeLock, releaseWakeLock } = useWakeLock();
   
   const [timeRemaining, setTimeRemaining] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(true);
   const endSoundPlayedRef = useRef(false);
+
+  // Handle wake lock for meditation session
+  useEffect(() => {
+    if (isRunning) {
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      releaseWakeLock();
+    };
+  }, [isRunning, requestWakeLock, releaseWakeLock]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

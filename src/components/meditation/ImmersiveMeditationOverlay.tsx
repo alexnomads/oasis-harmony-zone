@@ -6,6 +6,8 @@ import { CompanionPetComponent } from "../pet/CompanionPet";
 import { CompanionPet } from "@/types/pet";
 import { Button } from "@/components/ui/button";
 import { useWakeLock } from "@/hooks/useWakeLock";
+import { useMovementDetection } from "@/hooks/useMovementDetection";
+import { Capacitor } from '@capacitor/core';
 
 interface ImmersiveMeditationOverlayProps {
   isActive: boolean;
@@ -28,19 +30,54 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
 }) => {
   const [showExitButton, setShowExitButton] = useState(false);
   const [showBreathingText, setShowBreathingText] = useState(true);
+  const [pointsDeducted, setPointsDeducted] = useState(0);
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
+  
+  const { showWarning } = useMovementDetection({
+    isActive: isActive && isTimerRunning,
+    sensitivity: Capacitor.isNativePlatform() ? 3 : 5, // More sensitive on mobile
+    onMovementDetected: () => {
+      setPointsDeducted(prev => prev + 0.15);
+    }
+  });
 
   // Handle wake lock when overlay becomes active
   useEffect(() => {
     if (isActive && isTimerRunning) {
       requestWakeLock();
+      
+      // For mobile apps, also prevent viewport scaling and add fullscreen meta tags
+      if (Capacitor.isNativePlatform()) {
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+        
+        // Request fullscreen on mobile if available
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {
+            // Fullscreen not available or denied
+          });
+        }
+      }
     } else {
       releaseWakeLock();
+      
+      if (Capacitor.isNativePlatform()) {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        
+        if (document.exitFullscreen && document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {
+            // Exit fullscreen failed
+          });
+        }
+      }
     }
     
     // Cleanup on unmount
     return () => {
       releaseWakeLock();
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     };
   }, [isActive, isTimerRunning, requestWakeLock, releaseWakeLock]);
 
@@ -138,7 +175,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
     <AnimatePresence>
       {isActive && (
         <motion.div
-          className="fixed inset-0 z-[9999] overflow-hidden bg-black"
+          className="fixed inset-0 z-[9999] overflow-hidden bg-black immersive-meditation-overlay immersive-meditation-active"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -357,6 +394,41 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
               )}
             </motion.div>
           </div>
+
+          {/* Movement Detection Warning */}
+          <AnimatePresence>
+            {showWarning && (
+              <motion.div
+                className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40 max-w-sm mx-auto"
+                initial={{ opacity: 0, y: -50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -50, scale: 0.9 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <div className="bg-red-600/90 backdrop-blur-sm border border-red-400/50 rounded-xl px-6 py-4 text-white shadow-2xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-bold text-yellow-300 mb-1">MOVEMENT DETECTED</h3>
+                      <p className="text-sm">
+                        {pointsDeducted.toFixed(2)} points will be deducted.
+                      </p>
+                      <p className="text-xs text-white/80 mt-1">
+                        Try to remain still during meditation.
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setPointsDeducted(0)}
+                      className="text-white/60 hover:text-white hover:bg-white/10 ml-4"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Exit Controls */}
           <AnimatePresence>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 export const useWakeLock = () => {
   const [isWakeLockActive, setIsWakeLockActive] = useState(false);
@@ -6,12 +7,43 @@ export const useWakeLock = () => {
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   useEffect(() => {
-    // Check if Wake Lock API is supported
-    setIsSupported('wakeLock' in navigator);
+    // Check if Wake Lock API is supported or if we're on mobile with Capacitor
+    setIsSupported('wakeLock' in navigator || Capacitor.isNativePlatform());
   }, []);
 
   const requestWakeLock = async (): Promise<boolean> => {
-    if (!isSupported) {
+    if (Capacitor.isNativePlatform()) {
+      // For native platforms, we'll use CSS and meta viewport to prevent sleep
+      // and add event listeners to keep the app active
+      try {
+        // Add a meta tag to prevent viewport scaling
+        let metaViewport = document.querySelector('meta[name="viewport"]');
+        if (!metaViewport) {
+          metaViewport = document.createElement('meta');
+          metaViewport.setAttribute('name', 'viewport');
+          document.head.appendChild(metaViewport);
+        }
+        metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no');
+        
+        // Keep the app active by triggering periodic events
+        const keepActive = () => {
+          // Trigger a small touch event to keep the app active
+          document.dispatchEvent(new Event('touchstart'));
+        };
+        
+        const intervalId = setInterval(keepActive, 10000); // Every 10 seconds
+        (wakeLockRef as any).current = { intervalId, type: 'native' };
+        
+        setIsWakeLockActive(true);
+        console.log('Native wake lock is active');
+        return true;
+      } catch (error) {
+        console.error('Failed to acquire native wake lock:', error);
+        return false;
+      }
+    }
+
+    if (!('wakeLock' in navigator)) {
       console.warn('Wake Lock API is not supported in this browser');
       return false;
     }
@@ -36,7 +68,13 @@ export const useWakeLock = () => {
   const releaseWakeLock = async (): Promise<void> => {
     if (wakeLockRef.current) {
       try {
-        await wakeLockRef.current.release();
+        if ((wakeLockRef.current as any).type === 'native') {
+          // Clear native interval
+          clearInterval((wakeLockRef.current as any).intervalId);
+        } else {
+          // Release web wake lock
+          await wakeLockRef.current.release();
+        }
         wakeLockRef.current = null;
         setIsWakeLockActive(false);
         console.log('Wake lock released');
@@ -50,7 +88,11 @@ export const useWakeLock = () => {
   useEffect(() => {
     return () => {
       if (wakeLockRef.current) {
-        wakeLockRef.current.release();
+        if ((wakeLockRef.current as any).type === 'native') {
+          clearInterval((wakeLockRef.current as any).intervalId);
+        } else {
+          wakeLockRef.current.release();
+        }
       }
     };
   }, []);

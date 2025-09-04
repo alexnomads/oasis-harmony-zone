@@ -134,3 +134,30 @@
     max-height: 50vh !important;
   }
 }
+
+/* Meditation page specific styles */
+.meditation-page {
+  position: relative;
+}
+
+/* Hide header and other UI elements when in fullscreen meditation mode on mobile */
+@media (max-width: 768px) {
+  body:has(.immersive-meditation-active) .header,
+  body:has(.immersive-meditation-active) .meditation-page > *:not(.immersive-meditation-overlay) {
+    display: none !important;
+  }
+  
+  body:has(.immersive-meditation-active) {
+    overflow: hidden;
+  }
+}
+
+/* Ensure fullscreen experience */
+.immersive-meditation-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+}

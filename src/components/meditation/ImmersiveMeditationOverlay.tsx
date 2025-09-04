@@ -17,6 +17,7 @@ interface ImmersiveMeditationOverlayProps {
   pet?: CompanionPet | null;
   petEmotion?: 'happy' | 'neutral' | 'sad' | 'sleepy' | 'stressed';
   onExit: () => void;
+  onMovementPenalty?: (penaltyPoints: number) => void;
 }
 
 export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProps> = ({
@@ -27,6 +28,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
   pet,
   petEmotion = 'neutral',
   onExit,
+  onMovementPenalty,
 }) => {
   const [showExitButton, setShowExitButton] = useState(false);
   const [showBreathingText, setShowBreathingText] = useState(true);
@@ -37,7 +39,9 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
     isActive: isActive && isTimerRunning,
     sensitivity: Capacitor.isNativePlatform() ? 3 : 5, // More sensitive on mobile
     onMovementDetected: () => {
-      setPointsDeducted(prev => prev + 0.15);
+      const penalty = 0.15;
+      setPointsDeducted(prev => prev + penalty);
+      onMovementPenalty?.(penalty);
     }
   });
 

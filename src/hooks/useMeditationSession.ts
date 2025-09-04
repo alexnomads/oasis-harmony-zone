@@ -14,6 +14,7 @@ export const useMeditationSession = (userId: string | undefined) => {
   const [sessionCompleted, setSessionCompleted] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [movementPenalties, setMovementPenalties] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showReflectionModal, setShowReflectionModal] = useState(false);
   const toastShownRef = useRef(false);
@@ -51,6 +52,10 @@ export const useMeditationSession = (userId: string | undefined) => {
     return (time / selectedDuration) * 100;
   };
 
+  const handleMovementPenalty = useCallback((penalty: number) => {
+    setMovementPenalties(prev => prev + penalty);
+  }, []);
+
   const handleComplete = useCallback(async () => {
     if (!sessionId) return;
 
@@ -75,7 +80,7 @@ export const useMeditationSession = (userId: string | undefined) => {
         const { session, userPoints } = await SessionService.completeSession(
           sessionId, 
           time, 
-          { mouseMovements: 0, focusLost: 0, windowBlurs: 0 }
+          { mouseMovements: Math.round(movementPenalties * 10), focusLost: 0, windowBlurs: 0 }
         );
         setPointsEarned(session.points_earned);
         setTotalPoints(userPoints.total_points);
@@ -108,7 +113,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     };
 
     await basicCompletion();
-  }, [sessionId, time, userId, toast, releaseWakeLock]);
+  }, [sessionId, time, movementPenalties, userId, toast, releaseWakeLock]);
 
   const handleReflectionSave = useCallback(async (reflectionData: { emoji: string; notes: string; notes_public: boolean }) => {
     if (!sessionId) return;
@@ -118,7 +123,7 @@ export const useMeditationSession = (userId: string | undefined) => {
       await SessionService.completeSession(
         sessionId, 
         time, 
-        { mouseMovements: 0, focusLost: 0, windowBlurs: 0 }
+        { mouseMovements: Math.round(movementPenalties * 10), focusLost: 0, windowBlurs: 0 }
       );
 
       setSessionCompleted(true);
@@ -139,7 +144,7 @@ export const useMeditationSession = (userId: string | undefined) => {
       setSessionCompleted(true);
       setShowReflectionModal(false);
     }
-  }, [sessionId, time, pointsEarned, toast]);
+  }, [sessionId, time, movementPenalties, pointsEarned, toast]);
 
   const startMeditation = async () => {
     try {
@@ -206,12 +211,14 @@ export const useMeditationSession = (userId: string | undefined) => {
     }
   };
 
+  // Reset movement penalties when starting new session
   const resetTimer = () => {
     setTime(0);
     setIsRunning(false);
     setSessionId(null);
     setSessionCompleted(false);
     setPointsEarned(0);
+    setMovementPenalties(0);
     setShowReflectionModal(false);
     toastShownRef.current = false;
     // Release wake lock when resetting
@@ -281,5 +288,7 @@ export const useMeditationSession = (userId: string | undefined) => {
     toastShownRef,
     timeRemaining: selectedDuration - time,
     totalDuration: selectedDuration,
+    handleMovementPenalty,
+    movementPenalties,
   };
 };

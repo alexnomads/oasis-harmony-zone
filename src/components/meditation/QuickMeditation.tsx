@@ -38,9 +38,12 @@ export const QuickMeditation: React.FC = () => {
   const [focusLost, setFocusLost] = useState(0);
   const [windowBlurs, setWindowBlurs] = useState(0);
   const [hasMovement, setHasMovement] = useState(false);
+  const [movementPenalties, setMovementPenalties] = useState(0);
   const [lastActiveTimestamp, setLastActiveTimestamp] = useState<Date | null>(null);
 
-  // Initialize audio elements
+  const handleMovementPenalty = useCallback((penalty: number) => {
+    setMovementPenalties(prev => prev + penalty);
+  }, []);
   useEffect(() => {
     startSoundRef.current = new Audio('/meditation-start.mp3');
     endSoundRef.current = new Audio('/meditation-end.mp3');
@@ -71,6 +74,7 @@ export const QuickMeditation: React.FC = () => {
       setFocusLost(0);
       setWindowBlurs(0);
       setHasMovement(false);
+      setMovementPenalties(0);
       setLastActiveTimestamp(new Date());
 
       // Create session in database
@@ -137,7 +141,7 @@ export const QuickMeditation: React.FC = () => {
           // Timer complete
           const duration = totalDuration;
           const distractions = {
-            mouseMovements: hasMovement ? 1 : 0,
+            mouseMovements: Math.round(movementPenalties * 10),
             focusLost,
             windowBlurs
           };
@@ -149,7 +153,7 @@ export const QuickMeditation: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isTimerRunning, hasMovement, focusLost, windowBlurs, totalDuration]);
+  }, [isTimerRunning, movementPenalties, focusLost, windowBlurs, totalDuration]);
 
   // Focus tracking for meditation sessions
   useEffect(() => {
@@ -224,7 +228,7 @@ export const QuickMeditation: React.FC = () => {
     distractionCount: number,
     focusLost: number,
     windowBlurs: number,
-    hasMovement: boolean
+    movementCount: number
   ) => {
     // If no distractions, show encouraging message
     if (distractionCount === 0) {
@@ -235,7 +239,7 @@ export const QuickMeditation: React.FC = () => {
     const distractionDetails = [];
     if (focusLost > 0) distractionDetails.push(`${focusLost} tab switch${focusLost > 1 ? 'es' : ''}`);
     if (windowBlurs > 0) distractionDetails.push(`${windowBlurs} window switch${windowBlurs > 1 ? 'es' : ''}`);
-    if (hasMovement) distractionDetails.push('movement detected');
+    if (movementCount > 0) distractionDetails.push(`${movementCount} movement${movementCount > 1 ? 's' : ''} detected`);
 
     const distractionText = distractionDetails.join(', ');
 
@@ -275,7 +279,7 @@ export const QuickMeditation: React.FC = () => {
         distractionCount,
         distractions.focusLost,
         distractions.windowBlurs,
-        distractions.mouseMovements > 0
+        distractions.mouseMovements
       );
 
       // Show toast notification
@@ -318,6 +322,7 @@ export const QuickMeditation: React.FC = () => {
         pet={pet}
         petEmotion={petEmotion}
         onExit={handleOverlayExit}
+        onMovementPenalty={handleMovementPenalty}
       />
       
       <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20">

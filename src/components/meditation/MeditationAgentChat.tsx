@@ -44,6 +44,7 @@ export const MeditationAgentChat: React.FC = () => {
     resetTimer,
     timeRemaining,
     totalDuration,
+    handleMovementPenalty,
   } = useMeditationSession(user?.id);
 
   useEffect(() => {
@@ -187,6 +188,7 @@ export const MeditationAgentChat: React.FC = () => {
         pet={pet}
         petEmotion={petEmotion}
         onExit={handleOverlayExit}
+        onMovementPenalty={handleMovementPenalty}
       />
       
       <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 mobile-chat-container flex flex-col max-h-[70vh] lg:max-h-[calc(100vh-20rem)] mb-32 lg:mb-8">

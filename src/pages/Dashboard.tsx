@@ -174,7 +174,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white">
+    <div className="min-h-screen relative">
       <Header />
       <div className="container mx-auto px-4 pt-16 pb-8 sm:pt-24">
         <motion.div
@@ -184,31 +184,26 @@ export default function Dashboard() {
           className="max-w-7xl mx-auto"
         >
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8 gap-4">
-            <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vibrantPurple to-vibrantOrange">Your Journey</h1>
+            <h1 className="cyber-heading text-3xl sm:text-4xl">Your Journey</h1>
             <div className="flex flex-col xs:flex-row gap-3">
-              <Button
+              <button
                 onClick={() => navigate('/meditate')}
-                className="bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90 w-full xs:w-auto"
-                size="lg"
+                className="retro-button px-6 py-3 w-full xs:w-auto"
               >
                 <Timer className="mr-2 h-5 w-5" />
                 Start Meditating
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => navigate('/global-dashboard')}
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 w-full xs:w-auto"
-                size="lg"
+                className="tape-card px-6 py-3 border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full xs:w-auto"
               >
                 <Globe className="mr-2 h-5 w-5" />
                 Global Dashboard
-              </Button>
+              </button>
             </div>
           </div>
 
-          {/* Main content grid with pet section */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Main stats and content */}
             <div className="lg:col-span-3 space-y-6">
               <motion.div 
                 className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6"
@@ -217,71 +212,62 @@ export default function Dashboard() {
                 animate="visible"
               >
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                    <CardContent className="p-4 sm:pt-6">
-                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                        <div className="p-3 bg-purple-500/10 rounded-lg">
-                          <Award className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
-                        </div>
-                        <div className="text-center xs:text-left">
-                          <p className="text-xs sm:text-sm text-zinc-400">ROJ Points</p>
-                          <h3 className="text-xl sm:text-2xl font-bold">{totalPoints.toFixed(1)}</h3>
-                        </div>
+                  <div className="tape-card p-4 sm:pt-6">
+                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                      <div className="p-3 bg-primary/20 rounded-lg">
+                        <Award className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div className="text-center xs:text-left">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground">ROJ Points</p>
+                        <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{totalPoints.toFixed(1)}</h3>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                    <CardContent className="p-4 sm:pt-6">
-                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                        <div className="p-3 bg-orange-500/10 rounded-lg">
-                          <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />
-                        </div>
-                        <div className="text-center xs:text-left">
-                          <p className="text-xs sm:text-sm text-zinc-400">Current Streak</p>
-                          <h3 className="text-xl sm:text-2xl font-bold">{streak} days</h3>
-                        </div>
+                  <div className="tape-card p-4 sm:pt-6">
+                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                      <div className="p-3 bg-accent/20 rounded-lg">
+                        <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div className="text-center xs:text-left">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground">Current Streak</p>
+                        <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{streak} days</h3>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                    <CardContent className="p-4 sm:pt-6">
-                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                        <div className="p-3 bg-blue-500/10 rounded-lg">
-                          <History className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
-                        </div>
-                        <div className="text-center xs:text-left">
-                          <p className="text-xs sm:text-sm text-zinc-400">Total Sessions</p>
-                          <h3 className="text-xl sm:text-2xl font-bold">{totalSessions}</h3>
-                        </div>
+                  <div className="tape-card p-4 sm:pt-6">
+                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                      <div className="p-3 bg-secondary/20 rounded-lg">
+                        <History className="h-6 w-6 sm:h-8 sm:w-8 text-secondary" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div className="text-center xs:text-left">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground">Total Sessions</p>
+                        <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{totalSessions}</h3>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
 
                 <motion.div variants={itemVariants}>
-                  <Card className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-                    <CardContent className="p-4 sm:pt-6">
-                      <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                        <div className="p-3 bg-green-500/10 rounded-lg">
-                          <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
-                        </div>
-                        <div className="text-center xs:text-left">
-                          <p className="text-xs sm:text-sm text-zinc-400">Total Time</p>
-                          <h3 className="text-xl sm:text-2xl font-bold">{formatDurationDetails(totalDuration)}</h3>
-                        </div>
+                  <div className="tape-card p-4 sm:pt-6">
+                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
+                      <div className="p-3 bg-lime/20 rounded-lg">
+                        <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-lime" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <div className="text-center xs:text-left">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground">Total Time</p>
+                        <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{formatDurationDetails(totalDuration)}</h3>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               </motion.div>
 
-              {/* Meditation Trend Chart */}
               <MeditationTrendChart sessions={userData?.sessions || []} />
 
               <motion.div
@@ -290,87 +276,82 @@ export default function Dashboard() {
                 animate="visible"
                 transition={{ delay: 0.5 }}
               >
-                <Card className="bg-zinc-900/50 border-zinc-800">
-                  <div className="p-5 sm:p-6 border-b border-zinc-800">
+                <div className="crt-frame p-5 sm:p-6">
+                  <div className="border-b border-primary/30 pb-4 mb-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <h2 className="text-xl sm:text-2xl font-bold">Recent Activity</h2>
+                      <h2 className="cyber-heading text-xl sm:text-2xl">Recent Activity</h2>
                       <div className="flex gap-2">
-                        <Badge 
-                          variant={sessionFilter === 'all' ? 'default' : 'secondary'}
-                          className="cursor-pointer"
+                        <button 
+                          className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'all' ? 'bg-primary/20' : 'bg-muted/20'}`}
                           onClick={() => setSessionFilter('all')}
                         >
                           All
-                        </Badge>
-                        <Badge 
-                          variant={sessionFilter === 'meditation' ? 'default' : 'secondary'}
-                          className="cursor-pointer"
+                        </button>
+                        <button 
+                          className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'meditation' ? 'bg-primary/20' : 'bg-muted/20'}`}
                           onClick={() => setSessionFilter('meditation')}
                         >
                           Meditation
-                        </Badge>
-                        <Badge 
-                          variant={sessionFilter === 'mood' ? 'default' : 'secondary'}
-                          className="cursor-pointer"
+                        </button>
+                        <button 
+                          className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'mood' ? 'bg-primary/20' : 'bg-muted/20'}`}
                           onClick={() => setSessionFilter('mood')}
                         >
                           Mood
-                        </Badge>
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <CardContent className="p-0">
-                    {filteredActivities.length > 0 ? (
-                      <div className="divide-y divide-zinc-800/70">
-                         {filteredActivities.map((activity, index) => (
-                           activity.type === 'meditation' ? (
-                             <MeditationSessionEntry
-                               key={`meditation-${activity.data.id}`}
-                               session={activity.data}
-                               index={index}
-                             />
-                           ) : (
-                             <MoodSessionEntry 
-                               key={`mood-${activity.data.id}`}
-                               moodLog={activity.data}
-                               index={index}
-                             />
-                           )
-                         ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-10 text-zinc-400">
-                        <motion.div
-                          initial={{ scale: 0.9, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: 0.2 }}
-                        >
-                          <Timer className="h-12 w-12 mx-auto mb-3 text-zinc-600" />
-                          <p className="text-lg">
-                            {sessionFilter === 'mood' ? 'No mood logs yet.' : 
-                             sessionFilter === 'meditation' ? 'No meditation sessions yet.' : 
-                             'No activity yet.'}
-                          </p>
-                          <p className="mt-2 text-sm">
-                            {sessionFilter === 'mood' ? 'Check in with yourself in the pet section!' : 'Start your journey today!'}
-                          </p>
-                          {sessionFilter !== 'mood' && (
-                            <Button
-                              onClick={() => navigate('/meditate')}
-                              className="mt-6 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
-                            >
-                              Begin Meditation
-                            </Button>
-                          )}
-                        </motion.div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  {filteredActivities.length > 0 ? (
+                    <div className="space-y-2">
+                       {filteredActivities.map((activity, index) => (
+                         activity.type === 'meditation' ? (
+                           <MeditationSessionEntry
+                             key={`meditation-${activity.data.id}`}
+                             session={activity.data}
+                             index={index}
+                           />
+                         ) : (
+                           <MoodSessionEntry 
+                             key={`mood-${activity.data.id}`}
+                             moodLog={activity.data}
+                             index={index}
+                           />
+                         )
+                       ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-10">
+                      <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="retro-text"
+                      >
+                        <Timer className="h-12 w-12 mx-auto mb-3 text-primary" />
+                        <p className="text-lg">
+                          {sessionFilter === 'mood' ? 'No mood logs yet.' : 
+                           sessionFilter === 'meditation' ? 'No meditation sessions yet.' : 
+                           'No activity yet.'}
+                        </p>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {sessionFilter === 'mood' ? 'Check in with yourself in the pet section!' : 'Start your journey today!'}
+                        </p>
+                        {sessionFilter !== 'mood' && (
+                          <button
+                            onClick={() => navigate('/meditate')}
+                            className="retro-button mt-6 px-6 py-3"
+                          >
+                            Begin Meditation
+                          </button>
+                        )}
+                      </motion.div>
+                    </div>
+                  )}
+                </div>
               </motion.div>
             </div>
 
-            {/* Pet Section Sidebar */}
             <div className="lg:col-span-1">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}

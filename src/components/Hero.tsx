@@ -36,7 +36,6 @@ export const Hero = () => {
       navigate('/meditate');
     } else {
       trackEvent('user', 'sign_in_attempt', 'hero_button');
-      // Use URL parameter to trigger sign-in modal
       navigate('/?login=true');
     }
   };
@@ -49,7 +48,7 @@ export const Hero = () => {
           loop
           muted
           playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover opacity-40"
+          className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
         >
           <source
             src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4"
@@ -57,6 +56,9 @@ export const Hero = () => {
           />
           Your browser does not support the video tag.
         </video>
+        
+        {/* VHS static overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10 mix-blend-overlay"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-16 text-center">
@@ -66,34 +68,41 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="max-w-3xl mx-auto"
         >
-          <img 
-            src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
-            alt="ROJ Logo" 
-            className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-8"
-          />
-          <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-medium bg-white/10 text-white rounded-full">
+          <div className="relative inline-block mb-4 sm:mb-8">
+            <img 
+              src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
+              alt="ROJ Logo" 
+              className="w-24 h-24 sm:w-32 sm:h-32 mx-auto drop-shadow-[0_0_20px_hsl(var(--primary))]"
+            />
+            <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse"></div>
+          </div>
+          
+          <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-mono uppercase tracking-wider border border-primary/50 text-primary rounded-full bg-primary/10 backdrop-blur-sm">
             Your mental wellness comes before your crypto gains.
           </span>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 text-white">
+          
+          <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 glitch-text" data-text="Rose of Jericho">
             Rose of Jericho
           </h1>
+          
           <div className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-white/90 h-[80px] sm:h-[120px] flex flex-col items-center justify-center">
-            <p className="mb-2 text-sm sm:text-base md:text-xl">An AI Agent that rewards you when focusing on</p>
+            <p className="mb-2 text-sm sm:text-base md:text-xl retro-text">An AI Agent that rewards you when focusing on</p>
             <motion.div
               key={currentSlide}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className="text-white font-semibold text-3xl sm:text-5xl md:text-7xl mb-2"
+              className="cyber-heading text-3xl sm:text-5xl md:text-7xl mb-2"
             >
               {slides[currentSlide]}
             </motion.div>
           </div>
+          
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 w-full">
-            <Button
+            <button
               onClick={handleMainButtonClick}
-              className="bg-white/10 hover:bg-white/20 text-white px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full transition-all duration-300 border border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto max-w-[280px] sm:max-w-none"
+              className="retro-button px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full w-full sm:w-auto max-w-[280px] sm:max-w-none"
             >
               {user ? (
                 <>
@@ -103,18 +112,19 @@ export const Hero = () => {
               ) : (
                 "Sign In"
               )}
-            </Button>
-            <Button
+            </button>
+            
+            <button
               onClick={handleFollow}
-              className="bg-black/30 hover:bg-black/40 text-white px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full transition-all duration-300 border border-white/20 hover:border-white/40 w-full sm:w-auto max-w-[200px] sm:max-w-none"
+              className="tape-card px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full sm:w-auto max-w-[200px] sm:max-w-none"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
                 alt="X Logo" 
                 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 invert"
               /> 
-              <span className="whitespace-nowrap">Follow @ROJOasis</span>
-            </Button>
+              <span className="whitespace-nowrap font-mono">Follow @ROJOasis</span>
+            </button>
           </div>
         </motion.div>
       </div>

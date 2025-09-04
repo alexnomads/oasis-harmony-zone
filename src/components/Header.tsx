@@ -66,53 +66,53 @@ export const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-zinc-800">
-      <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
+    <header className="fixed top-0 left-0 right-0 z-50 crt-frame bg-background/95 backdrop-blur-sm">
+      <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-accent" />
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:bg-white/10 text-white">
+                <button className="retro-button p-2">
                   <Menu className="h-4 w-4 md:h-5 md:w-5" />
-                </Button>
+                </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-black/90 backdrop-blur-sm border border-zinc-800">
-                <DropdownMenuItem onClick={() => navigate('/')} className="text-white hover:bg-white/5 focus:bg-white/5">
+              <DropdownMenuContent align="start" className="w-56 tape-card">
+                <DropdownMenuItem onClick={() => navigate('/')} className="retro-text hover:bg-primary/20">
                   Home
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/meditate')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <DropdownMenuItem onClick={() => navigate('/meditate')} className="retro-text hover:bg-primary/20">
                   <Timer className="mr-2 h-4 w-4" />
                   Meditate Now
                 </DropdownMenuItem>
                 {user && (
-                  <DropdownMenuItem onClick={() => navigate('/dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')} className="retro-text hover:bg-primary/20">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Your Dashboard
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => navigate('/global-dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <DropdownMenuItem onClick={() => navigate('/global-dashboard')} className="retro-text hover:bg-primary/20">
                   <Globe className="mr-2 h-4 w-4" />
                   Global Dashboard
                 </DropdownMenuItem>
-                <div className="h-px bg-gradient-to-r from-vibrantPurple to-vibrantOrange my-1 opacity-50" />
-                <DropdownMenuItem onClick={() => scrollToSection("programs")} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <div className="h-px bg-gradient-to-r from-primary to-secondary my-1 opacity-50" />
+                <DropdownMenuItem onClick={() => scrollToSection("programs")} className="retro-text hover:bg-primary/20">
                   Our Programs
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => scrollToSection("subscription-plans")} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <DropdownMenuItem onClick={() => scrollToSection("subscription-plans")} className="retro-text hover:bg-primary/20">
                   Subscription Plans
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => scrollToSection("token")} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <DropdownMenuItem onClick={() => scrollToSection("token")} className="retro-text hover:bg-primary/20">
                   ROJ Token
                 </DropdownMenuItem>
-                <div className="h-px bg-gradient-to-r from-vibrantPurple to-vibrantOrange my-1 opacity-50" />
-                <DropdownMenuItem onClick={() => scrollToSection("testimonials")} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <div className="h-px bg-gradient-to-r from-primary to-secondary my-1 opacity-50" />
+                <DropdownMenuItem onClick={() => scrollToSection("testimonials")} className="retro-text hover:bg-primary/20">
                   Testimonials
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <DropdownMenuItem onClick={() => scrollToSection("newsletter")} className="retro-text hover:bg-primary/20">
                   Contact Us
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="text-white hover:bg-white/5 focus:bg-white/5">
+                <DropdownMenuItem onClick={() => scrollToSection("roadmap")} className="retro-text hover:bg-primary/20">
                   Roadmap
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -122,7 +122,7 @@ export const Header = () => {
               href="https://twitter.com/ROJOasis"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-2 text-white hover:text-white/80 text-sm font-medium"
+              className="hidden sm:flex items-center gap-2 text-secondary hover:text-accent retro-text font-medium transition-colors"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
@@ -137,7 +137,7 @@ export const Header = () => {
             <img 
               src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
               alt="Rose of Jericho" 
-              className="h-6 w-auto md:h-8 cursor-pointer"
+              className="h-6 w-auto md:h-8 cursor-pointer drop-shadow-[0_0_10px_hsl(var(--primary))]"
               onClick={() => navigate('/')}
             />
           </div>
@@ -145,10 +145,10 @@ export const Header = () => {
           <div className="flex-1 flex items-center justify-end gap-2">
             {user && (
               <div className="hidden md:flex flex-col items-end mr-2">
-                <span id="user-status" className="text-xs text-white">
+                <span id="user-status" className="text-xs retro-text text-secondary">
                   {user.email?.split('@')[0]}
                 </span>
-                <span id="points-display" className="text-xs text-white">
+                <span id="points-display" className="text-xs retro-text text-accent">
                   Points: {points}
                 </span>
               </div>
@@ -158,31 +158,28 @@ export const Header = () => {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="border-white text-white bg-transparent hover:bg-white/10"
-                    >
+                    <button className="retro-button px-4 py-2 text-sm">
                       <User className="mr-2 h-4 w-4" />
                       Account
-                    </Button>
+                    </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-sm border border-zinc-800">
-                    <DropdownMenuItem onClick={() => navigate('/dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                  <DropdownMenuContent align="end" className="w-56 tape-card">
+                    <DropdownMenuItem onClick={() => navigate('/dashboard')} className="retro-text hover:bg-primary/20">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       Your Dashboard
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/global-dashboard')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                    <DropdownMenuItem onClick={() => navigate('/global-dashboard')} className="retro-text hover:bg-primary/20">
                       <Globe className="mr-2 h-4 w-4" />
                       Global Dashboard
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/meditate')} className="text-white hover:bg-white/5 focus:bg-white/5">
+                    <DropdownMenuItem onClick={() => navigate('/meditate')} className="retro-text hover:bg-primary/20">
                       <Timer className="mr-2 h-4 w-4" />
                       Meditate Now
                     </DropdownMenuItem>
-                    <div className="h-px bg-gradient-to-r from-vibrantPurple to-vibrantOrange my-1 opacity-50" />
+                    <div className="h-px bg-gradient-to-r from-primary to-secondary my-1 opacity-50" />
                     <DropdownMenuItem 
                       onClick={signOut} 
-                      className="text-white hover:bg-white/5 focus:bg-white/5"
+                      className="retro-text hover:bg-destructive/20"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out
@@ -191,18 +188,19 @@ export const Header = () => {
                 </DropdownMenu>
               ) : (
                 <>
-                  <Button
-                    variant="outline"
-                    className="border-white text-white bg-transparent hover:bg-white/10"
+                  <button
+                    className="retro-button px-4 py-2 text-sm"
                     onClick={() => setShowSignIn(!showSignIn)}
                     aria-label="Sign In"
                   >
                     <User className="mr-2 h-4 w-4" />
                     Sign In
-                  </Button>
+                  </button>
                   {showSignIn && (
                     <div className="absolute right-0 mt-2 z-50">
-                      <AuthForm />
+                      <div className="tape-card">
+                        <AuthForm />
+                      </div>
                     </div>
                   )}
                 </>
@@ -212,11 +210,11 @@ export const Header = () => {
         </div>
         
         {user && (
-          <div className="md:hidden w-full flex justify-between text-white text-xs py-1 px-2">
-            <span id="mobile-user-status">
+          <div className="md:hidden w-full flex justify-between retro-text text-xs py-1 px-2">
+            <span id="mobile-user-status" className="text-secondary">
               {user.email?.split('@')[0]}
             </span>
-            <span id="mobile-points-display">
+            <span id="mobile-points-display" className="text-accent">
               Points: {points}
             </span>
           </div>

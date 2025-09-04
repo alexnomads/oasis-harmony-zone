@@ -9,8 +9,8 @@ import { Newsletter } from "@/components/Newsletter";
 import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 import { GetInTouch } from "@/components/GetInTouch";
 import { Testimonials } from "@/components/Testimonials";
-
 import { Awards } from "@/components/Awards";
+import { VHSOverlay } from "@/components/ui/VHSOverlay";
 
 const Index = () => {
   const { scrollYProgress } = useScroll();
@@ -22,8 +22,9 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen">
+      <VHSOverlay />
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-softOrange origin-left z-50"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent origin-left z-50"
         style={{ scaleX }}
       />
       <Header />

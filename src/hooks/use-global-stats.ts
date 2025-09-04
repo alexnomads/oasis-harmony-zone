@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { TimePeriod } from "@/components/dashboard/TimeFilter";
 
 export interface GlobalStats {

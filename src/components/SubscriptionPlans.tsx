@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { PlanCard } from "./subscription/PlanCard";
 import { PlanHeader } from "./subscription/PlanHeader";
 import { SubscriptionDialog } from "./subscription/SubscriptionDialog";

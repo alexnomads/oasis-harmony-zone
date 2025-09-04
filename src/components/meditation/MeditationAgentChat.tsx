@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ChatInterface } from "./ChatInterface";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { MeditationTimer } from "./MeditationTimer";
 import { CompletedSession } from "./CompletedSession";
 import { MessageType } from "./ChatMessage";

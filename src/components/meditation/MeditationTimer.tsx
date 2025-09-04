@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MeditationType } from "@/types/database";
 import { TimerDisplay } from "./TimerDisplay";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useWakeLock } from "@/hooks/useWakeLock";
 
 interface TimerProps {

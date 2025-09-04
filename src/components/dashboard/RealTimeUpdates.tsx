@@ -1,7 +1,7 @@
 
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 interface RealTimeUpdatesProps {
   refetch: () => void;

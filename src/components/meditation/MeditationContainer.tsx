@@ -57,7 +57,7 @@ export const MeditationContainer = () => {
           <WelcomeMessage />
         </section>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-h-screen lg:max-h-[calc(100vh-12rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-h-screen lg:max-h-[calc(100vh-12rem)] pb-8 lg:pb-0">
           {/* Main Content - Meditation Interface (Mobile First) */}
           <div className="order-1 lg:order-2 lg:col-span-3">
             <section className="space-y-6">
@@ -93,14 +93,14 @@ export const MeditationContainer = () => {
               </div>
 
               {/* Personalized Recommendations - Less Prominent Location */}
-              <section className="mt-8 mb-24 relative z-10">
+              <section className="mt-8 mb-32 lg:mb-24 relative z-10">
                 <PersonalizedRecommendations />
               </section>
             </section>
           </div>
 
           {/* Pet & Currency Sidebar (Mobile Second) */}
-          <div className="order-2 lg:order-1 lg:col-span-1 space-y-4">
+          <div className="order-2 lg:order-1 lg:col-span-1 space-y-4 mb-8 lg:mb-0">
             {/* Pet Display */}
             <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
               <CardContent className="p-4">

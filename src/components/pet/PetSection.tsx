@@ -20,35 +20,46 @@ export const PetSection: React.FC = () => {
   const hasLoggedMoodToday = !!getCurrentMood();
   const petEmotion = getPetEmotion();
   if (!user) {
-    return <Card className="bg-zinc-900/50 border-zinc-800">
-        <CardContent className="p-6 text-center">
+    return (
+      <div className="crt-frame p-5 sm:p-6">
+        <div className="text-center">
           <p className="text-white/70">Sign in to meet your companion!</p>
-        </CardContent>
-      </Card>;
+        </div>
+      </div>
+    );
   }
+
   if (isLoading) {
-    return <Card className="bg-zinc-900/50 border-zinc-800">
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-24 bg-white/10 rounded-lg" />
-            <div className="h-4 bg-white/10 rounded" />
-            <div className="h-4 bg-white/10 rounded w-3/4" />
-          </div>
-        </CardContent>
-      </Card>;
+    return (
+      <div className="crt-frame p-5 sm:p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-24 bg-white/10 rounded-lg" />
+          <div className="h-4 bg-white/10 rounded" />
+          <div className="h-4 bg-white/10 rounded w-3/4" />
+        </div>
+      </div>
+    );
   }
-  return <div className="space-y-4">
+
+  return (
+    <div className="space-y-4">
       {/* Pet Display */}
-      <Card className="bg-zinc-900/50 border-zinc-800">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-400" />
+      <div className="crt-frame p-5 sm:p-6">
+        <div className="border-b border-primary/30 pb-4 mb-4">
+          <h2 className="cyber-heading text-xl sm:text-2xl flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-accent" />
             Your Companion
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {pet ? <div className="space-y-3">
-              <CompanionPetComponent pet={pet} isAnimating={petEmotion === 'happy'} size="medium" showStats={true} />
+          </h2>
+        </div>
+        <div>
+          {pet ? (
+            <div className="space-y-3">
+              <CompanionPetComponent 
+                pet={pet} 
+                isAnimating={petEmotion === 'happy'} 
+                size="medium" 
+                showStats={true} 
+              />
               <div className="bg-zinc-800/50 rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -61,19 +72,21 @@ export const PetSection: React.FC = () => {
                   Grows your companion through evolution stages
                 </p>
               </div>
-            </div> : <div className="text-center text-white/70 py-4">
+            </div>
+          ) : (
+            <div className="text-center text-white/70 py-4">
               <p>Your companion is being prepared...</p>
-            </div>}
-        </CardContent>
-      </Card>
-
-      {/* Currency Display */}
-      {currency && <Card className="bg-zinc-900/50 border-zinc-800">
-          
-          
-        </Card>}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Daily Mood Logger */}
-      <DailyMoodLogger onLogMood={logMood} hasLoggedToday={hasLoggedMoodToday} isLoading={isLoading} />
-    </div>;
+      <DailyMoodLogger 
+        onLogMood={logMood} 
+        hasLoggedToday={hasLoggedMoodToday} 
+        isLoading={isLoading} 
+      />
+    </div>
+  );
 };

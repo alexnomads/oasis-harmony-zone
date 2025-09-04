@@ -129,13 +129,13 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.5 }}
     >
-      <Card className="bg-zinc-900/50 border-zinc-800">
-        <CardHeader className="pb-4">
+      <div className="crt-frame p-5 sm:p-6">
+        <div className="border-b border-primary/30 pb-4 mb-4">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white">Meditation Frequency</h2>
-                <p className="text-zinc-400 mt-1">Your meditation activity over time</p>
+                <h2 className="cyber-heading text-xl sm:text-2xl">Meditation Frequency</h2>
+                <p className="text-white/80 mt-1">Your meditation activity over time</p>
               </div>
             </div>
             {user && (
@@ -151,8 +151,8 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
               </div>
             )}
           </div>
-        </CardHeader>
-        <CardContent className="pt-0">
+        </div>
+        <div className="pt-0">
           {/* Time Period Filter */}
           <div className="flex justify-center mb-4">
             <div className="flex items-center gap-1 bg-zinc-800/50 p-1 rounded-lg">
@@ -240,8 +240,8 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }

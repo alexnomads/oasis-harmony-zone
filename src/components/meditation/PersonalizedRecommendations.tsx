@@ -257,7 +257,7 @@ export const PersonalizedRecommendations = () => {
                   <h4 className="font-medium text-foreground leading-tight">{rec.title}</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{rec.description}</p>
                 </div>
-                <Badge variant="secondary" className="text-xs bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
+                <Badge variant="secondary" className="text-xs bg-cyan-500/20 text-cyan-300 border-cyan-500/30 hidden lg:inline-flex">
                   {rec.reason}
                 </Badge>
               </div>

@@ -50,14 +50,14 @@ export const MeditationContainer = () => {
   }, []);
 
   return (
-    <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4 pb-safe">
+      <div className="max-w-7xl mx-auto space-y-8 mb-20">
         {/* Welcome Message - Primary Section */}
         <section className="mb-8">
           <WelcomeMessage />
         </section>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[calc(100vh-2rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-h-screen lg:max-h-[calc(100vh-12rem)]">
           {/* Main Content - Meditation Interface (Mobile First) */}
           <div className="order-1 lg:order-2 lg:col-span-3">
             <section className="space-y-6">

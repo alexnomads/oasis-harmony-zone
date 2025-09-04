@@ -21,7 +21,7 @@ export const Footer = () => {
           {/* Left - Logo and info */}
           <div className="space-y-4">
             <img 
-              src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
+              src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
               alt="Rose of Jericho" 
               className="h-12 w-auto"
             />

@@ -71,7 +71,7 @@ export const Hero = () => {
           <div className="w-full flex justify-center mb-4 sm:mb-8">
             <div className="relative">
               <img 
-                src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
+                src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
                 alt="ROJ Logo" 
                 className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]"
               />

@@ -244,33 +244,35 @@ export const PersonalizedRecommendations = () => {
           Recommended for You
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-0 space-y-3">
+      <CardContent className="p-4 pt-0 space-y-4">
         {recommendations.map((rec) => (
           <div
             key={rec.id}
-            className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10"
+            className="flex items-start justify-between p-4 rounded-lg bg-black/30 border border-white/10 gap-4"
           >
-            <div className="flex items-center gap-3">
-              <div className="text-accent">{rec.icon}</div>
-              <div>
-                <h4 className="font-medium text-foreground">{rec.title}</h4>
-                <p className="text-sm text-muted-foreground">{rec.description}</p>
-                <Badge variant="secondary" className="text-xs mt-1">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="text-accent mt-0.5 flex-shrink-0">{rec.icon}</div>
+              <div className="flex-1 min-w-0 space-y-2">
+                <div className="space-y-1">
+                  <h4 className="font-medium text-foreground leading-tight">{rec.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{rec.description}</p>
+                </div>
+                <Badge variant="secondary" className="text-xs bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
                   {rec.reason}
                 </Badge>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex flex-col items-end justify-start gap-2 flex-shrink-0">
+              <div className="text-sm text-muted-foreground font-medium">
                 {Math.round(rec.duration / 60)} min
               </div>
               <Button 
                 size="sm" 
-                className="retro-button text-xs px-3 py-2"
+                className="retro-button text-xs px-4 py-2 min-w-[60px]"
                 onClick={() => startMeditationSession(rec.duration, rec.title)}
                 disabled={startingSession === rec.title}
               >
-                {startingSession === rec.title ? 'Starting...' : 'Start'}
+                {startingSession === rec.title ? 'Starting...' : 'START'}
               </Button>
             </div>
           </div>

@@ -11,8 +11,6 @@ import { GetInTouch } from "@/components/GetInTouch";
 import { Testimonials } from "@/components/Testimonials";
 import { Awards } from "@/components/Awards";
 import { Footer } from "@/components/Footer";
-import { VHSOverlay } from "@/components/ui/VHSOverlay";
-
 const Index = () => {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -23,7 +21,6 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen">
-      <VHSOverlay />
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent origin-left z-50"
         style={{ scaleX }}

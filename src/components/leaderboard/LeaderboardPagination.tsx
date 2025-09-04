@@ -37,11 +37,11 @@ export const LeaderboardPagination = ({ currentPage, totalPages, onPageChange }:
 
   return (
     <Pagination className="mt-6">
-      <PaginationContent>
+      <PaginationContent className="flex flex-wrap justify-center gap-1 sm:gap-2">
         <PaginationItem>
           <PaginationPrevious 
             onClick={() => onPageChange(currentPage - 1)}
-            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+            className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} px-2 py-1 text-xs sm:text-sm sm:px-3 sm:py-2`} 
           />
         </PaginationItem>
         
@@ -50,7 +50,7 @@ export const LeaderboardPagination = ({ currentPage, totalPages, onPageChange }:
             <PaginationLink 
               isActive={page === currentPage}
               onClick={() => onPageChange(page)}
-              className="cursor-pointer"
+              className="cursor-pointer px-2 py-1 text-xs sm:text-sm sm:px-3 sm:py-2 min-w-[32px] sm:min-w-[40px]"
             >
               {page}
             </PaginationLink>
@@ -60,7 +60,7 @@ export const LeaderboardPagination = ({ currentPage, totalPages, onPageChange }:
         <PaginationItem>
           <PaginationNext 
             onClick={() => onPageChange(currentPage + 1)}
-            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} 
+            className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} px-2 py-1 text-xs sm:text-sm sm:px-3 sm:py-2`} 
           />
         </PaginationItem>
       </PaginationContent>

@@ -25,6 +25,10 @@ export default {
       screens: {
         xs: "480px",
       },
+      fontFamily: {
+        'space': ['Space Mono', 'monospace'],
+        'mono': ['Space Mono', 'Courier New', 'monospace'],
+      },
       colors: {
         vibrantOrange: "#FF8A00",
         vibrantPurple: "#9C27B0",

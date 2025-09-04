@@ -17,7 +17,7 @@ import { usePet } from "@/hooks/usePet";
 
 export const MeditationContainer = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeTab, setActiveTab] = useState("quick");
   const {
     pet,
     currency,
@@ -34,7 +34,7 @@ export const MeditationContainer = () => {
   useEffect(() => {
     const handleStartRecommendedMeditation = (event: CustomEvent) => {
       const { duration } = event.detail;
-      // Switch to Quick Meditation tab
+      // Quick Meditation is already the default tab, just ensure it's active
       setActiveTab("quick");
       // The QuickMeditation component will handle the session start
       window.dispatchEvent(new CustomEvent('setMeditationDuration', { 
@@ -98,27 +98,33 @@ export const MeditationContainer = () => {
           {/* Main Content - Meditation Interface */}
           <div className="lg:col-span-3">
             <section className="space-y-6">
-              {/* Grouped Navigation - AI Coach & Quick Meditation */}
-              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-1 border border-white/10">
+              {/* Grouped Navigation - Quick Meditation & AI Coach */}
+              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-2 border border-white/10">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-transparent border-0">
-                    <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-black/40 data-[state=active]:text-white">
-                      <MessageCircle className="w-4 h-4" />
-                      AI Coach
-                    </TabsTrigger>
-                    <TabsTrigger value="quick" className="flex items-center gap-2 data-[state=active]:bg-black/40 data-[state=active]:text-white">
+                  <TabsList className="grid w-full grid-cols-2 bg-transparent border-0 gap-2">
+                    <TabsTrigger 
+                      value="quick" 
+                      className="retro-button flex items-center gap-2 justify-center py-3 data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90"
+                    >
                       <Brain className="w-4 h-4" />
                       Quick Meditation
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="chat" 
+                      className="retro-button flex items-center gap-2 justify-center py-3 data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      AI Coach
                     </TabsTrigger>
                   </TabsList>
 
                   <div className="mt-6">
-                    <TabsContent value="chat" className="m-0">
-                      <MeditationAgentChat />
-                    </TabsContent>
-
                     <TabsContent value="quick" className="m-0 space-y-6">
                       <QuickMeditation />
+                    </TabsContent>
+
+                    <TabsContent value="chat" className="m-0">
+                      <MeditationAgentChat />
                     </TabsContent>
                   </div>
                 </Tabs>

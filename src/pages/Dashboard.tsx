@@ -204,68 +204,68 @@ export default function Dashboard() {
           </div>
 
           <div className="space-y-6">
-            <motion.div 
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <motion.div variants={itemVariants}>
-                <div className="tape-card p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-primary/20 rounded-lg">
-                      <Award className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm retro-text text-muted-foreground">ROJ Points</p>
-                      <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{totalPoints.toFixed(1)}</h3>
+              <motion.div 
+                className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <motion.div variants={itemVariants}>
+                  <div className="tape-card p-4 h-24 sm:h-28 flex items-center">
+                    <div className="flex items-center gap-3 w-full">
+                      <div className="p-2 sm:p-3 bg-primary/20 rounded-lg flex-shrink-0">
+                        <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">ROJ Points</p>
+                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{totalPoints.toFixed(1)}</h3>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              <motion.div variants={itemVariants}>
-                <div className="tape-card p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-accent/20 rounded-lg">
-                      <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm retro-text text-muted-foreground">Current Streak</p>
-                      <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{streak} days</h3>
+                <motion.div variants={itemVariants}>
+                  <div className="tape-card p-4 h-24 sm:h-28 flex items-center">
+                    <div className="flex items-center gap-3 w-full">
+                      <div className="p-2 sm:p-3 bg-accent/20 rounded-lg flex-shrink-0">
+                        <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">Current Streak</p>
+                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{streak} days</h3>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              <motion.div variants={itemVariants}>
-                <div className="tape-card p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-secondary/20 rounded-lg">
-                      <History className="h-6 w-6 sm:h-8 sm:w-8 text-secondary" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm retro-text text-muted-foreground">Total Sessions</p>
-                      <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{totalSessions}</h3>
+                <motion.div variants={itemVariants}>
+                  <div className="tape-card p-4 h-24 sm:h-28 flex items-center">
+                    <div className="flex items-center gap-3 w-full">
+                      <div className="p-2 sm:p-3 bg-secondary/20 rounded-lg flex-shrink-0">
+                        <History className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">Total Sessions</p>
+                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{totalSessions}</h3>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
 
-              <motion.div variants={itemVariants}>
-                <div className="tape-card p-4 sm:pt-6">
-                  <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4">
-                    <div className="p-3 bg-lime/20 rounded-lg">
-                      <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-lime" />
-                    </div>
-                    <div className="text-center xs:text-left">
-                      <p className="text-xs sm:text-sm retro-text text-muted-foreground">Total Time</p>
-                      <h3 className="text-xl sm:text-2xl font-bold cyber-heading">{formatDurationDetails(totalDuration)}</h3>
+                <motion.div variants={itemVariants}>
+                  <div className="tape-card p-4 h-24 sm:h-28 flex items-center">
+                    <div className="flex items-center gap-3 w-full">
+                      <div className="p-2 sm:p-3 bg-lime/20 rounded-lg flex-shrink-0">
+                        <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-lime" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">Total Time</p>
+                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{formatDurationDetails(totalDuration)}</h3>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
 
             <MeditationTrendChart sessions={userData?.sessions || []} />
 

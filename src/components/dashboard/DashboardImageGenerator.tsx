@@ -238,21 +238,24 @@ Join me at roseofjericho.xyz${profileUrl ? `\n${profileUrl}` : ''}
         aria-hidden="true"
       />
       
-      <div className="flex gap-2">
-        <Button
-          onClick={handleShareTwitter}
-          className="flex-1 bg-gradient-to-r from-vibrantPurple to-vibrantOrange hover:opacity-90"
-        >
-          <Share2 className="mr-2 h-4 w-4" />
-          Share Journey on X
-        </Button>
-        
+      <div className="space-y-3">
         <Button
           onClick={handleDownload}
-          variant="outline"
-          className="border-white/20 text-white hover:bg-white/10"
+          className="w-full retro-button"
         >
-          <Download className="h-4 w-4" />
+          <Download className="mr-2 h-4 w-4" />
+          Download Journey Image
+        </Button>
+        
+        {/* Share button - moved to less prominent position */}
+        <Button
+          onClick={handleShareTwitter}
+          variant="outline"
+          size="sm"
+          className="w-full text-xs opacity-70 hover:opacity-100 border-white/20 text-white/70 hover:bg-white/10"
+        >
+          <Share2 className="mr-2 h-3 w-3" />
+          Share on X
         </Button>
       </div>
     </div>

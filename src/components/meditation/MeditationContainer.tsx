@@ -51,14 +51,13 @@ export const MeditationContainer = () => {
 
   return (
     <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Welcome Message */}
-        <WelcomeMessage />
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Welcome Message - Primary Section */}
+        <section className="mb-8">
+          <WelcomeMessage />
+        </section>
         
-        {/* Personalized Recommendations */}
-        <PersonalizedRecommendations />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[calc(100vh-2rem)] mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:h-[calc(100vh-2rem)]">
           {/* Pet & Currency Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* Pet Display */}
@@ -96,30 +95,40 @@ export const MeditationContainer = () => {
             )}
           </div>
 
-          {/* Main Content */}
+          {/* Main Content - Meditation Interface */}
           <div className="lg:col-span-3">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-              <TabsList className="grid w-full grid-cols-2 bg-black/20 border border-white/20">
-                <TabsTrigger value="chat" className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4" />
-                  AI Coach
-                </TabsTrigger>
-                <TabsTrigger value="quick" className="flex items-center gap-2">
-                  <Brain className="w-4 h-4" />
-                  Quick Meditation
-                </TabsTrigger>
-              </TabsList>
+            <section className="space-y-6">
+              {/* Grouped Navigation - AI Coach & Quick Meditation */}
+              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-1 border border-white/10">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-transparent border-0">
+                    <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-black/40 data-[state=active]:text-white">
+                      <MessageCircle className="w-4 h-4" />
+                      AI Coach
+                    </TabsTrigger>
+                    <TabsTrigger value="quick" className="flex items-center gap-2 data-[state=active]:bg-black/40 data-[state=active]:text-white">
+                      <Brain className="w-4 h-4" />
+                      Quick Meditation
+                    </TabsTrigger>
+                  </TabsList>
 
-              <div className="mt-4 h-[calc(100%-4rem)]">
-                <TabsContent value="chat" className="h-full m-0">
-                  <MeditationAgentChat />
-                </TabsContent>
+                  <div className="mt-6">
+                    <TabsContent value="chat" className="m-0">
+                      <MeditationAgentChat />
+                    </TabsContent>
 
-                <TabsContent value="quick" className="h-full m-0">
-                  <QuickMeditation />
-                </TabsContent>
+                    <TabsContent value="quick" className="m-0 space-y-6">
+                      <QuickMeditation />
+                    </TabsContent>
+                  </div>
+                </Tabs>
               </div>
-            </Tabs>
+
+              {/* Personalized Recommendations - Less Prominent Location */}
+              <section className="mt-8">
+                <PersonalizedRecommendations />
+              </section>
+            </section>
           </div>
         </div>
       </div>

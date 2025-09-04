@@ -18,7 +18,7 @@ export const GetInTouch = () => {
               href="https://x.com/alexnomads" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-white/80 hover:text-softOrange transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
             >
               <X className="w-8 h-8" />
             </a>
@@ -26,7 +26,7 @@ export const GetInTouch = () => {
               href="https://www.linkedin.com/in/alessandrocapezza/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-white/80 hover:text-softOrange transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
             >
               <Linkedin className="w-8 h-8" />
             </a>
@@ -34,7 +34,7 @@ export const GetInTouch = () => {
               href="http://t.me/alexnomads" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-white/80 hover:text-softOrange transition-colors"
+              className="text-white/80 hover:text-primary transition-colors"
             >
               <MessageCircle className="w-8 h-8" />
             </a>

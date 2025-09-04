@@ -104,15 +104,13 @@ export const Programs = () => {
                       <CardFooter className="px-6 pb-6 pt-0">
                         {program.title === "Guided Meditation" && (
                           user ? (
-                            <Button 
-                              className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
-                              asChild
-                            >
-                              <Link to="/meditate">
-                                <Play className="w-4 h-4 mr-2" />
-                                Meditate & Accrue Points Now
-                              </Link>
-                            </Button>
+                             <button 
+                               className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                               onClick={() => window.location.href = "/meditate"}
+                             >
+                               <Play className="w-4 h-4 mr-2" />
+                               Meditate & Accrue Points Now
+                             </button>
                           ) : (
                             <Button 
                               className="w-full bg-white/10 hover:bg-white/20 text-white"
@@ -129,13 +127,13 @@ export const Programs = () => {
                         )}
                         
                         {program.title === "Community Sessions" && (
-                          <Button 
-                            className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
-                            onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
-                          >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Join Our Telegram Group
-                          </Button>
+                        <button 
+                          className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                          onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Join Our Telegram Group
+                        </button>
                         )}
                       </CardFooter>
                     </Card>
@@ -172,15 +170,13 @@ export const Programs = () => {
                   <CardFooter className="px-6 pb-6 pt-0">
                     {program.title === "Guided Meditation" && (
                       user ? (
-                        <Button 
-                          className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
-                          asChild
+                        <button 
+                          className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                          onClick={() => window.location.href = "/meditate"}
                         >
-                          <Link to="/meditate">
-                            <Play className="w-4 h-4 mr-2" />
-                            Meditate & Accrue Points Now
-                          </Link>
-                        </Button>
+                          <Play className="w-4 h-4 mr-2" />
+                          Meditate & Accrue Points Now
+                        </button>
                       ) : (
                         <Button 
                           className="w-full bg-white/10 hover:bg-white/20 text-white"
@@ -197,13 +193,13 @@ export const Programs = () => {
                     )}
                     
                     {program.title === "Community Sessions" && (
-                      <Button 
-                        className="w-full bg-softOrange hover:bg-softOrange/80 text-white"
+                      <button 
+                        className="retro-button w-full px-6 py-3 text-sm rounded-full"
                         onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                       >
                         <MessageSquare className="w-4 h-4 mr-2" />
                         Join Our Telegram Group
-                      </Button>
+                      </button>
                     )}
                   </CardFooter>
                 </Card>

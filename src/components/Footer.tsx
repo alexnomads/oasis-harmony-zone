@@ -8,8 +8,10 @@ export const Footer = () => {
   const version = "1.0.0"; // You can update this manually or integrate with your build system
   
   return (
-    <footer className="bg-black py-10 border-t border-white/10">
-      <div className="container mx-auto px-6">
+    <footer className="relative overflow-hidden py-10 border-t border-white/10">
+      <div className="absolute inset-0 bg-gradient-to-br from-deep-violet/40 via-primary/20 to-secondary/30"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,hsl(var(--neon-magenta))_0%,transparent_50%),radial-gradient(circle_at_60%_40%,hsl(var(--electric-cyan))_0%,transparent_50%)]"></div>
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

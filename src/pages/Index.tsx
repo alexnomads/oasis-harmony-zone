@@ -10,6 +10,7 @@ import { SubscriptionPlans } from "@/components/SubscriptionPlans";
 import { GetInTouch } from "@/components/GetInTouch";
 import { Testimonials } from "@/components/Testimonials";
 import { Awards } from "@/components/Awards";
+import { Footer } from "@/components/Footer";
 import { VHSOverlay } from "@/components/ui/VHSOverlay";
 
 const Index = () => {
@@ -57,7 +58,7 @@ const Index = () => {
           <GetInTouch />
         </section>
       </main>
-      
+      <Footer />
     </div>
   );
 };

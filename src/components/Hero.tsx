@@ -68,7 +68,7 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="max-w-3xl mx-auto"
         >
-          <div className="flex justify-center mb-4 sm:mb-8">
+          <div className="w-full flex justify-center mb-4 sm:mb-8">
             <div className="relative">
               <img 
                 src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
@@ -79,10 +79,12 @@ export const Hero = () => {
             </div>
           </div>
           
-          <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-mono uppercase tracking-wider border-2 border-accent bg-black/80 text-accent rounded-full backdrop-blur-sm shadow-[0_0_20px_hsl(var(--accent)/0.5)] relative">
-            <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-full animate-pulse"></div>
-          </span>
+          <div className="w-full flex justify-center mb-4 sm:mb-6">
+            <span className="inline-block px-4 py-2 text-xs sm:text-sm font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
+              <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full opacity-50"></div>
+            </span>
+          </div>
           
           <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 glitch-text" data-text="Rose of Jericho">
             Rose of Jericho

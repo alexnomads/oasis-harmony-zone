@@ -63,12 +63,12 @@ export const Newsletter = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-            <Button 
+            <button 
               type="submit"
-              className="h-14 px-8 rounded-full bg-softPurple hover:bg-softPurple/90 text-white transition-colors duration-300 mt-2"
+              className="retro-button h-14 px-8 rounded-full mt-2"
             >
               Send a message
-            </Button>
+            </button>
           </form>
         </motion.div>
       </div>

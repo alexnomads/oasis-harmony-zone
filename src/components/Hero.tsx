@@ -107,12 +107,12 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 w-full">
             <button
               onClick={handleMainButtonClick}
-              className="retro-button px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full w-full sm:w-auto max-w-[280px] sm:max-w-none"
+              className="retro-button px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none"
             >
               {user ? (
                 <>
-                  <Clock className="mr-2" size={20} />
-                  <span className="truncate">Meditate & Accrue Points Now</span>
+                  <Clock className="mr-2 flex-shrink-0" size={16} />
+                  <span className="text-center leading-tight">Meditate & Accrue Points Now</span>
                 </>
               ) : (
                 "Sign In"
@@ -121,12 +121,12 @@ export const Hero = () => {
             
             <button
               onClick={handleFollow}
-              className="tape-card px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full sm:w-auto max-w-[200px] sm:max-w-none"
+              className="tape-card px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full sm:w-auto max-w-[320px] sm:max-w-none"
             >
               <img 
                 src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
                 alt="X Logo" 
-                className="w-4 h-4 sm:w-5 sm:h-5 mr-2 invert"
+                className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 invert"
               /> 
               <span className="whitespace-nowrap font-mono">Follow @ROJOasis</span>
             </button>

@@ -80,7 +80,7 @@ export const MeditationContainer = () => {
                       <span className="whitespace-nowrap">AI COACH</span>
                     </TabsTrigger>
                   </TabsList>
-                  <div className="mt-6">
+                  <div className="mt-6 mb-32 lg:mb-0">
                     <TabsContent value="quick" className="m-0 space-y-6">
                       <QuickMeditation />
                     </TabsContent>

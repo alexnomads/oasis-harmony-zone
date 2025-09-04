@@ -189,7 +189,7 @@ export const MeditationAgentChat: React.FC = () => {
         onExit={handleOverlayExit}
       />
       
-      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 mobile-chat-container flex flex-col max-h-[70vh] lg:max-h-[calc(100vh-20rem)]">
+      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20 mobile-chat-container flex flex-col max-h-[70vh] lg:max-h-[calc(100vh-20rem)] mb-32 lg:mb-8">
         <div className="h-1 w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange" />
         <CardHeader className="border-b border-white/20 pb-4 flex-shrink-0">
           <div className="flex items-center gap-3">

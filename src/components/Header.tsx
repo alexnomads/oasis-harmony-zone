@@ -135,7 +135,7 @@ export const Header = () => {
 
           <div className="absolute left-1/2 transform -translate-x-1/2">
             <img 
-              src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
+              src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
               alt="Rose of Jericho" 
               className="h-6 w-auto md:h-8 cursor-pointer drop-shadow-[0_0_10px_hsl(var(--primary))]"
               onClick={() => navigate('/')}

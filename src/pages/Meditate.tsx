@@ -7,7 +7,7 @@ export default function Meditate() {
   return (
     <div className="min-h-screen relative flex flex-col">
       <Header />
-      <main className="flex-1 pt-16 pb-4">
+      <main className="flex-1 pt-16 pb-8 lg:pb-4">
         <MeditationContainer />
       </main>
     </div>

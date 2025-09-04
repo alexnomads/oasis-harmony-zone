@@ -51,7 +51,7 @@ export const MeditationContainer = () => {
 
   return (
     <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
-      <div className="max-w-7xl mx-auto space-y-8 min-h-screen pb-96">
+      <div className="max-w-7xl mx-auto space-y-8 min-h-screen pb-[32rem] lg:pb-96">
         {/* Welcome Message - Primary Section */}
         <section className="mb-8">
           <WelcomeMessage />
@@ -100,7 +100,7 @@ export const MeditationContainer = () => {
           </div>
 
           {/* Pet & Currency Sidebar (Mobile Second) */}
-          <div className="order-2 lg:order-1 lg:col-span-1 space-y-4 mb-8 lg:mb-0">
+          <div className="order-2 lg:order-1 lg:col-span-1 space-y-4 mb-24 lg:mb-0">
             {/* Pet Display */}
             <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
               <CardContent className="p-4">

@@ -266,8 +266,7 @@ export const PersonalizedRecommendations = () => {
               </div>
               <Button 
                 size="sm" 
-                variant="outline" 
-                className="mt-1"
+                className="retro-button text-xs px-3 py-2"
                 onClick={() => startMeditationSession(rec.duration, rec.title)}
                 disabled={startingSession === rec.title}
               >

@@ -88,7 +88,7 @@ export const DailyMoodLogger: React.FC<DailyMoodLoggerProps> = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
+          className="retro-button w-full py-4"
           disabled={isLoading}
         >
           <Heart className="w-4 h-4 mr-2" />
@@ -182,7 +182,7 @@ export const DailyMoodLogger: React.FC<DailyMoodLoggerProps> = ({
           <Button 
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-vibrantPurple to-vibrantOrange"
+            className="retro-button w-full py-3"
           >
             {isSubmitting ? 'Logging...' : 'Log Mood (+5 ROJ Points)'}
           </Button>

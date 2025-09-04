@@ -24,8 +24,7 @@ export const TimerControls = ({
       <Button 
         onClick={toggleTimer} 
         disabled={isLoading || disabled}
-        variant="default" 
-        className="w-40 bg-gradient-to-r from-vibrantPurple to-vibrantOrange border-none hover:opacity-90"
+        className="retro-button w-40 py-3"
       >
         {isLoading ? (
           <>
@@ -46,9 +45,8 @@ export const TimerControls = ({
       {resetTimer && (
         <Button 
           onClick={resetTimer} 
-          variant="outline"
+          className="retro-button opacity-60 hover:opacity-100"
           disabled={isLoading || disabled}
-          className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
         >
           <RotateCcw className="mr-2 h-4 w-4" /> Reset
         </Button>

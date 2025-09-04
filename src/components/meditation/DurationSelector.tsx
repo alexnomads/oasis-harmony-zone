@@ -54,7 +54,11 @@ export const DurationSelector = ({
             variant={selectedDuration === value ? "default" : "outline"}
             onClick={() => setSelectedDuration(value)}
             disabled={isRunning}
-            className="w-full h-12 text-sm font-medium"
+            className={`w-full h-12 text-sm font-medium ${
+              selectedDuration === value 
+                ? 'retro-button' 
+                : 'retro-button opacity-60 hover:opacity-100'
+            }`}
           >
             {label}
           </Button>

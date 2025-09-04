@@ -348,7 +348,7 @@ export const QuickMeditation: React.FC = () => {
                 >
                   <Button
                     onClick={startMeditation}
-                    className="bg-gradient-to-r from-vibrantOrange to-vibrantPurple hover:opacity-90 text-lg px-6 py-6"
+                    className="retro-button text-lg px-6 py-6"
                     size="lg"
                   >
                     <Play className="mr-2 h-5 w-5" />

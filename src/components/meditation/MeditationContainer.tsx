@@ -51,7 +51,7 @@ export const MeditationContainer = () => {
 
   return (
     <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
-      <div className="max-w-7xl mx-auto space-y-8 min-h-screen pb-[32rem] lg:pb-96">
+      <div className="max-w-7xl mx-auto space-y-8 min-h-screen pb-[40rem] lg:pb-96">
         {/* Welcome Message - Primary Section */}
         <section className="mb-8">
           <WelcomeMessage />

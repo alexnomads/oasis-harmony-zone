@@ -50,8 +50,8 @@ export const MeditationContainer = () => {
   }, []);
 
   return (
-    <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4 pb-safe">
-      <div className="max-w-7xl mx-auto space-y-8 mb-32 lg:mb-40">
+    <div className="mobile-meditation-container bg-gradient-to-br from-deepPurple via-midnightBlue to-cosmicBlue p-4">
+      <div className="max-w-7xl mx-auto space-y-8 min-h-screen pb-96">
         {/* Welcome Message - Primary Section */}
         <section className="mb-8">
           <WelcomeMessage />
@@ -93,7 +93,7 @@ export const MeditationContainer = () => {
               </div>
 
               {/* Personalized Recommendations - Less Prominent Location */}
-              <section className="mt-8 mb-16">
+              <section className="mt-8 mb-24 relative z-10">
                 <PersonalizedRecommendations />
               </section>
             </section>

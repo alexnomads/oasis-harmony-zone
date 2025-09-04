@@ -5,11 +5,11 @@ import { MeditationContainer } from '@/components/meditation/MeditationContainer
 
 export default function Meditate() {
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative flex flex-col">
       <Header />
-      <div className="pt-16">
+      <main className="flex-1 pt-16 pb-4">
         <MeditationContainer />
-      </div>
+      </main>
     </div>
   );
 }

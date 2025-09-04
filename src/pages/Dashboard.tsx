@@ -217,8 +217,8 @@ export default function Dashboard() {
                         <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">ROJ Points</p>
-                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{totalPoints.toFixed(1)}</h3>
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground leading-tight">ROJ Points</p>
+                        <h3 className="text-base sm:text-lg font-bold cyber-heading leading-tight">{totalPoints.toFixed(1)}</h3>
                       </div>
                     </div>
                   </div>
@@ -231,8 +231,8 @@ export default function Dashboard() {
                         <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">Current Streak</p>
-                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{streak} days</h3>
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground leading-tight">Current Streak</p>
+                        <h3 className="text-base sm:text-lg font-bold cyber-heading leading-tight">{streak} days</h3>
                       </div>
                     </div>
                   </div>
@@ -245,8 +245,8 @@ export default function Dashboard() {
                         <History className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">Total Sessions</p>
-                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{totalSessions}</h3>
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground leading-tight">Total Sessions</p>
+                        <h3 className="text-base sm:text-lg font-bold cyber-heading leading-tight">{totalSessions}</h3>
                       </div>
                     </div>
                   </div>
@@ -259,8 +259,8 @@ export default function Dashboard() {
                         <Timer className="h-5 w-5 sm:h-6 sm:w-6 text-lime" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm retro-text text-muted-foreground truncate">Total Time</p>
-                        <h3 className="text-lg sm:text-xl font-bold cyber-heading truncate">{formatDurationDetails(totalDuration)}</h3>
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground leading-tight">Total Time</p>
+                        <h3 className="text-base sm:text-lg font-bold cyber-heading leading-tight">{formatDurationDetails(totalDuration)}</h3>
                       </div>
                     </div>
                   </div>

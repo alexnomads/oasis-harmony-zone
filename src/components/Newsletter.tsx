@@ -31,8 +31,10 @@ export const Newsletter = () => {
   };
 
   return (
-    <section id="newsletter" className="py-12 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
-      <div className="container mx-auto px-6">
+    <section id="newsletter" className="py-12 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/25 via-primary/15 to-secondary/25"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_85%,hsl(var(--deep-violet))_0%,transparent_45%),radial-gradient(circle_at_85%_15%,hsl(var(--neon-magenta))_0%,transparent_45%),radial-gradient(circle_at_50%_50%,hsl(var(--electric-cyan))_0%,transparent_55%)]"></div>
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

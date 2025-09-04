@@ -68,17 +68,20 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="max-w-3xl mx-auto"
         >
-          <div className="relative inline-block mb-4 sm:mb-8">
-            <img 
-              src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
-              alt="ROJ Logo" 
-              className="w-24 h-24 sm:w-32 sm:h-32 mx-auto drop-shadow-[0_0_20px_hsl(var(--primary))]"
-            />
-            <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse"></div>
+          <div className="flex justify-center mb-4 sm:mb-8">
+            <div className="relative">
+              <img 
+                src="/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png" 
+                alt="ROJ Logo" 
+                className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]"
+              />
+              <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse"></div>
+            </div>
           </div>
           
-          <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-mono uppercase tracking-wider border border-primary/50 text-primary rounded-full bg-primary/10 backdrop-blur-sm">
-            Your mental wellness comes before your crypto gains.
+          <span className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-mono uppercase tracking-wider border-2 border-accent bg-black/80 text-accent rounded-full backdrop-blur-sm shadow-[0_0_20px_hsl(var(--accent)/0.5)] relative">
+            <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-full animate-pulse"></div>
           </span>
           
           <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 glitch-text" data-text="Rose of Jericho">

@@ -22,8 +22,10 @@ const awards = [{
 }];
 export const Awards = () => {
   const isMobile = useIsMobile();
-  return <section className="py-8 bg-black/30 backdrop-blur-sm border-y border-white/10">
-      <div className="container mx-auto px-4">
+  return <section className="py-8 relative overflow-hidden border-y border-white/10">
+    <div className="absolute inset-0 bg-gradient-to-r from-deep-violet/30 via-primary/20 to-secondary/30"></div>
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,hsl(var(--neon-magenta))_0%,transparent_40%),radial-gradient(circle_at_70%_30%,hsl(var(--electric-cyan))_0%,transparent_40%)]"></div>
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div initial={{
         opacity: 0,
         y: 20

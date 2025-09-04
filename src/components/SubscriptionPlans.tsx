@@ -58,8 +58,10 @@ export const SubscriptionPlans = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]" id="subscription-plans">
-      <div className="container mx-auto px-6">
+    <section className="py-16 relative overflow-hidden" id="subscription-plans">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-accent/15 to-secondary/30"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_65%,hsl(var(--deep-violet))_0%,transparent_50%),radial-gradient(circle_at_65%_35%,hsl(var(--neon-magenta))_0%,transparent_50%),radial-gradient(circle_at_50%_80%,hsl(var(--electric-cyan))_0%,transparent_45%)]"></div>
+      <div className="container mx-auto px-6 relative z-10">
         <PlanHeader isYearly={isYearly} setIsYearly={setIsYearly} />
 
         {isMobile ? (

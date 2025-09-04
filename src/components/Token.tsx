@@ -23,8 +23,10 @@ export const Token = () => {
     text: "COMING UP! Token rewards for participation in wellness activities or referrals.",
     image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
   }];
-  return <section className="py-16 pb-8 bg-gradient-to-br from-[#9C27B0] to-[#FF8A00]">
-      <div className="container mx-auto px-6">
+  return <section className="py-16 pb-8 relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30"></div>
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_90%,hsl(var(--deep-violet))_0%,transparent_50%),radial-gradient(circle_at_90%_10%,hsl(var(--neon-magenta))_0%,transparent_50%),radial-gradient(circle_at_50%_50%,hsl(var(--electric-cyan))_0%,transparent_60%)]"></div>
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div initial={{
         opacity: 0,
         y: 20

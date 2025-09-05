@@ -35,7 +35,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
   const [pointsDeducted, setPointsDeducted] = useState(0);
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
   
-  const { showWarning } = useMovementDetection({
+  const { showWarning, isCalibrating } = useMovementDetection({
     isActive: isActive && isTimerRunning,
     sensitivity: Capacitor.isNativePlatform() ? 3 : 5, // More sensitive on mobile
     onMovementDetected: () => {
@@ -428,6 +428,31 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
                     >
                       <X className="w-4 h-4" />
                     </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Calibration Indicator */}
+          <AnimatePresence>
+            {isCalibrating && (
+              <motion.div
+                className="absolute top-20 left-1/2 transform -translate-x-1/2 z-40 max-w-sm mx-auto"
+                initial={{ opacity: 0, y: -50, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -50, scale: 0.9 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <div className="bg-blue-600/90 backdrop-blur-sm border border-blue-400/50 rounded-xl px-6 py-4 text-white shadow-2xl">
+                  <div className="text-center">
+                    <h3 className="text-lg font-bold text-cyan-300 mb-1">🔧 CALIBRATING</h3>
+                    <p className="text-sm">
+                      Setting up movement detection...
+                    </p>
+                    <p className="text-xs text-white/80 mt-1">
+                      Please stay still for 10 seconds
+                    </p>
                   </div>
                 </div>
               </motion.div>

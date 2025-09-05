@@ -60,7 +60,7 @@ export const MeditationContainer = () => {
         {/* Fullscreen meditation interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
           {/* Navigation tabs - minimal and clean */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-1">
             <TabsList className="grid w-full max-w-md grid-cols-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-xl p-1">
               <TabsTrigger 
                 value="quick" 

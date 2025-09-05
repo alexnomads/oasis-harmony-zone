@@ -35,7 +35,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
   const [pointsDeducted, setPointsDeducted] = useState(0);
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
   
-  const { showWarning, isCalibrating } = useMovementDetection({
+  const { showWarning, isCalibrating, isMoving } = useMovementDetection({
     isActive: isActive && isTimerRunning,
     sensitivity: Capacitor.isNativePlatform() ? 3 : 5, // More sensitive on mobile
     onMovementDetected: () => {
@@ -208,21 +208,24 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
             {[...Array(pet?.evolution_stage ? (pet.evolution_stage + 1) * 8 : 16)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-white rounded-full"
+                className={`absolute w-1 h-1 rounded-full transition-colors duration-300 ${
+                  isMoving ? 'bg-red-300' : 'bg-white'
+                }`}
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
                 }}
                 animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.3, 0.8, 0.3],
-                  x: [0, Math.random() * 30 - 15, 0],
-                  y: [0, Math.random() * 30 - 15, 0],
+                  scale: isMoving ? [1, 2, 0.5, 1.5, 1] : [1, 1.5, 1],
+                  opacity: isMoving ? [0.3, 0.9, 0.1, 0.8, 0.3] : [0.3, 0.8, 0.3],
+                  x: isMoving ? [0, Math.random() * 60 - 30, Math.random() * 40 - 20, 0] : [0, Math.random() * 30 - 15, 0],
+                  y: isMoving ? [0, Math.random() * 60 - 30, Math.random() * 40 - 20, 0] : [0, Math.random() * 30 - 15, 0],
                 }}
                 transition={{
-                  duration: 4 + Math.random() * 3,
+                  duration: isMoving ? 2 + Math.random() * 2 : 4 + Math.random() * 3,
                   repeat: Infinity,
                   delay: i * 0.2,
+                  ease: isMoving ? "easeOut" : "easeInOut",
                 }}
               />
             ))}
@@ -245,17 +248,19 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
               <motion.div
                 className="absolute w-96 h-96 md:w-[500px] md:h-[500px] rounded-full opacity-20"
                 style={{
-                  background: 'radial-gradient(circle, rgba(139, 69, 19, 0.4) 0%, rgba(255, 140, 0, 0.3) 30%, rgba(138, 43, 226, 0.2) 100%)',
+                  background: isMoving 
+                    ? 'radial-gradient(circle, rgba(255, 69, 69, 0.4) 0%, rgba(255, 140, 0, 0.3) 30%, rgba(138, 43, 226, 0.2) 100%)'
+                    : 'radial-gradient(circle, rgba(139, 69, 19, 0.4) 0%, rgba(255, 140, 0, 0.3) 30%, rgba(138, 43, 226, 0.2) 100%)',
                   filter: 'blur(20px)',
                 }}
                 animate={{
-                  scale: [1, 1.15, 1],
-                  opacity: [0.2, 0.4, 0.2],
+                  scale: isMoving ? [1, 1.25, 1.1, 1.2, 1] : [1, 1.15, 1],
+                  opacity: isMoving ? [0.2, 0.6, 0.3, 0.5, 0.2] : [0.2, 0.4, 0.2],
                 }}
                 transition={{
-                  duration: 3,
+                  duration: isMoving ? 1.5 : 3,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  ease: isMoving ? "easeOut" : "easeInOut",
                 }}
               />
 
@@ -263,17 +268,19 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
               <motion.div
                 className="absolute w-80 h-80 md:w-96 md:h-96 rounded-full opacity-30"
                 style={{
-                  background: 'radial-gradient(circle, rgba(255, 140, 0, 0.5) 0%, rgba(138, 43, 226, 0.4) 50%, transparent 100%)',
+                  background: isMoving 
+                    ? 'radial-gradient(circle, rgba(255, 100, 100, 0.5) 0%, rgba(255, 43, 43, 0.4) 50%, transparent 100%)'
+                    : 'radial-gradient(circle, rgba(255, 140, 0, 0.5) 0%, rgba(138, 43, 226, 0.4) 50%, transparent 100%)',
                   filter: 'blur(15px)',
                 }}
                 animate={{
-                  scale: [1, 1.25, 1],
-                  opacity: [0.3, 0.6, 0.3],
+                  scale: isMoving ? [1, 1.35, 1.1, 1.3, 1] : [1, 1.25, 1],
+                  opacity: isMoving ? [0.3, 0.8, 0.4, 0.7, 0.3] : [0.3, 0.6, 0.3],
                 }}
                 transition={{
-                  duration: 5,
+                  duration: isMoving ? 2 : 5,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  ease: isMoving ? "easeOut" : "easeInOut",
                   delay: 0.5,
                 }}
               />
@@ -282,17 +289,19 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
               <motion.div
                 className="absolute w-64 h-64 md:w-80 md:h-80 rounded-full opacity-50"
                 style={{
-                  background: 'radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 140, 0, 0.4) 40%, transparent 100%)',
+                  background: isMoving 
+                    ? 'radial-gradient(circle, rgba(255, 180, 180, 0.6) 0%, rgba(255, 100, 100, 0.4) 40%, transparent 100%)'
+                    : 'radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 140, 0, 0.4) 40%, transparent 100%)',
                   filter: 'blur(8px)',
                 }}
                 animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.5, 0.8, 0.5],
+                  scale: isMoving ? [1, 1.2, 0.9, 1.15, 1] : [1, 1.1, 1],
+                  opacity: isMoving ? [0.5, 0.9, 0.3, 0.8, 0.5] : [0.5, 0.8, 0.5],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: isMoving ? 1 : 2,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  ease: isMoving ? "easeOut" : "easeInOut",
                 }}
               />
 
@@ -308,7 +317,9 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
                   ease: "easeInOut",
                 }}
               >
-                <div className="text-white text-6xl md:text-8xl font-bold drop-shadow-2xl tracking-wider">
+                <div className={`text-6xl md:text-8xl font-bold drop-shadow-2xl tracking-wider transition-colors duration-500 ${
+                  isMoving ? 'text-amber-200' : 'text-white'
+                }`}>
                   {formatTime(timeRemaining)}
                 </div>
                 
@@ -332,10 +343,18 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
                       transition={{ duration: 1 }}
                     >
                       <motion.div
-                        animate={{ opacity: [1, 0.5, 1] }}
-                        transition={{ duration: 4, repeat: Infinity }}
+                        animate={{ 
+                          opacity: isCalibrating ? [1, 0.3, 1] : [1, 0.5, 1],
+                          scale: isCalibrating ? [1, 1.05, 1] : [1, 1, 1]
+                        }}
+                        transition={{ 
+                          duration: isCalibrating ? 2 : 4, 
+                          repeat: Infinity 
+                        }}
                       >
-                        Breathe in... and out...
+                        {isCalibrating ? 'Finding your center...' : 
+                         isMoving ? 'Return to stillness...' : 
+                         'Breathe in... and out...'}
                       </motion.div>
                     </motion.div>
                   )}
@@ -399,65 +418,6 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
             </motion.div>
           </div>
 
-          {/* Movement Detection Warning */}
-          <AnimatePresence>
-            {showWarning && (
-              <motion.div
-                className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40 max-w-sm mx-auto"
-                initial={{ opacity: 0, y: -50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -50, scale: 0.9 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              >
-                <div className="bg-red-600/90 backdrop-blur-sm border border-red-400/50 rounded-xl px-6 py-4 text-white shadow-2xl">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold text-yellow-300 mb-1">MOVEMENT DETECTED</h3>
-                      <p className="text-sm">
-                        {pointsDeducted.toFixed(2)} points will be deducted.
-                      </p>
-                      <p className="text-xs text-white/80 mt-1">
-                        Try to remain still during meditation.
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setPointsDeducted(0)}
-                      className="text-white/60 hover:text-white hover:bg-white/10 ml-4"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Calibration Indicator */}
-          <AnimatePresence>
-            {isCalibrating && (
-              <motion.div
-                className="absolute top-20 left-1/2 transform -translate-x-1/2 z-40 max-w-sm mx-auto"
-                initial={{ opacity: 0, y: -50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -50, scale: 0.9 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              >
-                <div className="bg-blue-600/90 backdrop-blur-sm border border-blue-400/50 rounded-xl px-6 py-4 text-white shadow-2xl">
-                  <div className="text-center">
-                    <h3 className="text-lg font-bold text-cyan-300 mb-1">🔧 CALIBRATING</h3>
-                    <p className="text-sm">
-                      Setting up movement detection...
-                    </p>
-                    <p className="text-xs text-white/80 mt-1">
-                      Please stay still for 10 seconds
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Exit Controls */}
           <AnimatePresence>

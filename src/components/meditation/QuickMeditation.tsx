@@ -386,11 +386,11 @@ export const QuickMeditation: React.FC = () => {
               >
                 <Button
                   onClick={startMeditation}
-                  className="retro-button w-full max-w-md mx-auto text-lg md:text-xl px-6 py-6 md:px-8 md:py-8 rounded-xl"
+                  className="retro-button w-full max-w-md mx-auto text-base md:text-lg px-6 py-6 md:px-8 md:py-8 rounded-xl"
                   size="lg"
                 >
-                  <Play className="mr-2 h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
-                  <span className="truncate">
+                  <Play className="mr-2 h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
+                  <span className="text-center leading-tight">
                     {selectedDuration === 30 ? "Begin 30-Second Meditation" : `Begin ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
                   </span>
                 </Button>

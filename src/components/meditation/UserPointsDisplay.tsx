@@ -20,15 +20,18 @@ export const UserPointsDisplay = () => {
     if (!user) return;
 
     try {
-      // Fetch total points from currency table
-      const { data: currency } = await supabase
-        .from('user_currency')
-        .select('points')
+      // Fetch total points from user_points table
+      const { data: userPoints } = await supabase
+        .from('user_points')
+        .select('total_points')
         .eq('user_id', user.id)
         .single();
 
-      if (currency) {
-        setPoints(currency.points);
+      if (userPoints) {
+        setPoints(userPoints.total_points);
+      } else {
+        // Handle new users who don't have a user_points record yet
+        setPoints(0);
       }
 
       // Fetch today's points from meditation sessions

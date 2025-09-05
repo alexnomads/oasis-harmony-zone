@@ -325,58 +325,90 @@ export const QuickMeditation: React.FC = () => {
         onMovementPenalty={handleMovementPenalty}
       />
       
-      <Card className="w-full bg-black/20 backdrop-blur-sm border border-white/20">
-        <CardContent className="p-6">
-          {isTimerRunning && sessionId ? (
-            <div className="hidden">
-              <MeditationTimer
-                initialType="mindfulness"
-                initialDuration={selectedDuration}
-                onComplete={handleMeditationComplete}
-                sessionId={sessionId}
-              />
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="space-y-4">
+      {/* Fullscreen meditation setup - no card wrapper */}
+      <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-8">
+        {isTimerRunning && sessionId ? (
+          <div className="hidden">
+            <MeditationTimer
+              initialType="mindfulness"
+              initialDuration={selectedDuration}
+              onComplete={handleMeditationComplete}
+              sessionId={sessionId}
+            />
+          </div>
+        ) : (
+          <div className="w-full max-w-4xl space-y-12 text-center">
+            {/* Large title */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-4"
+            >
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-white to-vibrantOrange bg-clip-text text-transparent">
+                Start Your Meditation
+              </h1>
+              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+                Choose your meditation duration and begin your mindfulness journey
+              </p>
+            </motion.div>
+
+            {/* Duration selector - larger and more prominent */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-8"
+            >
+              <h2 className="text-2xl md:text-3xl text-white font-medium mb-8">
+                Select Duration
+              </h2>
+              <div className="max-w-3xl mx-auto">
                 <DurationSelector
                   selectedDuration={selectedDuration}
                   setSelectedDuration={setSelectedDuration}
                   isRunning={isTimerRunning}
                 />
               </div>
-              
-              <div className="flex justify-center">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+            </motion.div>
+            
+            {/* Large start button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="space-y-8"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  onClick={startMeditation}
+                  className="retro-button text-xl md:text-2xl px-12 py-8 md:px-16 md:py-10 rounded-2xl"
+                  size="lg"
                 >
-                  <Button
-                    onClick={startMeditation}
-                    className="retro-button text-lg px-6 py-6"
-                    size="lg"
-                  >
-                    <Play className="mr-2 h-5 w-5" />
-                    {selectedDuration === 30 ? "Start 30-Second Meditation" : `Start ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
-                  </Button>
-                </motion.div>
-              </div>
+                  <Play className="mr-3 h-8 w-8" />
+                  {selectedDuration === 30 ? "Begin 30-Second Meditation" : `Begin ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
+                </Button>
+              </motion.div>
               
-              <div className="text-center space-y-2">
-                <p className="text-white/60 text-sm">
-                  Stay focused to earn max points. Movement, tab switching, or leaving the page will reduce points earned.
+              {/* Instructions */}
+              <div className="text-center space-y-4 max-w-2xl mx-auto">
+                <p className="text-white/60 text-base md:text-lg">
+                  Stay focused to earn maximum points. Movement, tab switching, or leaving the page will reduce points earned.
                 </p>
                 {isWakeLockActive && (
-                  <div className="flex items-center justify-center gap-2 text-vibrantOrange text-xs">
-                    <Shield className="w-3 h-3" />
+                  <div className="flex items-center justify-center gap-3 text-vibrantOrange text-sm md:text-base">
+                    <Shield className="w-5 h-5" />
                     <span>Screen sleep prevented - meditation protected</span>
                   </div>
                 )}
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </motion.div>
+          </div>
+        )}
+      </div>
     </>
   );
 };

@@ -42,7 +42,7 @@ export const DurationSelector = ({
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
       transition={{ duration: 0.5 }} 
-      className="grid grid-cols-3 gap-2"
+      className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
     >
       {durations.map(({ label, value }) => (
         <motion.div 
@@ -54,9 +54,9 @@ export const DurationSelector = ({
             variant={selectedDuration === value ? "default" : "outline"}
             onClick={() => setSelectedDuration(value)}
             disabled={isRunning}
-            className={`w-full h-12 text-sm font-medium ${
+            className={`w-full h-16 md:h-20 text-base md:text-lg font-medium rounded-xl ${
               selectedDuration === value 
-                ? 'retro-button' 
+                ? 'retro-button text-xl md:text-2xl' 
                 : 'retro-button opacity-60 hover:opacity-100'
             }`}
           >

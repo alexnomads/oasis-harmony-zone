@@ -57,50 +57,45 @@ export const MeditationContainer = () => {
           <WelcomeMessage />
         </section>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-h-screen lg:max-h-[calc(100vh-12rem)] pb-8 lg:pb-0">
-          {/* Main Content - Meditation Interface (Mobile First) */}
-          <div className="order-1 lg:order-2 lg:col-span-3">
-            <section className="space-y-6">
-              {/* Grouped Navigation - Quick Meditation & AI Coach */}
-              <div className="bg-black/10 backdrop-blur-sm rounded-lg p-2 border border-white/10">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-transparent border-0 gap-2">
-                    <TabsTrigger 
-                      value="quick" 
-                      className="retro-button flex flex-col sm:flex-row items-center gap-1 sm:gap-2 justify-center py-3 px-2 text-xs sm:text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90"
-                    >
-                      <Brain className="w-4 h-4 flex-shrink-0" />
-                      <span className="whitespace-nowrap">QUICK MEDITATION</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="chat" 
-                      className="retro-button flex flex-col sm:flex-row items-center gap-1 sm:gap-2 justify-center py-3 px-2 text-xs sm:text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90"
-                    >
-                      <MessageCircle className="w-4 h-4 flex-shrink-0" />
-                      <span className="whitespace-nowrap">AI COACH</span>
-                    </TabsTrigger>
-                  </TabsList>
-                  <div className="mt-6 mb-32 lg:mb-0">
-                    <TabsContent value="quick" className="m-0 space-y-6">
-                      <QuickMeditation />
-                    </TabsContent>
-
-                    <TabsContent value="chat" className="m-0">
-                      <MeditationAgentChat />
-                    </TabsContent>
-                  </div>
-                </Tabs>
-              </div>
-
-              {/* Personalized Recommendations - Less Prominent Location */}
-              <section className="mt-8 mb-32 lg:mb-24 relative z-10">
-                <PersonalizedRecommendations />
-              </section>
-            </section>
+        {/* Fullscreen meditation interface */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+          {/* Navigation tabs - minimal and clean */}
+          <div className="flex justify-center mb-8">
+            <TabsList className="grid w-full max-w-md grid-cols-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-xl p-1">
+              <TabsTrigger 
+                value="quick" 
+                className="retro-button flex items-center gap-2 justify-center py-3 px-4 text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
+              >
+                <Brain className="w-4 h-4 flex-shrink-0" />
+                <span>MEDITATION</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="chat" 
+                className="retro-button flex items-center gap-2 justify-center py-3 px-4 text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
+              >
+                <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                <span>AI COACH</span>
+              </TabsTrigger>
+            </TabsList>
           </div>
 
-          {/* Pet & Currency Sidebar (Mobile Second) */}
-          <div className="order-2 lg:order-1 lg:col-span-1 space-y-4 mb-24 lg:mb-0">
+          {/* Tab content - fullscreen */}
+          <div className="w-full">
+            <TabsContent value="quick" className="m-0">
+              <QuickMeditation />
+            </TabsContent>
+
+            <TabsContent value="chat" className="m-0">
+              <div className="max-w-4xl mx-auto">
+                <MeditationAgentChat />
+              </div>
+            </TabsContent>
+          </div>
+        </Tabs>
+
+        {/* Sidebar content moved to bottom on mobile, hidden during active meditation */}
+        <div className="meditation-sidebar-content mt-16 lg:mt-24">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {/* Pet Display */}
             <Card className="bg-black/20 backdrop-blur-sm border border-white/20">
               <CardContent className="p-4">
@@ -134,6 +129,11 @@ export const MeditationContainer = () => {
                 isLoading={petLoading} 
               />
             )}
+          </div>
+
+          {/* Personalized Recommendations */}
+          <div className="mt-12 max-w-6xl mx-auto">
+            <PersonalizedRecommendations />
           </div>
         </div>
       </div>

@@ -304,6 +304,28 @@
   .mobile-heading {
     @apply text-2xl sm:text-3xl md:text-5xl;
   }
+
+  /* Meditation page specific styles */
+  .meditation-page {
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Hide sidebar content during active meditation (when immersive overlay is active) */
+  .meditation-sidebar-content {
+    transition: opacity 0.3s ease;
+  }
+
+  /* Fullscreen meditation experience */
+  .meditation-page .meditation-container {
+    min-height: 100vh;
+  }
+
+  /* Hide elements during meditation session */
+  .meditation-page.immersive-active .meditation-sidebar-content {
+    opacity: 0;
+    pointer-events: none;
+  }
   
   /* Mobile viewport and safe area utilities */
   .mobile-safe-container {

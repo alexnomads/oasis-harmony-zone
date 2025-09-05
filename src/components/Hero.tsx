@@ -41,7 +41,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-5 sm:pt-6 w-full">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-1 sm:pt-2 w-full">
       <div className="absolute inset-0 w-full h-full">
         <video
           autoPlay
@@ -61,14 +61,14 @@ export const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10 mix-blend-overlay"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-16 text-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="max-w-3xl mx-auto"
         >
-          <div className="w-full flex justify-center mb-4 sm:mb-8">
+          <div className="w-full flex justify-center mb-2 sm:mb-4">
             <div className="relative">
               <img 
                 src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
@@ -79,18 +79,18 @@ export const Hero = () => {
             </div>
           </div>
           
-          <div className="w-full flex justify-center mb-4 sm:mb-6">
+          <div className="w-full flex justify-center mb-2 sm:mb-3">
             <span className="inline-block px-4 py-2 text-xs sm:text-sm font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
               <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full opacity-50"></div>
             </span>
           </div>
           
-          <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 glitch-text" data-text="Rose of Jericho">
+          <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-2 sm:mb-4 glitch-text" data-text="Rose of Jericho">
             Rose of Jericho
           </h1>
           
-          <div className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-white/90 h-[80px] sm:h-[120px] flex flex-col items-center justify-center">
+          <div className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 text-white/90 h-[60px] sm:h-[80px] flex flex-col items-center justify-center">
             <p className="mb-2 text-sm sm:text-base md:text-xl retro-text">An AI Agent that rewards you when focusing on</p>
             <motion.div
               key={currentSlide}
@@ -134,7 +134,7 @@ export const Hero = () => {
         </motion.div>
       </div>
 
-      <div className="h-7 sm:h-17 md:h-22"></div>
+      <div className="h-2 sm:h-4"></div>
     </section>
   );
 };

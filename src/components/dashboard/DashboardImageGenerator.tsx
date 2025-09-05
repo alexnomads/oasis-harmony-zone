@@ -96,34 +96,59 @@ export const DashboardImageGenerator = ({
     ctx.strokeRect(chartX, chartY, chartWidth, chartHeight);
     ctx.shadowBlur = 0;
 
-    // Draw the meditation frequency chart if we have data
+    // Chart title and subtitle - show always
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Space Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Meditation Frequency - ${selectedPeriod || 30} Days`, chartX + 20, chartY - 10);
+    
+    ctx.fillStyle = '#a1a1aa';
+    ctx.font = '14px Space Mono';
+    ctx.fillText('Sessions per day', chartX + 20, chartY + 25);
+
+    // Draw the meditation frequency chart
     if (chartData && chartData.length > 0) {
       const maxSessions = Math.max(...chartData.map(d => d.sessions), 1);
-      const dataPoints = chartData.map((point, index) => {
-        const x = chartX + 40 + (index * (chartWidth - 80)) / (chartData.length - 1);
-        const y = chartY + chartHeight - 40 - ((point.sessions / maxSessions) * (chartHeight - 80));
-        return { x, y, sessions: point.sessions, date: point.dateDisplay };
-      });
-
-      // Draw grid lines
-      ctx.strokeStyle = 'rgba(161, 161, 170, 0.2)';
+      
+      // Draw grid lines first
+      ctx.strokeStyle = 'rgba(161, 161, 170, 0.3)';
       ctx.lineWidth = 1;
+      
+      // Horizontal grid lines
       for (let i = 0; i <= 4; i++) {
-        const y = chartY + 40 + (i * (chartHeight - 80)) / 4;
+        const gridY = chartY + chartHeight - 40 - (i * (chartHeight - 80)) / 4;
         ctx.beginPath();
-        ctx.moveTo(chartX + 40, y);
-        ctx.lineTo(chartX + chartWidth - 40, y);
+        ctx.moveTo(chartX + 40, gridY);
+        ctx.lineTo(chartX + chartWidth - 40, gridY);
+        ctx.stroke();
+      }
+      
+      // Vertical grid lines
+      const visibleData = chartData.slice(-Math.min(chartData.length, 15)); // Show max 15 data points for readability
+      for (let i = 0; i < visibleData.length; i++) {
+        const gridX = chartX + 40 + (i * (chartWidth - 80)) / Math.max(visibleData.length - 1, 1);
+        ctx.beginPath();
+        ctx.moveTo(gridX, chartY + 40);
+        ctx.lineTo(gridX, chartY + chartHeight - 40);
         ctx.stroke();
       }
 
-      // Draw the line chart with gradient
+      // Calculate data points for the visible data
+      const dataPoints = visibleData.map((point, index) => {
+        const x = chartX + 40 + (index * (chartWidth - 80)) / Math.max(visibleData.length - 1, 1);
+        const normalizedSessions = point.sessions / maxSessions;
+        const y = chartY + chartHeight - 40 - (normalizedSessions * (chartHeight - 80));
+        return { x, y, sessions: point.sessions, date: point.dateDisplay };
+      });
+
+      // Draw connecting lines if we have multiple points
       if (dataPoints.length > 1) {
         const lineGradient = ctx.createLinearGradient(chartX, 0, chartX + chartWidth, 0);
         lineGradient.addColorStop(0, '#9C27B0');
         lineGradient.addColorStop(1, '#FF8A00');
         
         ctx.strokeStyle = lineGradient;
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         
@@ -133,35 +158,65 @@ export const DashboardImageGenerator = ({
           ctx.lineTo(dataPoints[i].x, dataPoints[i].y);
         }
         ctx.stroke();
+      }
 
-        // Draw data points
-        dataPoints.forEach(point => {
+      // Draw data points with glow
+      dataPoints.forEach(point => {
+        if (point.sessions > 0) {
           // Outer glow
           ctx.fillStyle = '#FF8A00';
           ctx.shadowColor = '#FF8A00';
-          ctx.shadowBlur = 15;
+          ctx.shadowBlur = 10;
           ctx.beginPath();
-          ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
+          ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
           ctx.fill();
           ctx.shadowBlur = 0;
           
           // Inner core
           ctx.fillStyle = '#9C27B0';
           ctx.beginPath();
-          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
           ctx.fill();
-        });
-      }
+        }
+      });
 
-      // Chart title and subtitle
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px Space Mono';
-      ctx.textAlign = 'left';
-      ctx.fillText(`Meditation Frequency - ${selectedPeriod || 30} Days`, chartX + 20, chartY - 10);
-      
+      // Add Y-axis labels
       ctx.fillStyle = '#a1a1aa';
-      ctx.font = '14px Space Mono';
-      ctx.fillText('Sessions per day', chartX + 20, chartY + 25);
+      ctx.font = '12px Space Mono';
+      ctx.textAlign = 'right';
+      for (let i = 0; i <= 4; i++) {
+        const value = Math.round((i * maxSessions) / 4);
+        const labelY = chartY + chartHeight - 40 - (i * (chartHeight - 80)) / 4;
+        ctx.fillText(value.toString(), chartX + 35, labelY + 4);
+      }
+      
+      // Add some sample X-axis labels
+      ctx.textAlign = 'center';
+      const labelInterval = Math.max(1, Math.floor(visibleData.length / 5));
+      visibleData.forEach((point, index) => {
+        if (index % labelInterval === 0) {
+          const x = chartX + 40 + (index * (chartWidth - 80)) / Math.max(visibleData.length - 1, 1);
+          ctx.fillText(point.dateDisplay, x, chartY + chartHeight - 15);
+        }
+      });
+      
+    } else {
+      // Show "No data" message if no chart data
+      ctx.fillStyle = '#666';
+      ctx.font = '16px Space Mono';
+      ctx.textAlign = 'center';
+      ctx.fillText('No meditation data available', chartX + chartWidth / 2, chartY + chartHeight / 2);
+      
+      // Draw empty grid anyway for visual consistency
+      ctx.strokeStyle = 'rgba(161, 161, 170, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const gridY = chartY + 40 + (i * (chartHeight - 80)) / 4;
+        ctx.beginPath();
+        ctx.moveTo(chartX + 40, gridY);
+        ctx.lineTo(chartX + chartWidth - 40, gridY);
+        ctx.stroke();
+      }
     }
 
     // Stats cards layout - positioned below the chart

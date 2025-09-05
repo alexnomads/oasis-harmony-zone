@@ -380,16 +380,19 @@ export const QuickMeditation: React.FC = () => {
               className="space-y-8"
             >
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full"
               >
                 <Button
                   onClick={startMeditation}
-                  className="retro-button text-xl md:text-2xl px-12 py-8 md:px-16 md:py-10 rounded-2xl"
+                  className="retro-button w-full max-w-md mx-auto text-lg md:text-xl px-6 py-6 md:px-8 md:py-8 rounded-xl"
                   size="lg"
                 >
-                  <Play className="mr-3 h-8 w-8" />
-                  {selectedDuration === 30 ? "Begin 30-Second Meditation" : `Begin ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
+                  <Play className="mr-2 h-5 w-5 md:h-6 md:w-6 flex-shrink-0" />
+                  <span className="truncate">
+                    {selectedDuration === 30 ? "Begin 30-Second Meditation" : `Begin ${Math.floor(selectedDuration / 60)}-Minute Meditation`}
+                  </span>
                 </Button>
               </motion.div>
               

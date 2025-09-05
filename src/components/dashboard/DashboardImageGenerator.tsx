@@ -4,6 +4,13 @@ import { Share2, Download } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { SharingService } from '@/lib/services/sharingService';
 
+interface ChartDataPoint {
+  date: string;
+  dateDisplay: string;
+  sessions: number;
+  totalMinutes: number;
+}
+
 interface DashboardImageGeneratorProps {
   userEmail: string;
   totalPoints: number;
@@ -11,6 +18,8 @@ interface DashboardImageGeneratorProps {
   totalSessions: number;
   totalDuration: string;
   profileUrl?: string;
+  chartData?: ChartDataPoint[];
+  selectedPeriod?: 7 | 14 | 30;
 }
 
 export const DashboardImageGenerator = ({
@@ -19,7 +28,9 @@ export const DashboardImageGenerator = ({
   streak,
   totalSessions,
   totalDuration,
-  profileUrl
+  profileUrl,
+  chartData,
+  selectedPeriod
 }: DashboardImageGeneratorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -30,130 +41,220 @@ export const DashboardImageGenerator = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
-    // Set canvas dimensions for Twitter-friendly image (1200x675)
+    // Set canvas dimensions for social media sharing (1200x800 for better chart visibility)
     canvas.width = 1200;
-    canvas.height = 675;
+    canvas.height = 800;
 
-    // Create gradient background
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#18181b'); // zinc-900
-    gradient.addColorStop(1, '#000000'); // black
-    ctx.fillStyle = gradient;
+    // Create cyberpunk gradient background matching the site's theme
+    const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    bgGradient.addColorStop(0, '#000000'); // vhs-black
+    bgGradient.addColorStop(0.3, '#1a0d1a'); // deep purple-black
+    bgGradient.addColorStop(0.6, '#2d1b2d'); // medium purple
+    bgGradient.addColorStop(1, '#4a1a4a'); // darker purple
+    ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Add purple/orange accent border
+    // Add cyberpunk border with neon glow effect
     const borderGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    borderGradient.addColorStop(0, '#8b5cf6'); // vibrantPurple
-    borderGradient.addColorStop(1, '#f97316'); // vibrantOrange
+    borderGradient.addColorStop(0, '#9C27B0'); // vibrantPurple
+    borderGradient.addColorStop(0.5, '#FF00E5'); // neon-magenta
+    borderGradient.addColorStop(1, '#FF8A00'); // vibrantOrange
     ctx.fillStyle = borderGradient;
     ctx.fillRect(0, 0, canvas.width, 8);
 
-    // Add logo area background
-    ctx.fillStyle = 'rgba(39, 39, 42, 0.8)'; // zinc-800 with opacity
-    ctx.fillRect(40, 40, canvas.width - 80, 120);
-
-    // Add title
+    // Add title with cyberpunk styling
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 42px Arial';
+    ctx.font = 'bold 48px Impact, Arial Black, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('My Meditation Journey', canvas.width / 2, 115);
+    ctx.letterSpacing = '4px';
+    ctx.fillText('MY MEDITATION JOURNEY', canvas.width / 2, 60);
 
-    // Add subtitle with user email
-    ctx.fillStyle = '#a1a1aa'; // zinc-400
-    ctx.font = '22px Arial';
+    // Add subtitle with user and period info
+    ctx.fillStyle = '#a1a1aa';
+    ctx.font = '24px Space Mono, monospace';
     const displayName = userEmail.split('@')[0];
-    ctx.fillText(`@${displayName} on Rose of Jericho`, canvas.width / 2, 145);
+    ctx.fillText(`@${displayName} • Last ${selectedPeriod || 30} Days • Rose of Jericho`, canvas.width / 2, 90);
 
-    // Stats cards layout
+    // Chart area configuration
+    const chartX = 60;
+    const chartY = 120;
+    const chartWidth = canvas.width - 120;
+    const chartHeight = 280;
+
+    // Draw chart background with CRT frame effect
+    ctx.fillStyle = 'rgba(39, 39, 42, 0.9)';
+    ctx.fillRect(chartX, chartY, chartWidth, chartHeight);
+    
+    // Chart border with neon glow
+    ctx.strokeStyle = '#9C27B0';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(chartX, chartY, chartWidth, chartHeight);
+    
+    // Add glow effect
+    ctx.shadowColor = '#9C27B0';
+    ctx.shadowBlur = 20;
+    ctx.strokeRect(chartX, chartY, chartWidth, chartHeight);
+    ctx.shadowBlur = 0;
+
+    // Draw the meditation frequency chart if we have data
+    if (chartData && chartData.length > 0) {
+      const maxSessions = Math.max(...chartData.map(d => d.sessions), 1);
+      const dataPoints = chartData.map((point, index) => {
+        const x = chartX + 40 + (index * (chartWidth - 80)) / (chartData.length - 1);
+        const y = chartY + chartHeight - 40 - ((point.sessions / maxSessions) * (chartHeight - 80));
+        return { x, y, sessions: point.sessions, date: point.dateDisplay };
+      });
+
+      // Draw grid lines
+      ctx.strokeStyle = 'rgba(161, 161, 170, 0.2)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = chartY + 40 + (i * (chartHeight - 80)) / 4;
+        ctx.beginPath();
+        ctx.moveTo(chartX + 40, y);
+        ctx.lineTo(chartX + chartWidth - 40, y);
+        ctx.stroke();
+      }
+
+      // Draw the line chart with gradient
+      if (dataPoints.length > 1) {
+        const lineGradient = ctx.createLinearGradient(chartX, 0, chartX + chartWidth, 0);
+        lineGradient.addColorStop(0, '#9C27B0');
+        lineGradient.addColorStop(1, '#FF8A00');
+        
+        ctx.strokeStyle = lineGradient;
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(dataPoints[0].x, dataPoints[0].y);
+        for (let i = 1; i < dataPoints.length; i++) {
+          ctx.lineTo(dataPoints[i].x, dataPoints[i].y);
+        }
+        ctx.stroke();
+
+        // Draw data points
+        dataPoints.forEach(point => {
+          // Outer glow
+          ctx.fillStyle = '#FF8A00';
+          ctx.shadowColor = '#FF8A00';
+          ctx.shadowBlur = 15;
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          
+          // Inner core
+          ctx.fillStyle = '#9C27B0';
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+      }
+
+      // Chart title and subtitle
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 20px Space Mono';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Meditation Frequency - ${selectedPeriod || 30} Days`, chartX + 20, chartY - 10);
+      
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '14px Space Mono';
+      ctx.fillText('Sessions per day', chartX + 20, chartY + 25);
+    }
+
+    // Stats cards layout - positioned below the chart
+    const cardY = chartY + chartHeight + 40;
     const cardWidth = 240;
-    const cardHeight = 130;
-    const cardSpacing = 50;
-    const startX = (canvas.width - (2 * cardWidth + cardSpacing)) / 2;
-    const topRowY = 200;
-    const bottomRowY = 360;
+    const cardHeight = 100;
+    const cardSpacing = 40;
+    const totalCardsWidth = (4 * cardWidth) + (3 * cardSpacing);
+    const startX = (canvas.width - totalCardsWidth) / 2;
 
-    // Helper function to draw stat card
+    // Helper function to draw cyberpunk stat card
     const drawStatCard = (x: number, y: number, icon: string, value: string, label: string, color: string) => {
-      // Card background
-      ctx.fillStyle = 'rgba(39, 39, 42, 0.9)'; // zinc-800
+      // Card background with CRT effect
+      ctx.fillStyle = 'rgba(39, 39, 42, 0.95)';
       ctx.fillRect(x, y, cardWidth, cardHeight);
       
-      // Card border
-      ctx.strokeStyle = 'rgba(161, 161, 170, 0.2)'; // zinc-400 with opacity
-      ctx.lineWidth = 1;
+      // Neon border
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
       ctx.strokeRect(x, y, cardWidth, cardHeight);
+      
+      // Glow effect
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.strokeRect(x, y, cardWidth, cardHeight);
+      ctx.shadowBlur = 0;
 
-      // Icon circle background
-      ctx.fillStyle = color + '20'; // color with low opacity
-      ctx.beginPath();
-      ctx.arc(x + 60, y + 50, 25, 0, 2 * Math.PI);
-      ctx.fill();
-
-      // Icon text (emoji)
+      // Icon with glow
       ctx.fillStyle = color;
-      ctx.font = '26px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(icon, x + 60, y + 58);
-
-      // Value
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 28px Arial';
-      ctx.textAlign = 'left';
-      const maxWidth = cardWidth - 110; // Leave space for icon and padding
-      let fontSize = 28;
-      ctx.font = `bold ${fontSize}px Arial`;
-      
-      // Reduce font size if text is too wide
-      while (ctx.measureText(value).width > maxWidth && fontSize > 16) {
-        fontSize -= 2;
-        ctx.font = `bold ${fontSize}px Arial`;
-      }
-      
-      ctx.fillText(value, x + 85, y + 48);
-
-      // Label
-      ctx.fillStyle = '#a1a1aa'; // zinc-400
-      ctx.font = '16px Arial';
-      ctx.fillText(label, x + 85, y + 70);
-    };
-
-    // Draw stat cards with adjusted positions
-    drawStatCard(startX, topRowY, '🏆', totalPoints.toFixed(1), 'Total Points', '#eab308'); // yellow-500
-    drawStatCard(startX + cardWidth + cardSpacing, topRowY, '🔥', `${streak} days`, 'Current Streak', '#f97316'); // orange-500
-    drawStatCard(startX, bottomRowY, '📅', totalSessions.toString(), 'Total Sessions', '#3b82f6'); // blue-500
-    drawStatCard(startX + cardWidth + cardSpacing, bottomRowY, '⏱️', totalDuration, 'Total Time', '#10b981'); // green-500
-
-    // Add ROJ logo
-    const logo = new Image();
-    logo.onload = () => {
-      // Draw logo at center bottom
-      const logoSize = 60;
-      const logoX = (canvas.width - logoSize) / 2;
-      const logoY = 520;
-      ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
-      
-      // Add website URL under the logo
-      ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 24px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('www.roseofjericho.xyz', canvas.width / 2, 610);
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 5;
+      ctx.fillText(icon, x + 40, y + 35);
+      ctx.shadowBlur = 0;
 
-      // Add call to action
-      ctx.fillStyle = '#a1a1aa'; // zinc-400
-      ctx.font = '20px Arial';
-      ctx.fillText('Join me on the meditation journey', canvas.width / 2, 640);
-
-      // Add profile URL if provided
-      if (profileUrl) {
-        ctx.fillStyle = '#a1a1aa'; // zinc-400
-        ctx.font = '16px Arial';
-        ctx.fillText(profileUrl, canvas.width / 2, 660);
+      // Value with cyberpunk font
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px Space Mono, monospace';
+      ctx.textAlign = 'left';
+      const maxWidth = cardWidth - 90;
+      let fontSize = 22;
+      ctx.font = `bold ${fontSize}px Space Mono, monospace`;
+      
+      while (ctx.measureText(value).width > maxWidth && fontSize > 14) {
+        fontSize -= 2;
+        ctx.font = `bold ${fontSize}px Space Mono, monospace`;
       }
+      
+      ctx.fillText(value, x + 65, y + 35);
+
+      // Label
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '12px Space Mono, monospace';
+      ctx.fillText(label.toUpperCase(), x + 65, y + 55);
+    };
+
+    // Draw stat cards in a single row
+    drawStatCard(startX, cardY, '🏆', totalPoints.toFixed(1), 'ROJ Points', '#FF00E5');
+    drawStatCard(startX + cardWidth + cardSpacing, cardY, '🔥', `${streak}`, 'Day Streak', '#FF8A00');
+    drawStatCard(startX + (cardWidth + cardSpacing) * 2, cardY, '📅', totalSessions.toString(), 'Sessions', '#00FFFF');
+    drawStatCard(startX + (cardWidth + cardSpacing) * 3, cardY, '⏱️', totalDuration, 'Total Time', '#00FF88');
+
+    // Footer with logo and branding
+    const footerY = cardY + cardHeight + 30;
+    
+    // Add website URL and call to action
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 24px Space Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('ROSEOFJERICHO.XYZ', canvas.width / 2, footerY + 20);
+
+    ctx.fillStyle = '#a1a1aa';
+    ctx.font = '18px Space Mono, monospace';
+    ctx.fillText('JOIN THE DIGITAL MEDITATION REVOLUTION', canvas.width / 2, footerY + 45);
+
+    // Add ROJ logo with glow effect
+    const logo = new Image();
+    logo.onload = () => {
+      const logoSize = 50;
+      const logoX = (canvas.width - logoSize) / 2;
+      const logoY = footerY - 40;
+      
+      // Add glow behind logo
+      ctx.shadowColor = '#9C27B0';
+      ctx.shadowBlur = 20;
+      ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+      ctx.shadowBlur = 0;
     };
     logo.src = '/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png';
 
     return canvas;
-  }, [userEmail, totalPoints, streak, totalSessions, totalDuration, profileUrl]);
+  }, [userEmail, totalPoints, streak, totalSessions, totalDuration, profileUrl, chartData, selectedPeriod]);
 
   const handleDownload = useCallback(() => {
     const canvas = generateImage();

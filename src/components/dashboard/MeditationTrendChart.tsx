@@ -147,6 +147,8 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
                   totalSessions={totalCompletedSessions}
                   totalDuration={formatDurationDetails(totalDuration)}
                   profileUrl={`https://roseofjericho.xyz/profile/${user.email?.split('@')[0]}`}
+                  chartData={chartData}
+                  selectedPeriod={selectedPeriod}
                 />
               </div>
             )}

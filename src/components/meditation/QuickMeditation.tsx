@@ -298,7 +298,7 @@ export const QuickMeditation: React.FC = () => {
       <ImmersiveMeditationOverlay isActive={showImmersiveOverlay} timeRemaining={timeRemaining} totalDuration={totalDuration} isTimerRunning={isTimerRunning} pet={pet} petEmotion={petEmotion} onExit={handleOverlayExit} onMovementPenalty={handleMovementPenalty} />
       
       {/* Fullscreen meditation setup - no card wrapper */}
-      <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-8">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-4">
         {isTimerRunning && sessionId ? <div className="hidden">
             <MeditationTimer initialType="mindfulness" initialDuration={selectedDuration} onComplete={handleMeditationComplete} sessionId={sessionId} />
           </div> : <div className="w-full max-w-4xl space-y-12 text-center">

@@ -301,7 +301,7 @@ export const QuickMeditation: React.FC = () => {
       <div className="min-h-screen w-full flex flex-col items-center justify-center px-4 py-4">
         {isTimerRunning && sessionId ? <div className="hidden">
             <MeditationTimer initialType="mindfulness" initialDuration={selectedDuration} onComplete={handleMeditationComplete} sessionId={sessionId} />
-          </div> : <div className="w-full max-w-4xl space-y-12 text-center">
+          </div> : <div className="w-full max-w-4xl space-y-6 text-center">
             {/* Large title */}
             <motion.div initial={{
           opacity: 0,
@@ -328,7 +328,7 @@ export const QuickMeditation: React.FC = () => {
         }} transition={{
           duration: 0.6,
           delay: 0.2
-        }} className="space-y-8">
+        }} className="space-y-4">
               
               <div className="max-w-3xl mx-auto">
                 <DurationSelector selectedDuration={selectedDuration} setSelectedDuration={setSelectedDuration} isRunning={isTimerRunning} />
@@ -345,7 +345,7 @@ export const QuickMeditation: React.FC = () => {
         }} transition={{
           duration: 0.6,
           delay: 0.4
-        }} className="space-y-8">
+        }} className="space-y-4">
               <motion.div whileHover={{
             scale: 1.02
           }} whileTap={{

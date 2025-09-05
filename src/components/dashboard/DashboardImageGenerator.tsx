@@ -34,6 +34,16 @@ export const DashboardImageGenerator = ({
 }: DashboardImageGeneratorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  console.log('DashboardImageGenerator props:', { 
+    userEmail, 
+    totalPoints, 
+    streak, 
+    totalSessions, 
+    totalDuration, 
+    profileUrl, 
+    selectedPeriod 
+  });
+
   const generateImage = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
@@ -275,6 +285,7 @@ export const DashboardImageGenerator = ({
     };
 
     // Draw stat cards in a single row
+    console.log('Drawing stat cards with streak value:', streak);
     drawStatCard(startX, cardY, '🏆', totalPoints.toFixed(1), 'ROJ Points', '#FF00E5');
     drawStatCard(startX + cardWidth + cardSpacing, cardY, '🔥', `${streak}`, 'Day Streak', '#FF8A00');
     drawStatCard(startX + (cardWidth + cardSpacing) * 2, cardY, '📅', totalSessions.toString(), 'Sessions', '#00FFFF');

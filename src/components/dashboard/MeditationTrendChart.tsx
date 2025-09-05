@@ -28,6 +28,9 @@ export default function MeditationTrendChart({ sessions, userStreak, userTotalPo
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<7 | 14 | 30>(30);
 
+  // Debug logging to track streak values
+  console.log('MeditationTrendChart received:', { userStreak, userTotalPoints });
+
   const chartData = useMemo(() => {
     if (!sessions?.length) return [];
 
@@ -79,6 +82,8 @@ export default function MeditationTrendChart({ sessions, userStreak, userTotalPo
   // Use the actual user streak and points from Dashboard instead of calculating manually
   const actualStreak = userStreak || 0;
   const actualTotalPoints = userTotalPoints || totalPoints;
+
+  console.log('DashboardImageGenerator will receive:', { actualStreak, actualTotalPoints, userStreak });
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {

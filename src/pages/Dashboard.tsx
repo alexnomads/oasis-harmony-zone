@@ -114,6 +114,8 @@ export default function Dashboard() {
     totalDuration
   });
 
+  console.log("userData points data:", userData?.points);
+
   if (loading || loadingData) return null;
 
   const recentSessions = userData?.sessions.slice(0, 5) || [];

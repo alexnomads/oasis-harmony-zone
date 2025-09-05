@@ -20,9 +20,11 @@ interface MeditationSession {
 
 interface MeditationTrendChartProps {
   sessions: MeditationSession[];
+  userStreak?: number;
+  userTotalPoints?: number;
 }
 
-export default function MeditationTrendChart({ sessions }: MeditationTrendChartProps) {
+export default function MeditationTrendChart({ sessions, userStreak, userTotalPoints }: MeditationTrendChartProps) {
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<7 | 14 | 30>(30);
 
@@ -74,34 +76,9 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
     .filter(s => s.status === 'completed')
     .reduce((acc, session) => acc + (session.points_earned || 0), 0);
   
-  // Calculate streak (simplified - consecutive days with sessions)
-  const today = new Date();
-  const completedSessions = sessions
-    .filter(s => s.status === 'completed')
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  
-  let streak = 0;
-  if (completedSessions.length > 0) {
-    const sessionDates = completedSessions.map(s => 
-      new Date(s.created_at).toDateString()
-    );
-    const uniqueDates = [...new Set(sessionDates)];
-    
-    // Check if today has a session
-    const todayStr = today.toDateString();
-    const yesterdayStr = new Date(today.getTime() - 24 * 60 * 60 * 1000).toDateString();
-    
-    if (uniqueDates.includes(todayStr) || uniqueDates.includes(yesterdayStr)) {
-      for (let i = 0; i < uniqueDates.length; i++) {
-        const checkDate = new Date(today.getTime() - i * 24 * 60 * 60 * 1000).toDateString();
-        if (uniqueDates.includes(checkDate)) {
-          streak++;
-        } else {
-          break;
-        }
-      }
-    }
-  }
+  // Use the actual user streak and points from Dashboard instead of calculating manually
+  const actualStreak = userStreak || 0;
+  const actualTotalPoints = userTotalPoints || totalPoints;
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -142,8 +119,8 @@ export default function MeditationTrendChart({ sessions }: MeditationTrendChartP
               <div className="flex justify-center sm:justify-end">
                 <DashboardImageGenerator
                   userEmail={user.email || ''}
-                  totalPoints={totalPoints}
-                  streak={streak}
+                  totalPoints={actualTotalPoints}
+                  streak={actualStreak}
                   totalSessions={totalCompletedSessions}
                   totalDuration={formatDurationDetails(totalDuration)}
                   profileUrl={`https://roseofjericho.xyz/profile/${user.email?.split('@')[0]}`}

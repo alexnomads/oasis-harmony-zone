@@ -267,7 +267,11 @@ export default function Dashboard() {
                 </motion.div>
               </motion.div>
 
-            <MeditationTrendChart sessions={userData?.sessions || []} />
+            <MeditationTrendChart 
+              sessions={userData?.sessions || []} 
+              userStreak={streak}
+              userTotalPoints={totalPoints}
+            />
 
             <motion.div
               initial={{ opacity: 0, x: 20 }}

@@ -5,31 +5,28 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Clock } from "lucide-react";
 import { trackEvent } from "@/components/analytics/GoogleAnalytics";
-
 export const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = ["Wellness🧠", "Meditation🧘🏼‍♂️", "Fitness🏋️"];
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const navigate = useNavigate();
-
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
-  
   useEffect(() => {
     if (typeof window.gtag !== 'undefined') {
       trackEvent('engagement', 'view_hero_section');
     }
   }, []);
-
   const handleFollow = () => {
     window.open('https://x.com/ROJOasis', '_blank');
     trackEvent('social', 'click_follow_twitter', '@ROJOasis');
   };
-
   const handleMainButtonClick = () => {
     if (user) {
       trackEvent('navigation', 'start_meditation');
@@ -39,21 +36,10 @@ export const Hero = () => {
       navigate('/?login=true');
     }
   };
-
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-1 sm:pt-2 w-full">
+  return <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-1 sm:pt-2 w-full">
       <div className="absolute inset-0 w-full h-full">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
-        >
-          <source
-            src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4"
-            type="video/mp4"
-          />
+        <video autoPlay loop muted playsInline className="absolute top-0 left-0 w-full h-full object-cover opacity-20">
+          <source src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         
@@ -62,20 +48,19 @@ export const Hero = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-3xl mx-auto"
-        >
+        <motion.div initial={{
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.8
+      }} className="max-w-3xl mx-auto">
           <div className="w-full flex justify-center mb-2 sm:mb-4">
             <div className="relative">
-              <img 
-                src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
-                alt="ROJ Logo" 
-                className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]"
-              />
-              <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse"></div>
+              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
+              <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse py-0"></div>
             </div>
           </div>
           
@@ -92,42 +77,32 @@ export const Hero = () => {
           
           <div className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 text-white/90 h-[60px] sm:h-[80px] flex flex-col items-center justify-center">
             <p className="mb-2 text-sm sm:text-base md:text-xl retro-text">An AI Agent that rewards you when focusing on</p>
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="cyber-heading text-3xl sm:text-5xl md:text-7xl mb-2"
-            >
+            <motion.div key={currentSlide} initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} exit={{
+            opacity: 0,
+            y: -20
+          }} transition={{
+            duration: 0.5
+          }} className="cyber-heading text-3xl sm:text-5xl md:text-7xl mb-2">
               {slides[currentSlide]}
             </motion.div>
           </div>
           
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 w-full">
-            <button
-              onClick={handleMainButtonClick}
-              className="retro-button px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none"
-            >
-              {user ? (
-                <>
-                  <Clock className="mr-2 flex-shrink-0" size={16} />
-                  <span className="text-center leading-tight">Meditate & Accrue Points Now</span>
-                </>
-              ) : (
-                "Sign In"
-              )}
+            <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none">
+              {user ? <>
+                  <Clock size={16} className="mr-2 flex-shrink-0 mx-[140px]" />
+                  <span className="text-center leading-tight font-extrabold text-2xl">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
+                </> : "Sign In"}
             </button>
             
-            <button
-              onClick={handleFollow}
-              className="tape-card px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full sm:w-auto max-w-[320px] sm:max-w-none"
-            >
-              <img 
-                src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" 
-                alt="X Logo" 
-                className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 invert"
-              /> 
+            <button onClick={handleFollow} className="tape-card px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full sm:w-auto max-w-[320px] sm:max-w-none">
+              <img src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" alt="X Logo" className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 invert" /> 
               <span className="whitespace-nowrap font-mono">Follow @ROJOasis</span>
             </button>
           </div>
@@ -135,6 +110,5 @@ export const Hero = () => {
       </div>
 
       <div className="h-2 sm:h-4"></div>
-    </section>
-  );
+    </section>;
 };

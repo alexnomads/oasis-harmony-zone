@@ -36,7 +36,7 @@ export const Hero = () => {
       navigate('/?login=true');
     }
   };
-  return <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-0 sm:pt-1 w-full">
+  return <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-0 sm:pt-1 lg:pt-8 w-full">
       <div className="absolute inset-0 w-full h-full">
         <video autoPlay loop muted playsInline className="absolute top-0 left-0 w-full h-full object-cover opacity-20">
           <source src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4" type="video/mp4" />
@@ -47,7 +47,7 @@ export const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10 mix-blend-overlay"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-4 text-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-12 xl:px-16 py-2 sm:py-4 lg:py-12 xl:py-16 text-center">
         <motion.div initial={{
         opacity: 0,
         y: 20
@@ -56,27 +56,27 @@ export const Hero = () => {
         y: 0
       }} transition={{
         duration: 0.8
-      }} className="max-w-3xl mx-auto">
-          <div className="w-full flex justify-center mb-2 sm:mb-3">
-            <span className="inline-block px-4 py-2 text-xs sm:text-sm font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
+      }} className="max-w-3xl lg:max-w-5xl mx-auto lg:space-y-8 xl:space-y-12">
+          <div className="w-full flex justify-center mb-2 sm:mb-3 lg:mb-8 xl:mb-12">
+            <span className="inline-block px-4 py-2 lg:px-8 lg:py-4 text-xs sm:text-sm lg:text-base font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
               <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full opacity-50"></div>
             </span>
           </div>
           
-          <div className="w-full flex justify-center mb-2 sm:mb-4">
+          <div className="w-full flex justify-center mb-2 sm:mb-4 lg:mb-8 xl:mb-12">
             <div className="relative">
-              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
+              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
               <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse py-0"></div>
             </div>
           </div>
           
-          <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-2 sm:mb-4 glitch-text" data-text="Rose of Jericho">
+          <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black mb-2 sm:mb-4 lg:mb-8 xl:mb-12 glitch-text" data-text="Rose of Jericho">
             Rose of Jericho
           </h1>
           
-          <div className="text-lg sm:text-xl md:text-2xl mb-3 sm:mb-4 text-white/90 h-[60px] sm:h-[80px] flex flex-col items-center justify-center">
-            <p className="mb-2 text-sm sm:text-base md:text-xl retro-text">An AI Agent that rewards you when focusing on</p>
+          <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-3 sm:mb-4 lg:mb-8 xl:mb-12 text-white/90 h-[60px] sm:h-[80px] lg:h-[120px] xl:h-[140px] flex flex-col items-center justify-center">
+            <p className="mb-2 lg:mb-4 xl:mb-6 text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl retro-text">An AI Agent that rewards you when focusing on</p>
             <motion.div key={currentSlide} initial={{
             opacity: 0,
             y: 20
@@ -88,16 +88,16 @@ export const Hero = () => {
             y: -20
           }} transition={{
             duration: 0.5
-          }} className="cyber-heading text-3xl sm:text-5xl md:text-7xl mb-2">
+          }} className="cyber-heading text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl mb-2">
               {slides[currentSlide]}
             </motion.div>
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 w-full">
-            <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 lg:gap-8 xl:gap-12 w-full lg:mt-12 xl:mt-16">
+            <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-6 lg:py-8 xl:py-10 text-xs sm:text-lg lg:text-xl xl:text-2xl rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none lg:max-w-none">
               {user ? <>
                   <Clock size={16} className="mr-2 flex-shrink-0 mx-[140px]" />
-                  <span className="text-center leading-tight font-extrabold text-2xl">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
+                  <span className="text-center leading-tight font-extrabold text-2xl lg:text-3xl xl:text-4xl">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
                 </> : "Sign In"}
             </button>
             
@@ -106,6 +106,6 @@ export const Hero = () => {
         </motion.div>
       </div>
 
-      <div className="h-2 sm:h-4"></div>
+      <div className="h-2 sm:h-4 lg:h-8 xl:h-12"></div>
     </section>;
 };

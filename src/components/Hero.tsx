@@ -36,7 +36,7 @@ export const Hero = () => {
       navigate('/?login=true');
     }
   };
-  return <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-1 sm:pt-2 w-full">
+  return <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-0 sm:pt-1 w-full">
       <div className="absolute inset-0 w-full h-full">
         <video autoPlay loop muted playsInline className="absolute top-0 left-0 w-full h-full object-cover opacity-20">
           <source src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4" type="video/mp4" />
@@ -47,7 +47,7 @@ export const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10 mix-blend-overlay"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 text-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-4 text-center">
         <motion.div initial={{
         opacity: 0,
         y: 20

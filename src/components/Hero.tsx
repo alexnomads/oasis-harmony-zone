@@ -101,10 +101,7 @@ export const Hero = () => {
                 </> : "Sign In"}
             </button>
             
-            <button onClick={handleFollow} className="tape-card px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full border border-secondary/50 bg-secondary/10 hover:bg-secondary/20 text-white transition-all duration-300 w-full sm:w-auto max-w-[320px] sm:max-w-none">
-              <img src="/lovable-uploads/0b88d178-91da-4c76-9d67-7e294d0a1de6.png" alt="X Logo" className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 invert" /> 
-              <span className="whitespace-nowrap font-mono">Follow @ROJOasis</span>
-            </button>
+            
           </div>
         </motion.div>
       </div>

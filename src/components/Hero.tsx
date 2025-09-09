@@ -96,7 +96,7 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 w-full">
             <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none">
               {user ? <>
-                  <Clock size={16} className="mr-2 flex-shrink-0 mx-[140px]" />
+                  
                   <span className="text-center leading-tight font-extrabold text-2xl">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
                 </> : "Sign In"}
             </button>

@@ -47,7 +47,7 @@ export const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-secondary/10 mix-blend-overlay"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-2 sm:py-4 lg:py-6 xl:py-8 text-center h-full flex items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 xl:px-12 py-1 sm:py-2 lg:py-3 xl:py-4 text-center h-full flex items-center">
         <motion.div initial={{
         opacity: 0,
         y: 20
@@ -56,9 +56,9 @@ export const Hero = () => {
         y: 0
       }} transition={{
         duration: 0.8
-      }} className="max-w-3xl lg:max-w-5xl mx-auto w-full flex flex-col justify-center space-y-3 sm:space-y-4 lg:space-y-6 xl:space-y-8">
+      }} className="max-w-3xl lg:max-w-5xl mx-auto w-full flex flex-col justify-center space-y-2 sm:space-y-3 lg:space-y-4 xl:space-y-5">
           <div className="w-full flex justify-center">
-            <span className="inline-block px-4 py-2 lg:px-6 lg:py-3 text-xs sm:text-sm lg:text-base font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
+            <span className="inline-block px-3 py-1 lg:px-4 lg:py-2 text-xs sm:text-sm lg:text-base font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
               <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full opacity-50"></div>
             </span>
@@ -66,17 +66,17 @@ export const Hero = () => {
           
           <div className="w-full flex justify-center">
             <div className="relative">
-              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
+              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
               <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse py-0"></div>
             </div>
           </div>
           
-          <h1 className="cyber-heading text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black glitch-text" data-text="Rose of Jericho">
+          <h1 className="cyber-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black glitch-text" data-text="Rose of Jericho">
             Rose of Jericho
           </h1>
           
-          <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white/90 h-[50px] sm:h-[60px] lg:h-[80px] xl:h-[100px] flex flex-col items-center justify-center">
-            <p className="mb-1 lg:mb-2 text-xs sm:text-sm md:text-lg lg:text-xl xl:text-2xl retro-text">An AI Agent that rewards you when focusing on</p>
+          <div className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 h-[40px] sm:h-[50px] lg:h-[60px] xl:h-[70px] flex flex-col items-center justify-center">
+            <p className="mb-1 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl retro-text">An AI Agent that rewards you when focusing on</p>
             <motion.div key={currentSlide} initial={{
             opacity: 0,
             y: 20
@@ -88,16 +88,16 @@ export const Hero = () => {
             y: -20
           }} transition={{
             duration: 0.5
-          }} className="cyber-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl">
+          }} className="cyber-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
               {slides[currentSlide]}
             </motion.div>
           </div>
           
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 lg:gap-8 w-full">
-            <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-6 lg:px-8 xl:px-10 py-3 sm:py-4 lg:py-5 xl:py-6 text-xs sm:text-base lg:text-lg xl:text-xl rounded-full w-full sm:w-auto max-w-[300px] sm:max-w-none">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 lg:gap-6 w-full">
+            <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-4 lg:px-6 xl:py-4 py-2 sm:py-3 lg:py-4 text-xs sm:text-sm lg:text-base xl:text-lg rounded-full w-full sm:w-auto max-w-[280px] sm:max-w-none">
               {user ? <>
-                  <Clock size={16} className="mr-2 flex-shrink-0" />
-                  <span className="text-center leading-tight font-extrabold text-lg lg:text-xl xl:text-2xl">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
+                  <Clock size={14} className="mr-1 flex-shrink-0" />
+                  <span className="text-center leading-tight font-extrabold text-sm lg:text-base xl:text-lg">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
                 </> : "Sign In"}
             </button>
           </div>

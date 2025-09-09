@@ -57,18 +57,18 @@ export const Hero = () => {
       }} transition={{
         duration: 0.8
       }} className="max-w-3xl mx-auto">
-          <div className="w-full flex justify-center mb-2 sm:mb-4">
-            <div className="relative">
-              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
-              <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse py-0"></div>
-            </div>
-          </div>
-          
           <div className="w-full flex justify-center mb-2 sm:mb-3">
             <span className="inline-block px-4 py-2 text-xs sm:text-sm font-mono uppercase tracking-wider border-2 border-primary bg-black/90 text-primary rounded-full backdrop-blur-sm shadow-[0_0_30px_hsl(var(--primary)/0.8)] relative animate-pulse">
               <span className="relative z-10">Your mental wellness comes before your crypto gains.</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full opacity-50"></div>
             </span>
+          </div>
+          
+          <div className="w-full flex justify-center mb-2 sm:mb-4">
+            <div className="relative">
+              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
+              <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse py-0"></div>
+            </div>
           </div>
           
           <h1 className="cyber-heading text-4xl sm:text-5xl md:text-7xl font-black mb-2 sm:mb-4 glitch-text" data-text="Rose of Jericho">

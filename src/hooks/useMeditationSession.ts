@@ -246,27 +246,50 @@ export const useMeditationSession = (userId: string | undefined) => {
 
   useEffect(() => {
     if (isRunning) {
-      const handleInteraction = () => {
+      let touchMoveTimeout: NodeJS.Timeout;
+      let lastInteractionTime = 0;
+      const INTERACTION_THROTTLE = 5000; // 5 seconds between notifications
+
+      const handleMovement = (eventType: string) => {
+        const now = Date.now();
+        if (now - lastInteractionTime < INTERACTION_THROTTLE) return;
+        
+        lastInteractionTime = now;
+        handleMovementPenalty(0.15);
         toast({
           title: "Movement Detected",
-          description: "Please remain still during meditation. Moving or switching windows may affect your points.",
+          description: "Try to remain still during meditation for better focus.",
           variant: "destructive",
         });
       };
 
-      window.addEventListener('mousemove', handleInteraction);
-      window.addEventListener('blur', handleInteraction);
-      window.addEventListener('touchstart', handleInteraction);
-      window.addEventListener('touchmove', handleInteraction);
+      const handleMouseMove = () => handleMovement('mouse');
+      
+      // Only track significant touch movements, not taps or small gestures
+      const handleTouchMove = (e: TouchEvent) => {
+        if (e.touches.length > 0) {
+          clearTimeout(touchMoveTimeout);
+          touchMoveTimeout = setTimeout(() => {
+            handleMovement('touch');
+          }, 1000); // Only after 1 second of continuous movement
+        }
+      };
+
+      // Don't track window blur on mobile devices as it's too sensitive
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      window.addEventListener('mousemove', handleMouseMove);
+      if (!isMobile) {
+        window.addEventListener('touchmove', handleTouchMove);
+      }
 
       return () => {
-        window.removeEventListener('mousemove', handleInteraction);
-        window.removeEventListener('blur', handleInteraction);
-        window.removeEventListener('touchstart', handleInteraction);
-        window.removeEventListener('touchmove', handleInteraction);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('touchmove', handleTouchMove);
+        clearTimeout(touchMoveTimeout);
       };
     }
-  }, [isRunning, toast]);
+  }, [isRunning, toast, handleMovementPenalty]);
 
   return {
     isRunning,

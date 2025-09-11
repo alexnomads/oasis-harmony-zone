@@ -81,7 +81,10 @@ export const MeditationTimer: React.FC<TimerProps> = ({
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden && isRunning) {
+      // Only track visibility changes on desktop, mobile browsers are too sensitive
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (document.hidden && isRunning && !isMobile) {
         setFocusLost(prev => prev + 1);
         toast({
           title: "Focus Lost",
@@ -92,7 +95,10 @@ export const MeditationTimer: React.FC<TimerProps> = ({
     };
 
     const handleWindowBlur = () => {
-      if (isRunning) {
+      // Only track window blur on desktop, mobile browsers trigger this inappropriately
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isRunning && !isMobile) {
         setWindowBlurs(prev => prev + 1);
         toast({
           title: "Window Switch Detected",

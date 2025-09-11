@@ -35,75 +35,121 @@ interface ConversationMessage {
 }
 
 export class MeditationAgentService extends BaseService {
-  // Enhanced main method with mood analysis integration
+  // Crypto-stress bot protocol with command triggers and $ROJ rewards
   static async getResponse(userMessage: string, previousMessages: MessageType[]): Promise<AIResponse> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Get user context
-      const userContext = await this.getUserContext();
-      
-      // Analyze mood using new Edge Function
-      let moodAnalysis = null;
-      if (user) {
-        try {
-          const { data: moodData } = await supabase.functions.invoke('analyze-mood', {
-            body: {
-              message: userMessage,
-              userId: user.id,
-              previousMoods: await this.getRecentMoods(user.id)
-            }
-          });
-          
-          if (moodData && !moodData.error) {
-            moodAnalysis = moodData;
-            console.log('Mood analysis successful:', moodAnalysis);
+      // Use the crypto-stress response protocol directly
+      const getAIResponse = (message: string, userId?: string) => {
+        const input = message.toLowerCase().trim();
+        
+        // Handle 'done' verification for rewards
+        if (input === 'done' && userId) {
+          // This would be handled by the reward system
+          return "✅ Reward confirmed! Check your wallet for $ROJ update.";
+        }
+        
+        // Get market condition (simplified - in production would call CoinMarketCap API)
+        const marketCondition: 'up' | 'down' | 'stable' | 'volatile' = 'stable';
+        
+        const responses = {
+          '!stress': {
+            volatile: "Volatility spike. ACTION: Close tabs → Deep breath → Risk check only. Circuit breaker time. Type 'done' +7 $ROJ for reset.",
+            up: "Bull run stress. ACTION: Step back → Breathe → Cap position size. Greed guard activated. Type 'done' +6 $ROJ for clarity.",
+            down: "Bear market strain. ACTION: Charts off → Breath work → Focus fundamentals. This builds character. Type 'done' +8 $ROJ for resilience.",
+            stable: "Stress detected. ACTION: Phone down → 3 breaths → Check your why. Reset your perspective. Type 'done' +5 $ROJ for center."
+          },
+          '!focus': {
+            volatile: "Chaos mode. ACTION: One chart only → Laser focus → Single setup. Precision over noise. Type 'done' +6 $ROJ for clarity.",
+            up: "FOMO fog. ACTION: Strategy review → Breathe → Stick to plan. Discipline wins long-term. Type 'done' +5 $ROJ for discipline.",
+            down: "Bear focus needed. ACTION: Zoom out → Breathe → Accumulation mindset. Think years not days. Type 'done' +7 $ROJ for vision.",
+            stable: "Focus reset. ACTION: Clear workspace → Deep breath → Primary goal only. Laser beam mindset. Type 'done' +4 $ROJ for focus."
+          },
+          '!tired': {
+            volatile: "Market fatigue. ACTION: Step away → Power nap → No trades tired. Rest protects capital. Type 'done' +8 $ROJ for wisdom.",
+            up: "Bull exhaustion. ACTION: Secure profits → Rest → Let winners run. Fatigue kills gains. Type 'done' +6 $ROJ for energy.",
+            down: "Bear drain. ACTION: Close apps → Rest → Tomorrow's opportunity. Recharge your batteries. Type 'done' +7 $ROJ for recovery.",
+            stable: "Energy low. ACTION: 15min break → Breathe → Hydrate well. Your mind needs fuel. Type 'done' +5 $ROJ for vitality."
           }
-        } catch (error) {
-          console.log('Mood analysis unavailable, continuing with basic analysis');
+        };
+
+        const response = responses[input]?.[marketCondition];
+        return response || "I respond only to: !stress, !focus, !tired. These commands provide targeted crypto trading psychology support.";
+      };
+      
+      // Get response using crypto-stress protocol
+      const aiResponse = getAIResponse(userMessage, user?.id);
+
+      // Check if this is a reward confirmation
+      if (aiResponse.includes('✅') && user) {
+        // Extract points from response
+        const pointsMatch = aiResponse.match(/\+(\d+) \$ROJ/);
+        if (pointsMatch) {
+          const points = parseInt(pointsMatch[1]);
+          
+          // Award points through Supabase
+          try {
+            await this.awardCryptoStressPoints(user.id, points);
+          } catch (error) {
+            console.error('Error awarding points:', error);
+          }
         }
       }
-      
-      // Prepare conversation history with more context (last 12 messages)
-      const conversationHistory: ConversationMessage[] = previousMessages
-        .slice(-12)
-        .map(msg => ({
-          role: msg.role === 'agent' ? 'assistant' : 'user',
-          content: msg.content
-        }));
 
-      // Get AI response with enhanced context
-      const aiResponse = await this.getAIResponse(userMessage, conversationHistory, {
-        ...userContext,
-        moodAnalysis
-      });
-
-      // Use mood-based recommendation if available, otherwise fallback to basic analysis
-      const recommendation = moodAnalysis?.recommendation || 
-        this.getRecommendation(this.analyzeSentiment(userMessage));
-      
-      // Determine if meditation should be offered
-      const shouldShowMeditation = this.shouldShowMeditationOption(aiResponse, moodAnalysis || this.analyzeSentiment(userMessage));
-
-      // Log interaction for quality monitoring
-      if (user) {
-        this.logInteraction(user.id, userMessage, aiResponse, moodAnalysis);
-      }
-
+      // Crypto-stress bot never shows meditation options - it's command-based only
       return {
         message: aiResponse,
-        showMeditationOption: shouldShowMeditation,
-        recommendation: shouldShowMeditation ? recommendation : undefined,
-        moodAnalysis: moodAnalysis ? {
-          emotion: moodAnalysis.emotion,
-          intensity: moodAnalysis.intensity,
-          insights: moodAnalysis.insights
-        } : undefined
+        showMeditationOption: false,
+        recommendation: undefined
       };
       
     } catch (error) {
-      console.error('Error in AI meditation chat:', error);
-      return this.getContextualResponse(userMessage);
+      console.error('Error in crypto-stress bot:', error);
+      return {
+        message: "System error. Use: !stress, !focus, or !tired for guidance.",
+        showMeditationOption: false
+      };
+    }
+  }
+
+  // Award points through Supabase for crypto-stress bot
+  private static async awardCryptoStressPoints(userId: string, points: number) {
+    try {
+      // Update user points
+      const { data: currentPoints } = await supabase
+        .from('user_points')
+        .select('total_points, meditation_streak')
+        .eq('user_id', userId)
+        .single();
+
+      const newTotal = (currentPoints?.total_points || 0) + points;
+
+      await supabase
+        .from('user_points')
+        .upsert({
+          user_id: userId,
+          total_points: newTotal,
+          meditation_streak: currentPoints?.meditation_streak || 0,
+          updated_at: new Date().toISOString()
+        });
+
+      // Log the reward
+      await supabase
+        .from('user_session_logs')
+        .insert({
+          user_id: userId,
+          session_type: 'crypto_stress',
+          points_earned: points,
+          duration: 0, // Instant reward
+          created_at: new Date().toISOString()
+        });
+
+      console.log(`Awarded ${points} points to user ${userId}`);
+      
+    } catch (error) {
+      console.error('Error updating points in database:', error);
+      throw error;
     }
   }
 

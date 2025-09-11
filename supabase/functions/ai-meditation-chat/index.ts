@@ -26,310 +26,126 @@ interface RequestBody {
 }
 
 serve(async (req) => {
+  console.log('Crypto-Stress Bot v2 - Protocol Activated');
+  
+  // Handle CORS
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const { message, conversationHistory, userId, userContext }: RequestBody = await req.json()
-
-    const hfApiKey = Deno.env.get('HUGGING_FACE_API_KEY')
+    const { message, conversationHistory, userContext } = await req.json();
     
-    console.log('AI Coach request:', {
-      hasApiKey: !!hfApiKey,
-      keyLength: hfApiKey?.length || 0,
-      userId: userId || 'anonymous',
-      messagePreview: message.substring(0, 50)
-    })
-
-    if (!hfApiKey) {
-      console.error('HUGGING_FACE_API_KEY not found')
-      return new Response(
-        JSON.stringify({ 
-          response: "I need an API key to provide personalized responses. Please configure your Hugging Face API key in Supabase Edge Functions secrets.",
-          isFallback: true,
-          error: "Missing API key"
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200
-        }
-      )
+    if (!message) {
+      throw new Error('No message provided');
     }
 
-    // Create enhanced system prompt with conversation history
-    const recentContext = conversationHistory.slice(-4).map(msg => 
-      `${msg.role}: ${msg.content}`
-    ).join('\n');
+    console.log('Processing crypto-stress command:', {
+      message: message.toLowerCase().trim(),
+      hasUserContext: !!userContext
+    });
 
-    const systemPrompt = `You are Rose of Jericho, a compassionate AI wellness coach specializing in meditation and mindfulness. You help people, especially those dealing with stress from trading and financial markets.
+    // Use crypto-stress response protocol directly
+    const response = await getCryptoStressResponse(message.toLowerCase().trim());
 
-Your personality:
-- Warm and understanding
-- Conversational and engaging (ask follow-up questions)
-- Concise but meaningful responses (2-3 sentences max)
-- Focus on practical meditation guidance
-- Remember and build on previous conversation
-
-${userContext ? `User info: ${userContext.meditationStreak || 0} day streak, ${userContext.totalPoints || 0} points, dominant mood: ${userContext.dominantMood || 'unknown'}` : ''}
-
-Recent conversation:
-${recentContext}
-
-Current message: "${message}"
-
-Respond naturally and personally, building on the conversation context:`
-
-    console.log('Attempting AI response generation...')
-    
-    // Try reliable models in order of preference
-    let aiResponse = null
-    
-    // 1. Try DialoGPT-medium (most reliable for conversation)
-    console.log('Trying DialoGPT-medium...')
-    aiResponse = await tryDialoGPTMedium(hfApiKey, message, systemPrompt)
-    
-    // 2. Fallback to Flan-T5-base (instruction following)
-    if (!aiResponse) {
-      console.log('Trying Flan-T5-base...')
-      aiResponse = await tryFlanT5Base(hfApiKey, message, systemPrompt)
-    }
-
-    // 3. Fallback to DistilBERT (lightweight)
-    if (!aiResponse) {
-      console.log('Trying DistilBERT...')
-      aiResponse = await tryDistilBERT(hfApiKey, message, systemPrompt)
-    }
-
-    // 4. Final intelligent fallback
-    if (!aiResponse) {
-      console.log('All models failed, using intelligent fallback')
-      aiResponse = getContextualFallback(message, userContext)
-    }
-
-    console.log('Final AI response generated:', {
-      responseLength: aiResponse.length,
-      preview: aiResponse.substring(0, 100)
-    })
+    console.log('Crypto-stress response generated:', response.substring(0, 50) + '...');
 
     return new Response(
       JSON.stringify({ 
-        response: aiResponse,
-        isFallback: !aiResponse || aiResponse.includes('experiencing some technical')
+        response,
+        protocol: 'crypto-stress-v2'
       }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
   } catch (error) {
-    console.error('Edge function error:', error)
-    
-    const intelligentResponse = getContextualFallback(message || "Hello", userContext)
+    console.error('Error in crypto-stress bot:', error);
     
     return new Response(
       JSON.stringify({ 
-        response: intelligentResponse,
-        isFallback: true,
-        error: error.message 
+        response: "System error. Use: !stress, !focus, or !tired for guidance.",
+        error: true 
       }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
-      }
-    )
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 })
 
-async function tryDialoGPTMedium(apiKey: string, message: string, systemPrompt: string): Promise<string | null> {
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 8000) // 8 second timeout
-
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: `Context: ${systemPrompt}\n\nUser: ${message}\nRose:`,
-        parameters: {
-          max_new_tokens: 100,
-          temperature: 0.7,
-          top_p: 0.9,
-          do_sample: true,
-          return_full_text: false
-        }
-      }),
-      signal: controller.signal
-    })
-
-    clearTimeout(timeout)
-
-    if (!response.ok) {
-      console.error('DialoGPT API error:', response.status, response.statusText)
-      return null
-    }
-
-    const result = await response.json()
-    
-    if (Array.isArray(result) && result[0]?.generated_text) {
-      return cleanResponse(result[0].generated_text)
-    }
-    
-    return null
-  } catch (error) {
-    console.error('DialoGPT error:', error)
-    return null
-  }
-}
-
-async function tryFlanT5Base(apiKey: string, message: string, systemPrompt: string): Promise<string | null> {
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 8000)
-
-    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: `As a meditation coach, respond to this person: "${message}" with encouragement and guidance.`,
-        parameters: {
-          max_new_tokens: 80,
-          temperature: 0.7,
-          do_sample: true
-        }
-      }),
-      signal: controller.signal
-    })
-
-    clearTimeout(timeout)
-
-    if (!response.ok) {
-      console.error('Flan-T5 API error:', response.status, response.statusText)
-      return null
-    }
-
-    const result = await response.json()
-    
-    if (Array.isArray(result) && result[0]?.generated_text) {
-      return cleanResponse(result[0].generated_text)
-    }
-    
-    return null
-  } catch (error) {
-    console.error('Flan-T5 error:', error)
-    return null
-  }
-}
-
-async function tryDistilBERT(apiKey: string, message: string, systemPrompt: string): Promise<string | null> {
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 6000)
-
-    const response = await fetch('https://api-inference.huggingface.co/models/distilbert-base-uncased', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: `meditation coach response to: ${message}`,
-        parameters: {
-          return_all_scores: false
-        }
-      }),
-      signal: controller.signal
-    })
-
-    clearTimeout(timeout)
-
-    if (!response.ok) {
-      console.error('DistilBERT API error:', response.status, response.statusText)
-      return null
-    }
-
-    // DistilBERT is a classification model, so we'll get a fallback response
-    return null
-  } catch (error) {
-    console.error('DistilBERT error:', error)
-    return null
-  }
-}
-
-function cleanResponse(response: string): string {
-  let cleaned = response
-    .replace(/^(Context:|User:|Rose:)/gm, '')
-    .replace(/^\s*[\r\n]/gm, '')
-    .trim()
-
-  // Remove any formatting artifacts
-  cleaned = cleaned.replace(/^[:\-\s]+/, '').trim()
-
-  // Ensure reasonable length
-  if (cleaned.length > 300) {
-    const sentences = cleaned.split(/[.!?]+/)
-    cleaned = sentences.slice(0, 2).join('. ')
-    if (cleaned && !cleaned.match(/[.!?]$/)) {
-      cleaned += '.'
-    }
-  }
-
-  // Only reject if empty or too short
-  if (!cleaned || cleaned.length < 10) {
-    return null
-  }
-
-  return cleaned
-}
-
-function getContextualFallback(userMessage: string, userContext: any): string {
-  const input = userMessage.toLowerCase()
+// Crypto-stress response protocol with live market data
+async function getCryptoStressResponse(command: string): Promise<string> {
+  // Get live market condition from CoinMarketCap
+  const marketCondition = await getMarketCondition();
   
-  // Question-based responses for better engagement
-  if (input.includes('how') || input.includes('what') || input.includes('why') || input.includes('when')) {
-    if (input.includes('meditat')) {
-      return "Meditation is about training your attention to stay present. The key is consistency - even 5 minutes daily can make a difference. What specific aspect would you like to explore?"
+  const responses = {
+    '!stress': {
+      volatile: "Volatility spike. ACTION: Close tabs → Deep breath → Risk check only. Circuit breaker time. Type 'done' +7 $ROJ for reset.",
+      up: "Bull run stress. ACTION: Step back → Breathe → Cap position size. Greed guard activated. Type 'done' +6 $ROJ for clarity.",
+      down: "Bear market strain. ACTION: Charts off → Breath work → Focus fundamentals. This builds character. Type 'done' +8 $ROJ for resilience.",
+      stable: "Stress detected. ACTION: Phone down → 3 breaths → Check your why. Reset your perspective. Type 'done' +5 $ROJ for center."
+    },
+    '!focus': {
+      volatile: "Chaos mode. ACTION: One chart only → Laser focus → Single setup. Precision over noise. Type 'done' +6 $ROJ for clarity.",
+      up: "FOMO fog. ACTION: Strategy review → Breathe → Stick to plan. Discipline wins long-term. Type 'done' +5 $ROJ for discipline.",
+      down: "Bear focus needed. ACTION: Zoom out → Breathe → Accumulation mindset. Think years not days. Type 'done' +7 $ROJ for vision.",
+      stable: "Focus reset. ACTION: Clear workspace → Deep breath → Primary goal only. Laser beam mindset. Type 'done' +4 $ROJ for focus."
+    },
+    '!tired': {
+      volatile: "Market fatigue. ACTION: Step away → Power nap → No trades tired. Rest protects capital. Type 'done' +8 $ROJ for wisdom.",
+      up: "Bull exhaustion. ACTION: Secure profits → Rest → Let winners run. Fatigue kills gains. Type 'done' +6 $ROJ for energy.",
+      down: "Bear drain. ACTION: Close apps → Rest → Tomorrow's opportunity. Recharge your batteries. Type 'done' +7 $ROJ for recovery.",
+      stable: "Energy low. ACTION: 15min break → Breathe → Hydrate well. Your mind needs fuel. Type 'done' +5 $ROJ for vitality."
     }
-    if (input.includes('start') || input.includes('begin')) {
-      return "Starting is simple: find a quiet spot, sit comfortably, and focus on your breath. Would you like me to guide you through your first session?"
-    }
-    if (input.includes('help')) {
-      return "I can help you with breathing techniques, stress relief meditations, or building a daily practice. What would be most useful for you right now?"
-    }
+  };
+
+  const response = responses[command]?.[marketCondition];
+  return response || "I respond only to: !stress, !focus, !tired. These commands provide targeted crypto trading psychology support.";
+}
+
+// CoinMarketCap integration with caching
+let marketCache = { condition: 'stable' as 'up' | 'down' | 'stable' | 'volatile', lastUpdate: 0 };
+
+async function getMarketCondition(): Promise<'up' | 'down' | 'stable' | 'volatile'> {
+  // Rate limiting: only update every 5 minutes
+  if (Date.now() - marketCache.lastUpdate < 300000) {
+    return marketCache.condition;
   }
   
-  // Stress-related
-  if (input.includes('stress') || input.includes('anxious') || input.includes('overwhelmed')) {
-    return "I understand you're feeling stressed. Let's focus on your breath together - even 30 seconds of mindful breathing can help center you. Would you like to try a short session?"
+  try {
+    console.log('Fetching market data from CoinMarketCap...');
+    
+    const response = await fetch('https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD', {
+      headers: {
+        'X-CMC_PRO_API_KEY': 'f781be7e-9c4c-44f5-8d0e-669bb1593323',
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const btc = data.data[0]; // Bitcoin as market indicator
+      const changePercent = btc.quote.USD.percent_change_24h;
+      
+      let condition: 'up' | 'down' | 'stable' | 'volatile' = 'stable';
+      
+      if (Math.abs(changePercent) > 5) {
+        condition = 'volatile';
+      } else if (changePercent > 2) {
+        condition = 'up';
+      } else if (changePercent < -2) {
+        condition = 'down';
+      } else {
+        condition = 'stable';
+      }
+      
+      marketCache = { condition, lastUpdate: Date.now() };
+      console.log(`Market condition updated: ${condition} (BTC: ${changePercent.toFixed(2)}%)`);
+      
+      return condition;
+    }
+  } catch (error) {
+    console.log('Market data unavailable, using cached/stable condition:', error);
   }
-
-  // Trading/crypto related
-  if (input.includes('crypto') || input.includes('trading') || input.includes('market')) {
-    return "Market volatility can be emotionally challenging. Meditation helps us respond from clarity rather than react from fear. A few minutes of mindfulness can improve your trading decisions."
-  }
-
-  // Meditation related
-  if (input.includes('meditat') || input.includes('practice') || input.includes('calm')) {
-    return "That's wonderful that you're interested in meditation! Regular practice, even just a few minutes daily, can transform how you handle stress. Ready to start a session?"
-  }
-
-  if (input.includes('thank') || input.includes('appreciate')) {
-    return "You're very welcome! It's my joy to support your wellness journey. What would be most helpful for you right now?"
-  }
-
-  // More engaging responses that ask questions
-  const engagingResponses = [
-    "I'm here to support your wellness journey. What's bringing you to meditation today?",
-    "Every moment is an opportunity for mindfulness. What would be most helpful for you right now?", 
-    "I'd love to help you find the right practice for your needs. How are you feeling today?",
-    "Meditation can help with stress, sleep, focus, and emotional balance. What draws you to practice?"
-  ]
   
-  return engagingResponses[Math.floor(Math.random() * engagingResponses.length)]
+  return marketCache.condition;
 }
+

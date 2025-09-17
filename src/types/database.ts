@@ -3,7 +3,7 @@ export type MeditationType = 'mindfulness' | 'breathing' | 'body_scan' | 'loving
 
 export type MeditationStatus = 'in_progress' | 'completed' | 'cancelled';
 
-export type WorkoutType = 'abs' | 'pushups';
+export type WorkoutType = 'abs' | 'pushups' | 'biceps';
 
 export interface MeditationSession {
   id: string;

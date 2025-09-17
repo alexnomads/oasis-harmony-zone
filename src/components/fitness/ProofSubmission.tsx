@@ -11,7 +11,7 @@ import { FitnessService } from "@/lib/services/fitnessService";
 import type { FitnessSession } from "@/types/database";
 
 interface ProofSubmissionProps {
-  workoutType: 'abs' | 'pushups';
+  workoutType: 'abs' | 'pushups' | 'biceps';
   sessionData: {
     reps_completed: number;
     duration: number;
@@ -61,8 +61,8 @@ export const ProofSubmission = ({ workoutType, sessionData, onBack, onSkip }: Pr
   };
 
   const generateTweetText = () => {
-    const workoutEmoji = workoutType === 'abs' ? '🏋️‍♂️' : '💪';
-    const workoutName = workoutType === 'abs' ? 'ABS' : 'PUSH UPS';
+    const workoutEmoji = workoutType === 'abs' ? '🏋️‍♂️' : workoutType === 'biceps' ? '💪' : '💪';
+    const workoutName = workoutType === 'abs' ? 'ABS' : workoutType === 'biceps' ? 'BICEPS' : 'PUSH UPS';
     
     return encodeURIComponent(
       `Just crushed a ${workoutName} workout! ${workoutEmoji}\n` +
@@ -151,7 +151,7 @@ export const ProofSubmission = ({ workoutType, sessionData, onBack, onSkip }: Pr
         <CardContent className="p-6">
           <div className="text-center space-y-2">
             <div className="text-4xl mb-2">
-              {workoutType === 'abs' ? '🏋️‍♂️' : '💪'}
+              {workoutType === 'abs' ? '🏋️‍♂️' : workoutType === 'biceps' ? '💪' : '💪'}
             </div>
             <h3 className="text-2xl font-bold text-green-400">
               {workoutType.toUpperCase()} WORKOUT COMPLETED!

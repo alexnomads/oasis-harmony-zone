@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Dumbbell, Users } from "lucide-react";
 import { AbsWorkout } from "./AbsWorkout";
 import { PushUpWorkout } from "./PushUpWorkout";
+import { BicepsWorkout } from "./BicepsWorkout";
 import { FitnessStats } from "./FitnessStats";
 export const FitnessContainer = () => {
-  const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups'>('selection');
+  const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups' | 'biceps'>('selection');
 
   // Listen for recommended workout start events
   useEffect(() => {
@@ -18,6 +19,8 @@ export const FitnessContainer = () => {
         setActiveWorkout('abs');
       } else if (workoutType === 'pushups') {
         setActiveWorkout('pushups');
+      } else if (workoutType === 'biceps') {
+        setActiveWorkout('biceps');
       }
     };
     window.addEventListener('setWorkoutType', handleSetWorkoutType as EventListener);
@@ -36,6 +39,8 @@ export const FitnessContainer = () => {
         setActiveWorkout('abs');
       } else if (workoutType === 'pushups') {
         setActiveWorkout('pushups');
+      } else if (workoutType === 'biceps') {
+        setActiveWorkout('biceps');
       }
     };
     window.addEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
@@ -52,6 +57,9 @@ export const FitnessContainer = () => {
   if (activeWorkout === 'pushups') {
     return <PushUpWorkout onBack={handleBackToSelection} />;
   }
+  if (activeWorkout === 'biceps') {
+    return <BicepsWorkout onBack={handleBackToSelection} />;
+  }
   return <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
@@ -65,7 +73,7 @@ export const FitnessContainer = () => {
       <FitnessStats />
 
       {/* Workout Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         <Card className="bg-black/20 backdrop-blur-sm border border-accent/30 hover:border-accent/50 transition-all duration-300 group cursor-pointer">
           <CardContent className="p-6">
             <div className="text-center space-y-4">
@@ -95,6 +103,23 @@ export const FitnessContainer = () => {
               </p>
               <Button onClick={() => setActiveWorkout('pushups')} className="retro-button w-full py-3 text-lg">
                 START PUSH UPS 💥
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/20 backdrop-blur-sm border border-accent/30 hover:border-accent/50 transition-all duration-300 group cursor-pointer">
+          <CardContent className="p-6">
+            <div className="text-center space-y-4">
+              <div className="text-6xl group-hover:scale-110 transition-transform duration-300">
+                💪
+              </div>
+              <h3 className="text-2xl font-bold text-accent">BICEPS CURLS</h3>
+              <p className="text-muted-foreground">
+                Build those arms with focused bicep curl exercises
+              </p>
+              <Button onClick={() => setActiveWorkout('biceps')} className="retro-button w-full py-3 text-lg">
+                START BICEPS 🔥
               </Button>
             </div>
           </CardContent>

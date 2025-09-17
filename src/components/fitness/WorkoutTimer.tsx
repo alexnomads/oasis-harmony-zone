@@ -8,13 +8,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useWakeLock } from "@/hooks/useWakeLock";
 
 interface WorkoutTimerProps {
-  workoutType: 'abs' | 'pushups';
+  workoutType: 'abs' | 'pushups' | 'biceps';
   onComplete: (reps: number, duration: number) => void;
+  fixedDuration?: number; // For biceps which is fixed to 5 minutes
 }
 
-export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => {
-  const [duration, setDuration] = useState(600); // 10 minutes default
-  const [timeRemaining, setTimeRemaining] = useState(duration);
+export const WorkoutTimer = ({ workoutType, onComplete, fixedDuration }: WorkoutTimerProps) => {
+  const initialDuration = fixedDuration ? fixedDuration * 60 : 600; // Convert minutes to seconds for fixedDuration
+  const [duration, setDuration] = useState(initialDuration);
+  const [timeRemaining, setTimeRemaining] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [showRepsInput, setShowRepsInput] = useState(false);
@@ -136,7 +138,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   };
 
   const selectDuration = (newDuration: number) => {
-    if (!isRunning && !isCompleted) {
+    if (!isRunning && !isCompleted && !fixedDuration) {
       setDuration(newDuration);
       setTimeRemaining(newDuration);
     }
@@ -209,7 +211,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
           </div>
 
           {/* Duration Preset Buttons */}
-          {!isRunning && !isCompleted && (
+          {!isRunning && !isCompleted && !fixedDuration && (
             <div className="text-center space-y-4">
               <h3 className="text-lg font-medium text-accent">Select Duration</h3>
               <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2 sm:gap-3 max-w-sm mx-auto">
@@ -234,11 +236,14 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">
                 {workoutType === 'abs' && duration === 120 ? '🏋️‍♂️ PLANK' : 
-                 workoutType === 'abs' ? '🏋️‍♂️ ABS WORKOUT' : '💪 PUSH UPS'}
+                 workoutType === 'abs' ? '🏋️‍♂️ ABS WORKOUT' : 
+                 workoutType === 'biceps' ? '💪 BICEPS CURLS' : '💪 PUSH UPS'}
               </div>
               <p className="text-muted-foreground mt-2">
                 {workoutType === 'abs' && duration === 120 ? 
                   'Hold your plank position steady' : 
+                  workoutType === 'biceps' ? 
+                  'Focus on controlled curls and perfect form' :
                   'Focus on your form and breathing'}
               </p>
             </div>

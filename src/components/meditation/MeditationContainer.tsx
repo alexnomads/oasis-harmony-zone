@@ -11,6 +11,7 @@ import { UserPointsDisplay } from "./UserPointsDisplay";
 import { QuickMeditation } from "./QuickMeditation";
 import { UserProfile } from "../profile/UserProfile";
 import { useAuth } from "@/contexts/AuthContext";
+import { FitnessContainer } from "../fitness/FitnessContainer";
 import { CompanionPetComponent } from "../pet/CompanionPet";
 import { DailyMoodLogger } from "../pet/DailyMoodLogger";
 import { usePet } from "@/hooks/usePet";
@@ -61,20 +62,30 @@ export const MeditationContainer = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
           {/* Navigation tabs - minimal and clean */}
           <div className="flex justify-center mb-1">
-            <TabsList className="grid w-full max-w-md grid-cols-2 bg-black/20 backdrop-blur-sm border border-white/20 rounded-xl p-1">
+            <TabsList className="grid w-full max-w-2xl grid-cols-3 bg-black/20 backdrop-blur-sm border border-white/20 rounded-xl p-1">
               <TabsTrigger 
                 value="quick" 
-                className="retro-button flex items-center gap-2 justify-center py-3 px-4 text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
+                className="retro-button flex items-center gap-2 justify-center py-3 px-2 text-xs sm:text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
               >
                 <Brain className="w-4 h-4 flex-shrink-0" />
-                <span>MEDITATION</span>
+                <span className="hidden sm:inline">MEDITATION</span>
+                <span className="sm:hidden">MED</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="fitness" 
+                className="retro-button flex items-center gap-2 justify-center py-3 px-2 text-xs sm:text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
+              >
+                💪
+                <span className="hidden sm:inline">FITNESS</span>
+                <span className="sm:hidden">FIT</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="chat" 
-                className="retro-button flex items-center gap-2 justify-center py-3 px-4 text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
+                className="retro-button flex items-center gap-2 justify-center py-3 px-2 text-xs sm:text-sm data-[state=active]:opacity-100 data-[state=inactive]:opacity-70 hover:opacity-90 rounded-lg"
               >
                 <MessageCircle className="w-4 h-4 flex-shrink-0" />
-                <span>AI COACH</span>
+                <span className="hidden sm:inline">AI COACH</span>
+                <span className="sm:hidden">AI</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -83,6 +94,12 @@ export const MeditationContainer = () => {
           <div className="w-full">
             <TabsContent value="quick" className="m-0">
               <QuickMeditation />
+            </TabsContent>
+
+            <TabsContent value="fitness" className="m-0">
+              <div className="max-w-4xl mx-auto">
+                <FitnessContainer />
+              </div>
             </TabsContent>
 
             <TabsContent value="chat" className="m-0">

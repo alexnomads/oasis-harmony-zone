@@ -47,11 +47,27 @@ CREATE TABLE user_profiles (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create fitness_sessions table
+CREATE TABLE fitness_sessions (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users NOT NULL,
+    workout_type TEXT NOT NULL, -- 'abs' or 'pushups'
+    reps_completed INTEGER DEFAULT 0,
+    duration INTEGER DEFAULT 0, -- workout duration in seconds
+    points_earned INTEGER DEFAULT 0,
+    proof_type TEXT, -- 'twitter' or 'dm'
+    proof_url TEXT, -- link to tweet or proof
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    completed_at TIMESTAMP WITH TIME ZONE
+);
+
 -- Enable Row Level Security
 ALTER TABLE meditation_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE session_reflections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_points ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fitness_sessions ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for meditation_sessions
 CREATE POLICY "Users can view own meditation sessions"
@@ -115,6 +131,22 @@ CREATE POLICY "Users can create own profile"
 
 CREATE POLICY "Users can update own profile"
     ON user_profiles
+    FOR UPDATE
+    USING (auth.uid() = user_id);
+
+-- Create policies for fitness_sessions
+CREATE POLICY "Users can view own fitness sessions"
+    ON fitness_sessions
+    FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own fitness sessions"
+    ON fitness_sessions
+    FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own fitness sessions"
+    ON fitness_sessions
     FOR UPDATE
     USING (auth.uid() = user_id);
 

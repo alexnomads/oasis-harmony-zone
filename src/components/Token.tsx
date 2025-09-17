@@ -6,10 +6,10 @@ import { TokenBuyButton } from "./TokenBuyButton";
 
 export const Token = () => {
   const benefits = [{
-    text: "Access to ROJ pop-up areas at conferences and in physical spots worldwide.",
+    text: "COMING UP! Access to ROJ pop-up areas at conferences and in physical spots worldwide.",
     image: "/lovable-uploads/d129538f-def1-4f43-a2fe-9ef8cc81445a.png"
   }, {
-    text: "Owning $ROJ gives you access to the ROJ AI Wellness Agent.",
+    text: "COMING UP! Owning $ROJ gives you access to the ROJ AI Wellness Agent.",
     image: "/lovable-uploads/d04ac241-16f8-41c0-a55c-ff656a5a92d9.png"
   }, {
     text: "COMING UP! Discounts on wellness services (e.g., meditation sessions, yoga classes, healthy meals).",

@@ -33,6 +33,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
   const [showExitButton, setShowExitButton] = useState(false);
   const [showBreathingText, setShowBreathingText] = useState(true);
   const [pointsDeducted, setPointsDeducted] = useState(0);
+  const [showVideo, setShowVideo] = useState(false);
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
   
   const { showWarning, isCalibrating, isMoving } = useMovementDetection({
@@ -92,6 +93,15 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
       return () => clearTimeout(timer);
     }
   }, [isActive, isTimerRunning]);
+
+  // Show video for 5-minute meditation
+  useEffect(() => {
+    if (isActive && isTimerRunning && totalDuration === 300) {
+      setShowVideo(true);
+    } else {
+      setShowVideo(false);
+    }
+  }, [isActive, isTimerRunning, totalDuration]);
 
   // Handle keyboard exit (ESC)
   useEffect(() => {
@@ -452,6 +462,37 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
               Swipe up or tap corners to exit
             </div>
           </motion.div>
+
+          {/* 5-minute Meditation Video */}
+          <AnimatePresence>
+            {showVideo && (
+              <motion.div
+                className="absolute top-4 left-4 z-30 w-80 h-60 bg-black/80 backdrop-blur-sm rounded-lg overflow-hidden border border-white/20"
+                initial={{ opacity: 0, scale: 0.8, x: -50 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: -50 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="relative w-full h-full">
+                  <video
+                    src="/meditation-videos/5min-meditation.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    className="w-full h-full object-cover"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowVideo(false)}
+                    className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 transition-all duration-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>

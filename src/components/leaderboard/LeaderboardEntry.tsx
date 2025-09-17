@@ -54,9 +54,9 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
     return email.split('@')[0];
   };
 
-  const displayName = entry.display_name === entry.email 
-    ? getUsernameFromEmail(entry.email)
-    : entry.display_name;
+  const displayName = entry.display_name && entry.display_name !== 'User ' + entry.user_id.substring(0, 8)
+    ? entry.display_name
+    : getUsernameFromEmail(entry.email || '');
   
   const globalRank = (currentPage - 1) * itemsPerPage + index + 1;
   
@@ -96,8 +96,12 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
             {entry.total_points} pts
           </span>
           <span className="flex items-center gap-1">
-            <Flame className={`h-3 w-3 ${streak > 0 ? 'text-orange-500' : 'text-zinc-500'}`} />
-            {streak} day streak
+            <span>🧘</span>
+            {entry.meditation_streak} day streak
+          </span>
+          <span className="flex items-center gap-1">
+            <span>💪</span>
+            {entry.fitness_streak || 0} day streak
           </span>
         </div>
       </div>

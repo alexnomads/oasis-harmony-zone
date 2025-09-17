@@ -20,6 +20,12 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   const [inputReps, setInputReps] = useState("");
   const { toast } = useToast();
 
+  const presetDurations = [
+    { label: "1 MIN", value: 60 },
+    { label: "5 MIN", value: 300 },
+    { label: "10 MIN", value: 600 },
+  ];
+
   // Timer effect
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -87,9 +93,8 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     onComplete(reps, actualDuration);
   };
 
-  const adjustDuration = (change: number) => {
+  const selectDuration = (newDuration: number) => {
     if (!isRunning && !isCompleted) {
-      const newDuration = Math.max(60, duration + change);
       setDuration(newDuration);
       setTimeRemaining(newDuration);
     }
@@ -122,27 +127,22 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
             </div>
           </div>
 
-          {/* Duration Controls */}
+          {/* Duration Preset Buttons */}
           {!isRunning && !isCompleted && (
-            <div className="flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => adjustDuration(-60)}
-                disabled={duration <= 60}
-              >
-                <Minus className="w-4 h-4" />
-              </Button>
-              <span className="text-muted-foreground">
-                Duration: {Math.floor(duration / 60)}min
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => adjustDuration(60)}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
+            <div className="text-center space-y-4">
+              <h3 className="text-lg font-medium text-accent">Select Duration</h3>
+              <div className="flex justify-center gap-3">
+                {presetDurations.map((preset) => (
+                  <Button
+                    key={preset.value}
+                    variant={duration === preset.value ? "default" : "outline"}
+                    onClick={() => selectDuration(preset.value)}
+                    className={duration === preset.value ? "retro-button" : ""}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
             </div>
           )}
 

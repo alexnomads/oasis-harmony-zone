@@ -18,6 +18,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   const [isCompleted, setIsCompleted] = useState(false);
   const [showRepsInput, setShowRepsInput] = useState(false);
   const [inputReps, setInputReps] = useState("");
+  const [showVideo, setShowVideo] = useState(false);
   const { toast } = useToast();
 
   const presetDurations = [
@@ -25,6 +26,14 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     { label: "5 MIN", value: 300 },
     { label: "10 MIN", value: 600 },
   ];
+
+  // Get the appropriate workout video based on type and duration
+  const getWorkoutVideo = () => {
+    if (workoutType === 'abs' && duration === 300) {
+      return '/workout-videos/5min-abs.mp4';
+    }
+    return null;
+  };
 
   // Timer effect
   useEffect(() => {
@@ -57,6 +66,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
       setTimeRemaining(duration);
     }
     setIsRunning(true);
+    setShowVideo(true);
     toast({
       title: `${workoutType.toUpperCase()} Workout Started! 💪`,
       description: "Keep track of your reps and stay focused!",
@@ -65,6 +75,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
 
   const handlePause = () => {
     setIsRunning(false);
+    setShowVideo(false);
   };
 
   const handleReset = () => {
@@ -73,6 +84,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     setIsCompleted(false);
     setShowRepsInput(false);
     setInputReps("");
+    setShowVideo(false);
   };
 
   const handleComplete = () => {
@@ -80,6 +92,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     setIsCompleted(true);
     setIsRunning(false);
     setShowRepsInput(true);
+    setShowVideo(false);
     
     toast({
       title: "Workout Complete! 🎉",
@@ -106,6 +119,37 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
       <CardContent className="p-6">
         <div className="space-y-6">
+          {/* Video Display */}
+          <AnimatePresence>
+            {showVideo && getWorkoutVideo() && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="relative w-full max-w-md mx-auto"
+              >
+                <video
+                  src={getWorkoutVideo()!}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-auto rounded-lg border border-accent/30"
+                />
+                <div className="absolute top-2 right-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowVideo(false)}
+                    className="bg-black/50 border-accent/30"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Timer Display */}
           <div className="text-center">
             <motion.div 

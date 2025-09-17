@@ -83,7 +83,7 @@ export const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/meditate')} className="retro-text hover:bg-primary/20">
                   <Timer className="mr-2 h-4 w-4" />
-                  Meditate Now
+                  Wellness Zone
                 </DropdownMenuItem>
                 {user && (
                   <DropdownMenuItem onClick={() => navigate('/dashboard')} className="retro-text hover:bg-primary/20">
@@ -174,7 +174,7 @@ export const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/meditate')} className="retro-text hover:bg-primary/20">
                       <Timer className="mr-2 h-4 w-4" />
-                      Meditate Now
+                      Wellness Zone
                     </DropdownMenuItem>
                     <div className="h-px bg-gradient-to-r from-primary to-secondary my-1 opacity-50" />
                     <DropdownMenuItem 

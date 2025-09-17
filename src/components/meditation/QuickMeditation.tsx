@@ -312,8 +312,8 @@ export const QuickMeditation: React.FC = () => {
         }} transition={{
           duration: 0.6
         }} className="space-y-2">
-              <h2 className="text-3xl md:text-5xl font-bold glitch-text mb-4" data-text="🧘🏻‍♀️MEDITATION ZONE🧘🏻‍♀️">
-                🧘🏻‍♀️MEDITATION ZONE🧘🏻‍♀️
+              <h2 className="text-3xl md:text-5xl font-bold glitch-text mb-4" data-text="MEDITATION 🧘🏻‍♀️ ZONE">
+                MEDITATION 🧘🏻‍♀️ ZONE
               </h2>
               
             </motion.div>

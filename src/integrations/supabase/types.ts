@@ -206,6 +206,9 @@ export type Database = {
       user_points: {
         Row: {
           created_at: string
+          fitness_points: number | null
+          fitness_streak: number | null
+          last_fitness_date: string | null
           last_meditation_date: string | null
           meditation_streak: number
           total_points: number
@@ -214,6 +217,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          fitness_points?: number | null
+          fitness_streak?: number | null
+          last_fitness_date?: string | null
           last_meditation_date?: string | null
           meditation_streak?: number
           total_points?: number
@@ -222,6 +228,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          fitness_points?: number | null
+          fitness_streak?: number | null
+          last_fitness_date?: string | null
           last_meditation_date?: string | null
           meditation_streak?: number
           total_points?: number
@@ -237,8 +246,12 @@ export type Database = {
           active_streak: number | null
           display_name: string | null
           email: string | null
+          fitness_streak: number | null
+          last_fitness_date: string | null
           last_meditation_date: string | null
           meditation_streak: number | null
+          total_fitness_sessions: number | null
+          total_fitness_time: number | null
           total_meditation_time: number | null
           total_points: number | null
           total_sessions: number | null

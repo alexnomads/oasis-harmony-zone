@@ -42,21 +42,21 @@ export const DurationSelector = ({
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
       transition={{ duration: 0.5 }} 
-      className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
+      className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6"
     >
       {durations.map(({ label, value }) => (
         <motion.div 
           key={value} 
           whileHover={{ scale: isRunning ? 1 : 1.05 }} 
-          whileTap={{ scale: isRunning ? 1 : 0.95 }}
+          whileTap={{ scale: isRunning ? 1 : 0.98 }}
         >
           <Button
             variant={selectedDuration === value ? "default" : "outline"}
             onClick={() => setSelectedDuration(value)}
             disabled={isRunning}
-            className={`w-full h-16 md:h-20 text-base md:text-lg font-medium rounded-xl ${
+            className={`w-full min-h-[60px] h-16 md:h-20 px-2 py-3 text-sm md:text-lg font-medium rounded-xl whitespace-nowrap ${
               selectedDuration === value 
-                ? 'retro-button text-xl md:text-2xl' 
+                ? 'retro-button text-base md:text-2xl' 
                 : 'retro-button opacity-60 hover:opacity-100'
             }`}
           >

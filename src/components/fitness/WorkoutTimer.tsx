@@ -23,6 +23,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
 
   const presetDurations = [
     { label: "1 MIN", value: 60 },
+    { label: "2 MIN", value: 120 },
     { label: "5 MIN", value: 300 },
     { label: "10 MIN", value: 600 },
   ];
@@ -94,6 +95,13 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     const actualDuration = duration - timeRemaining;
     setIsCompleted(true);
     setIsRunning(false);
+    
+    // For plank (2 minutes), skip reps input
+    if (workoutType === 'abs' && duration === 120) {
+      onComplete(0, actualDuration); // 0 reps for plank hold
+      return;
+    }
+    
     setShowRepsInput(true);
     setShowVideo(false);
     
@@ -197,10 +205,13 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
           {!showRepsInput && (
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">
-                {workoutType === 'abs' ? '🏋️‍♂️ ABS WORKOUT' : '💪 PUSH UPS'}
+                {workoutType === 'abs' && duration === 120 ? '🏋️‍♂️ PLANK' : 
+                 workoutType === 'abs' ? '🏋️‍♂️ ABS WORKOUT' : '💪 PUSH UPS'}
               </div>
               <p className="text-muted-foreground mt-2">
-                Focus on your form and breathing
+                {workoutType === 'abs' && duration === 120 ? 
+                  'Hold your plank position steady' : 
+                  'Focus on your form and breathing'}
               </p>
             </div>
           )}

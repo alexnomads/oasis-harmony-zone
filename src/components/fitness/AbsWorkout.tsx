@@ -67,7 +67,7 @@ export const AbsWorkout = ({ onBack }: AbsWorkoutProps) => {
               <ul className="space-y-2 text-muted-foreground">
                 <li>• Crunches</li>
                 <li>• Bicycle crunches</li>
-                <li>• Plank hold</li>
+                <li>• Plank hold (2 min option)</li>
                 <li>• Russian twists</li>
                 <li>• Mountain climbers</li>
               </ul>

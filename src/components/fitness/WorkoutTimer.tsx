@@ -32,6 +32,9 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     if (workoutType === 'abs' && duration === 300) {
       return '/workout-videos/5min-abs.mp4';
     }
+    if (workoutType === 'abs' && duration === 600) {
+      return '/workout-videos/10min-abs.mp4';
+    }
     return null;
   };
 

@@ -50,6 +50,45 @@ export type Database = {
         }
         Relationships: []
       }
+      fitness_sessions: {
+        Row: {
+          created_at: string
+          duration: number
+          id: string
+          points_earned: number
+          proof_url: string | null
+          reps_completed: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+          workout_type: string
+        }
+        Insert: {
+          created_at?: string
+          duration?: number
+          id?: string
+          points_earned?: number
+          proof_url?: string | null
+          reps_completed?: number
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          workout_type: string
+        }
+        Update: {
+          created_at?: string
+          duration?: number
+          id?: string
+          points_earned?: number
+          proof_url?: string | null
+          reps_completed?: number
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          workout_type?: string
+        }
+        Relationships: []
+      }
       meditation_sessions: {
         Row: {
           completed_at: string | null

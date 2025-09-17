@@ -1,5 +1,4 @@
-import { supabase } from '../supabase';
-import { BaseService } from './baseService';
+import { supabase } from '@/integrations/supabase/client';
 import type { FitnessSession, WorkoutType } from '../../types/database';
 
 export interface FitnessStats {
@@ -9,7 +8,7 @@ export interface FitnessStats {
   weekStreak: number;
 }
 
-export class FitnessService extends BaseService {
+export class FitnessService {
   // Start a new fitness session
   static async startSession(
     userId: string,
@@ -35,13 +34,18 @@ export class FitnessService extends BaseService {
         verified: false // Only reps need verification, time/sessions always count
       };
       
-      const result = await supabase
+      const { data, error } = await supabase
         .from('fitness_sessions')
         .insert([sessionData])
         .select('*')
         .single();
         
-      return this.executeQuery<FitnessSession>(() => Promise.resolve(result));
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Failed to create session: ${error.message}`);
+      }
+      
+      return data as FitnessSession;
     } catch (error) {
       console.error('Error starting fitness session:', error);
       throw new Error('Could not start fitness session. Please try again.');
@@ -58,14 +62,19 @@ export class FitnessService extends BaseService {
         updated_at: new Date().toISOString()
       };
       
-      const result = await supabase
+      const { data, error } = await supabase
         .from('fitness_sessions')
         .update(updateData)
         .eq('id', sessionId)
         .select('*')
         .single();
       
-      return this.executeQuery<FitnessSession>(() => Promise.resolve(result));
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Failed to submit proof: ${error.message}`);
+      }
+      
+      return data as FitnessSession;
     } catch (error) {
       console.error('Error submitting proof:', error);
       throw new Error('Could not submit proof. Please try again.');
@@ -78,26 +87,31 @@ export class FitnessService extends BaseService {
       console.log('Fetching fitness stats for user:', userId);
       
       // Get all fitness sessions for the user
-      const sessionsResult = await supabase
+      const { data: sessions, error } = await supabase
         .from('fitness_sessions')
         .select('*')
         .eq('user_id', userId);
         
-      const sessions = await this.executeQuery<FitnessSession[]>(() => Promise.resolve(sessionsResult));
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Failed to fetch sessions: ${error.message}`);
+      }
+      
+      const fitnessData = sessions as FitnessSession[];
       
       // Calculate total workouts
-      const totalWorkouts = sessions.length;
+      const totalWorkouts = fitnessData.length;
       
       // Calculate total reps
-      const totalReps = sessions.reduce((sum, session) => sum + session.reps_completed, 0);
+      const totalReps = fitnessData.reduce((sum, session) => sum + session.reps_completed, 0);
       
-  // Calculate fitness points (only verified sessions count towards points)
-  const fitnessPoints = sessions
-    .filter(session => session.verified)
-    .reduce((sum, session) => sum + session.points_earned, 0);
+      // Calculate fitness points (only verified sessions count towards points)
+      const fitnessPoints = fitnessData
+        .filter(session => session.verified)
+        .reduce((sum, session) => sum + session.points_earned, 0);
       
       // Calculate week streak (consecutive days with workouts in the last 7 days)
-      const weekStreak = this.calculateWeekStreak(sessions);
+      const weekStreak = this.calculateWeekStreak(fitnessData);
       
       return {
         totalWorkouts,
@@ -146,13 +160,18 @@ export class FitnessService extends BaseService {
   // Get all fitness sessions for a user (for detailed view)
   static async getUserSessions(userId: string): Promise<FitnessSession[]> {
     try {
-      const result = await supabase
+      const { data, error } = await supabase
         .from('fitness_sessions')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
         
-      return this.executeQuery<FitnessSession[]>(() => Promise.resolve(result));
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Failed to fetch sessions: ${error.message}`);
+      }
+      
+      return data as FitnessSession[];
     } catch (error) {
       console.error('Error fetching user fitness sessions:', error);
       throw new Error('Could not fetch fitness sessions.');

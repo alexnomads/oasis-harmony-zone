@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dumbbell, Users } from "lucide-react";
@@ -8,6 +8,24 @@ import { FitnessStats } from "./FitnessStats";
 
 export const FitnessContainer = () => {
   const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups'>('selection');
+
+  // Listen for recommended workout start events
+  useEffect(() => {
+    const handleSetWorkoutType = (event: CustomEvent) => {
+      const { workoutType } = event.detail;
+      if (workoutType === 'abs') {
+        setActiveWorkout('abs');
+      } else if (workoutType === 'pushups') {
+        setActiveWorkout('pushups');
+      }
+    };
+
+    window.addEventListener('setWorkoutType', handleSetWorkoutType as EventListener);
+    
+    return () => {
+      window.removeEventListener('setWorkoutType', handleSetWorkoutType as EventListener);
+    };
+  }, []);
 
   const handleBackToSelection = () => {
     setActiveWorkout('selection');

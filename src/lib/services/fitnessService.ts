@@ -19,11 +19,29 @@ export class FitnessService {
     try {
       console.log('Starting fitness session for user:', userId, 'type:', workoutType);
       
-      // Calculate points based on the system
-      const basePoints = 50;
-      const repBonus = Math.floor(repsCompleted / 10) * 10; // +10 points per 10 reps
-      const timeBonus = duration > 300 ? 5 : 0; // +5 points if over 5 minutes
-      const totalPoints = basePoints + repBonus + timeBonus;
+      // Calculate points based on duration (similar to meditation system)
+      let basePoints;
+      if (duration <= 60) {
+        basePoints = 2; // 1 minute
+      } else if (duration <= 120) {
+        basePoints = 4; // 2 minutes
+      } else if (duration <= 300) {
+        basePoints = 8; // 5 minutes
+      } else if (duration <= 600) {
+        basePoints = 18; // 10 minutes
+      } else if (duration <= 900) {
+        basePoints = 28; // 15 minutes
+      } else {
+        basePoints = 40; // 30+ minutes
+      }
+      
+      // Rep bonus: smaller bonus to encourage longer sessions
+      const repBonus = Math.floor(repsCompleted / 20) * 2; // +2 points per 20 reps
+      
+      // Consistency bonus for longer sessions
+      const consistencyBonus = duration >= 300 ? 2 : 0; // +2 points for 5+ minute sessions
+      
+      const totalPoints = basePoints + repBonus + consistencyBonus;
       
       const sessionData = {
         user_id: userId,

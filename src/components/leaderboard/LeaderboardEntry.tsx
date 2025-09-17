@@ -90,42 +90,41 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
       
       <div className="flex-1 min-w-0 ml-1">
         <p className="font-semibold text-base sm:text-lg">{displayName}</p>
-        <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-zinc-400">
+        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-zinc-400">
           <span className="flex items-center gap-1">
             <Award className="h-3 w-3" />
             {entry.total_points} pts
           </span>
-          <span className="flex items-center gap-1">
-            <span>🧘</span>
-            {entry.meditation_streak} day streak
-          </span>
-          <span className="flex items-center gap-1">
-            <span>💪</span>
-            {entry.fitness_streak || 0} day streak
+          <span>
+            🧘{entry.meditation_streak}d • 💪{entry.fitness_streak || 0}d
           </span>
         </div>
       </div>
       
       <div className="text-right flex-shrink-0">
         <div className="space-y-1">
-          {/* Meditation Stats */}
-          <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
-            <span>🧘</span>
-            <span className="font-medium text-vibrantOrange">{entry.total_sessions}</span>
-            <span className="text-zinc-400">({formatDuration(entry.total_meditation_time)})</span>
+          {/* Sessions and Time - Mobile Compact */}
+          <div className="block sm:hidden text-xs">
+            <div className="text-vibrantOrange font-medium">
+              {entry.total_sessions + (entry.total_fitness_sessions || 0)} sessions
+            </div>
+            <div className="text-zinc-400 text-[10px]">
+              {formatDuration(entry.total_meditation_time + (entry.total_fitness_time || 0))}
+            </div>
           </div>
           
-          {/* Fitness Stats */}
-          <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
-            <span>💪</span>
-            <span className="font-medium text-vibrantOrange">{entry.total_fitness_sessions || 0}</span>
-            <span className="text-zinc-400">({formatDuration(entry.total_fitness_time || 0)})</span>
-          </div>
-          
-          {/* Individual Streaks */}
-          <div className="flex items-center justify-end gap-2 text-xs text-zinc-500">
-            <span>🧘 {entry.meditation_streak}d</span>
-            <span>💪 {entry.fitness_streak || 0}d</span>
+          {/* Desktop View - Detailed */}
+          <div className="hidden sm:block">
+            <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
+              <span>🧘</span>
+              <span className="font-medium text-vibrantOrange">{entry.total_sessions}</span>
+              <span className="text-zinc-400">({formatDuration(entry.total_meditation_time)})</span>
+            </div>
+            <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
+              <span>💪</span>
+              <span className="font-medium text-vibrantOrange">{entry.total_fitness_sessions || 0}</span>
+              <span className="text-zinc-400">({formatDuration(entry.total_fitness_time || 0)})</span>
+            </div>
           </div>
         </div>
       </div>

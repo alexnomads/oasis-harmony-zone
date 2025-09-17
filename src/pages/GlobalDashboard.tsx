@@ -15,9 +15,9 @@ export default function GlobalDashboard() {
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="mb-6 sm:mb-8">
           <h1 className="cyber-heading text-3xl sm:text-4xl text-center sm:text-left">
-            Global Meditation Dashboard
+            Global Dashboard
           </h1>
-          <p className="retro-text text-muted-foreground mt-2 text-center sm:text-left">All Time Statistics</p>
+          <p className="retro-text text-muted-foreground mt-2 text-center sm:text-left">Meditation & Fitness Statistics</p>
         </div>
 
         <GlobalStatsSection stats={stats} isLoading={isLoading} />

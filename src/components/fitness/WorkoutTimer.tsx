@@ -15,8 +15,9 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   const [duration, setDuration] = useState(600); // 10 minutes default
   const [timeRemaining, setTimeRemaining] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
-  const [reps, setReps] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [showRepsInput, setShowRepsInput] = useState(false);
+  const [inputReps, setInputReps] = useState("");
   const { toast } = useToast();
 
   // Timer effect
@@ -63,32 +64,31 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   const handleReset = () => {
     setIsRunning(false);
     setTimeRemaining(duration);
-    setReps(0);
     setIsCompleted(false);
+    setShowRepsInput(false);
+    setInputReps("");
   };
 
   const handleComplete = () => {
     const actualDuration = duration - timeRemaining;
     setIsCompleted(true);
     setIsRunning(false);
+    setShowRepsInput(true);
     
     toast({
       title: "Workout Complete! 🎉",
-      description: `Great job! You completed ${reps} reps in ${formatTime(actualDuration)}`,
+      description: `Great job! Time to log your reps.`,
     });
-
-    // Call the completion handler after a short delay for better UX
-    setTimeout(() => {
-      onComplete(reps, actualDuration);
-    }, 2000);
   };
 
-  const adjustReps = (change: number) => {
-    setReps(prev => Math.max(0, prev + change));
+  const handleRepsSubmit = () => {
+    const reps = parseInt(inputReps) || 0;
+    const actualDuration = duration - timeRemaining;
+    onComplete(reps, actualDuration);
   };
 
   const adjustDuration = (change: number) => {
-    if (!isRunning) {
+    if (!isRunning && !isCompleted) {
       const newDuration = Math.max(60, duration + change);
       setDuration(newDuration);
       setTimeRemaining(newDuration);
@@ -146,94 +146,107 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
             </div>
           )}
 
-          {/* Rep Counter */}
-          <div className="text-center space-y-4">
-            <div className="text-3xl font-bold text-primary">
-              {reps} {workoutType === 'abs' ? 'ABS REPS' : 'PUSH UPS'}
+          {/* Workout Type Display */}
+          {!showRepsInput && (
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary">
+                {workoutType === 'abs' ? '🏋️‍♂️ ABS WORKOUT' : '💪 PUSH UPS'}
+              </div>
+              <p className="text-muted-foreground mt-2">
+                Focus on your form and breathing
+              </p>
             </div>
-            
-            <div className="flex items-center justify-center gap-4">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => adjustReps(-1)}
-                disabled={reps === 0}
-                className="w-12 h-12 rounded-full"
-              >
-                <Minus className="w-5 h-5" />
-              </Button>
-              
-              <Button
-                variant="default"
-                size="lg"
-                onClick={() => adjustReps(1)}
-                className="retro-button w-16 h-16 rounded-full text-2xl"
-              >
-                <Plus className="w-6 h-6" />
-              </Button>
+          )}
+
+          {/* Reps Input after completion */}
+          {showRepsInput && (
+            <div className="text-center space-y-4">
+              <div className="text-2xl font-bold text-accent mb-4">
+                How many reps did you complete?
+              </div>
+              <div className="flex items-center justify-center gap-4">
+                <Input
+                  type="number"
+                  placeholder="Enter reps"
+                  value={inputReps}
+                  onChange={(e) => setInputReps(e.target.value)}
+                  className="w-32 text-center text-lg"
+                  min="0"
+                />
+                <Button
+                  onClick={handleRepsSubmit}
+                  className="retro-button px-6 py-2"
+                  disabled={!inputReps}
+                >
+                  Submit
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Control Buttons */}
-          <div className="flex justify-center gap-4">
-            <AnimatePresence mode="wait">
-              {!isRunning ? (
-                <motion.div
-                  key="play"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                >
-                  <Button
-                    onClick={handleStart}
-                    className="retro-button px-8 py-4 text-lg"
-                    disabled={isCompleted}
+          {!showRepsInput && (
+            <div className="flex justify-center gap-4">
+              <AnimatePresence mode="wait">
+                {!isRunning ? (
+                  <motion.div
+                    key="play"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
                   >
-                    <Play className="w-5 h-5 mr-2" />
-                    {timeRemaining === duration ? 'START' : 'RESUME'}
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="pause"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                >
-                  <Button
-                    onClick={handlePause}
-                    variant="outline"
-                    className="px-8 py-4 text-lg"
+                    <Button
+                      onClick={handleStart}
+                      className="retro-button px-8 py-4 text-lg"
+                      disabled={isCompleted}
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      {timeRemaining === duration ? 'START' : 'RESUME'}
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="pause"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
                   >
-                    <Pause className="w-5 h-5 mr-2" />
-                    PAUSE
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <Button
+                      onClick={handlePause}
+                      variant="outline"
+                      className="px-8 py-4 text-lg"
+                    >
+                      <Pause className="w-5 h-5 mr-2" />
+                      PAUSE
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <Button
-              onClick={handleReset}
-              variant="outline"
-              className="px-6 py-4"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" />
-              RESET
-            </Button>
-
-            {!isCompleted && timeRemaining < duration && (
               <Button
-                onClick={handleComplete}
-                className="retro-button px-6 py-4 bg-green-600 hover:bg-green-700"
+                onClick={handleReset}
+                variant="outline"
+                className="px-6 py-4"
+                disabled={isCompleted}
               >
-                FINISH EARLY
+                <RotateCcw className="w-5 h-5 mr-2" />
+                RESET
               </Button>
-            )}
-          </div>
+
+              {!isCompleted && timeRemaining < duration && (
+                <Button
+                  onClick={handleComplete}
+                  className="retro-button px-6 py-4 bg-green-600 hover:bg-green-700"
+                >
+                  FINISH EARLY
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Completion Message */}
           <AnimatePresence>
-            {isCompleted && (
+            {isCompleted && !showRepsInput && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -241,7 +254,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
               >
                 <div className="text-2xl mb-2">🎉</div>
                 <p className="text-green-400 font-semibold">
-                  Workout Complete! Preparing proof submission...
+                  Time's up! Now tell us how many reps you completed.
                 </p>
               </motion.div>
             )}

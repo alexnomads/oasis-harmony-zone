@@ -9,6 +9,8 @@ export interface GlobalStats {
   totalUsers: number;
   totalSessions: number;
   totalMeditationTime: number;
+  totalFitnessSessions: number;
+  totalFitnessTime: number;
 }
 
 export function useGlobalStats(timePeriod: TimePeriod = "all") {
@@ -16,6 +18,8 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
     totalUsers: 0,
     totalSessions: 0,
     totalMeditationTime: 0,
+    totalFitnessSessions: 0,
+    totalFitnessTime: 0,
   });
 
   const fetchGlobalStats = async () => {
@@ -92,12 +96,49 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         return sum + (session.duration || 0);
       }, 0);
 
-      console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Sessions: ${completedSessions.length}, Time: ${totalMeditationTime}`);
+      // Get fitness sessions
+      let fitnessQuery = supabase
+        .from('fitness_sessions')
+        .select('duration');
+
+      if (timePeriod !== "all") {
+        let startDate: Date | null = null;
+        const now = new Date();
+        startDate = new Date();
+        
+        switch(timePeriod) {
+          case "day":
+            startDate.setHours(0, 0, 0, 0);
+            break;
+          case "week":
+            startDate.setDate(now.getDate() - 7);
+            break;
+          case "month":
+            startDate.setMonth(now.getMonth() - 1);
+            break;
+          case "year":
+            startDate.setFullYear(now.getFullYear() - 1);
+            break;
+        }
+        
+        fitnessQuery = fitnessQuery.gte('created_at', startDate.toISOString());
+      }
+
+      const { data: fitnessData, error: fitnessError } = await fitnessQuery;
+      
+      const totalFitnessSessions = fitnessData?.length || 0;
+      const totalFitnessTime = fitnessData?.reduce((sum, session) => {
+        return sum + (session.duration || 0);
+      }, 0) || 0;
+
+      console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Meditation Sessions: ${completedSessions.length}, Meditation Time: ${totalMeditationTime}, Fitness Sessions: ${totalFitnessSessions}, Fitness Time: ${totalFitnessTime}`);
 
       return {
         totalUsers: totalUsersCount,
         totalSessions: completedSessions.length,
         totalMeditationTime,
+        totalFitnessSessions,
+        totalFitnessTime,
       };
     } catch (error) {
       console.error("Error fetching global stats:", error);
@@ -110,6 +151,8 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         totalUsers: 0,
         totalSessions: 0,
         totalMeditationTime: 0,
+        totalFitnessSessions: 0,
+        totalFitnessTime: 0,
       };
     }
   };

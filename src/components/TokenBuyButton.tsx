@@ -15,7 +15,7 @@ export const TokenBuyButton = () => {
   };
   return (
     <>
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-center items-center w-full gap-4 flex-wrap">
         <button 
           className="retro-button py-6 px-8 text-xl rounded-full glitch-text hover:opacity-90 transition-opacity" 
           onClick={handleBuyClick} 
@@ -23,6 +23,15 @@ export const TokenBuyButton = () => {
         >
           <div className="flex items-center gap-3">
             <span>Buy $ROJ now on Pump Fun</span>
+          </div>
+        </button>
+        
+        <button 
+          className="retro-button py-6 px-8 text-xl rounded-full opacity-60 cursor-not-allowed" 
+          disabled
+        >
+          <div className="flex items-center gap-3">
+            <span>$WELLNESS - Coming Soon</span>
           </div>
         </button>
       </div>

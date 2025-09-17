@@ -72,10 +72,6 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     }
     setIsRunning(true);
     setShowVideo(true);
-    toast({
-      title: `${workoutType.toUpperCase()} Workout Started! 💪`,
-      description: "Keep track of your reps and stay focused!",
-    });
   };
 
   const handlePause = () => {

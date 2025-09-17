@@ -37,8 +37,8 @@ interface MeditationTrendChartProps {
 
 export default function MeditationTrendChart({ sessions, userStreak, userTotalPoints }: MeditationTrendChartProps) {
   const { user } = useAuth();
-  const [selectedPeriod, setSelectedPeriod] = useState<7 | 14 | 30>(30);
-  const [chartType, setChartType] = useState<'line' | 'bar'>('line');
+  const [selectedPeriod, setSelectedPeriod] = useState<7 | 14 | 30>(7);
+  const [chartType, setChartType] = useState<'line' | 'bar'>('bar');
 
   // Fetch fitness sessions
   const { data: fitnessData } = useQuery({

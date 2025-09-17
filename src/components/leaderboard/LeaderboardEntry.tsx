@@ -73,62 +73,90 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.05 }}
-        className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10 shadow-sm hover:bg-white/10 transition-colors duration-200 cursor-pointer"
+        className="bg-white/5 rounded-lg border border-white/10 shadow-sm hover:bg-white/10 transition-colors duration-200 cursor-pointer"
       >
-      <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
-        {globalRank <= 3 ? (
-          <Medal className={`h-6 w-6 ${getMedalColor(index)}`} />
-        ) : (
-          <span className="text-zinc-500 font-medium">{globalRank}</span>
-        )}
-      </div>
-      
-      <Avatar className="h-12 w-12 border-2 border-white/10">
-        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}`} alt={displayName} />
-        <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-      </Avatar>
-      
-      <div className="flex-1 min-w-0 ml-1">
-        <p className="font-semibold text-base sm:text-lg">{displayName}</p>
-        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-zinc-400">
-          <span className="flex items-center gap-1">
-            <Award className="h-3 w-3" />
-            {entry.total_points} pts
-          </span>
-          <span>
-            🧘{entry.meditation_streak}d • 💪{entry.fitness_streak || 0}d
-          </span>
-        </div>
-      </div>
-      
-      <div className="text-right flex-shrink-0">
-        <div className="space-y-1">
-          {/* Sessions and Time - Mobile Compact */}
-          <div className="block sm:hidden text-xs">
-            <div className="text-vibrantOrange font-medium">
-              {entry.total_sessions + (entry.total_fitness_sessions || 0)} sessions
+        {/* Mobile Card Layout */}
+        <div className="block sm:hidden p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
+              {globalRank <= 3 ? (
+                <Medal className={`h-6 w-6 ${getMedalColor(index)}`} />
+              ) : (
+                <span className="text-zinc-500 font-medium">{globalRank}</span>
+              )}
             </div>
-            <div className="text-zinc-400 text-[10px]">
-              {formatDuration(entry.total_meditation_time + (entry.total_fitness_time || 0))}
+            
+            <Avatar className="h-12 w-12 border-2 border-white/10">
+              <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}`} alt={displayName} />
+              <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-lg mb-1">{displayName}</h3>
+              <div className="text-sm text-zinc-400 mb-2">
+                <span className="flex items-center gap-1">
+                  <Award className="h-3 w-3" />
+                  {entry.total_points} pts
+                </span>
+              </div>
+              <div className="text-vibrantOrange font-medium text-sm mb-2">
+                {entry.total_sessions + (entry.total_fitness_sessions || 0)} sessions
+              </div>
+              <div className="text-zinc-400 text-xs mb-3">
+                {formatDuration(entry.total_meditation_time + (entry.total_fitness_time || 0))}
+              </div>
+              <div className="flex items-center gap-3 text-xs text-zinc-400">
+                <span>🧘{entry.meditation_streak}d</span>
+                <span>💪{entry.fitness_streak || 0}d</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Row Layout */}
+        <div className="hidden sm:flex items-center gap-2 p-3">
+          <div className="flex-shrink-0 flex items-center justify-center w-8 h-8">
+            {globalRank <= 3 ? (
+              <Medal className={`h-6 w-6 ${getMedalColor(index)}`} />
+            ) : (
+              <span className="text-zinc-500 font-medium">{globalRank}</span>
+            )}
+          </div>
+          
+          <Avatar className="h-12 w-12 border-2 border-white/10">
+            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}`} alt={displayName} />
+            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+          </Avatar>
+          
+          <div className="flex-1 min-w-0 ml-1">
+            <p className="font-semibold text-base sm:text-lg">{displayName}</p>
+            <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-zinc-400">
+              <span className="flex items-center gap-1">
+                <Award className="h-3 w-3" />
+                {entry.total_points} pts
+              </span>
+              <span>
+                🧘{entry.meditation_streak}d • 💪{entry.fitness_streak || 0}d
+              </span>
             </div>
           </div>
           
-          {/* Desktop View - Detailed */}
-          <div className="hidden sm:block">
-            <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
-              <span>🧘</span>
-              <span className="font-medium text-vibrantOrange">{entry.total_sessions}</span>
-              <span className="text-zinc-400">({formatDuration(entry.total_meditation_time)})</span>
-            </div>
-            <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
-              <span>💪</span>
-              <span className="font-medium text-vibrantOrange">{entry.total_fitness_sessions || 0}</span>
-              <span className="text-zinc-400">({formatDuration(entry.total_fitness_time || 0)})</span>
+          <div className="text-right flex-shrink-0">
+            <div className="space-y-1">
+              <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
+                <span>🧘</span>
+                <span className="font-medium text-vibrantOrange">{entry.total_sessions}</span>
+                <span className="text-zinc-400">({formatDuration(entry.total_meditation_time)})</span>
+              </div>
+              <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
+                <span>💪</span>
+                <span className="font-medium text-vibrantOrange">{entry.total_fitness_sessions || 0}</span>
+                <span className="text-zinc-400">({formatDuration(entry.total_fitness_time || 0)})</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
     </Link>
   );
 };

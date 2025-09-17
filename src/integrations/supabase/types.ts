@@ -314,6 +314,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      safe_username_from_auth: {
+        Args: { uid: string }
+        Returns: string
+      }
     }
     Enums: {
       meditation_status: "in_progress" | "completed" | "cancelled"

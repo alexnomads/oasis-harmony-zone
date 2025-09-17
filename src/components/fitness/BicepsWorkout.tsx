@@ -56,56 +56,6 @@ export const BicepsWorkout = ({ onBack }: BicepsWorkoutProps) => {
         </h2>
       </div>
 
-      {/* Workout Instructions */}
-      <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
-        <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-xl font-semibold text-accent mb-3">📋 Instructions</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Use dumbbells, resistance bands, or water bottles
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Complete bicep curls for the selected duration
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Log your reps when the timer ends
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Your screen will stay on during the workout
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-accent mb-3">🎯 Tips</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Keep your elbows close to your body
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Control the weight on both up and down motions
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Don't swing your body - isolate the biceps
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-accent">•</span>
-                  Squeeze at the top of each rep
-                </li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Timer Component - Fixed to 5 minutes only */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

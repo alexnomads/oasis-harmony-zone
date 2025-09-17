@@ -44,6 +44,9 @@ export const WorkoutTimer = ({ workoutType, onComplete, fixedDuration }: Workout
     if (workoutType === 'abs' && duration === 120) {
       return '/workout-videos/2min-plank.mp4';
     }
+    if (workoutType === 'biceps' && duration === 300) {
+      return '/workout-videos/5min-biceps.mp4';
+    }
     return null;
   };
 

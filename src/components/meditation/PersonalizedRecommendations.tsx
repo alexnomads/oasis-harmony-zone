@@ -50,7 +50,9 @@ export const PersonalizedRecommendations = ({ type = 'meditation' }: Personalize
           .limit(10);
 
         const recs = generateFitnessRecommendations(fitnessSessions || []);
-        setRecommendations(recs);
+        const allowedTypes: Array<'abs' | 'pushups'> = ['abs', 'pushups'];
+        setRecommendations(recs.filter(r => r.workoutType && allowedTypes.includes(r.workoutType)));
+
       } else {
         // Fetch user's meditation history
         const { data: sessions } = await supabase

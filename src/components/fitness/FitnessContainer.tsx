@@ -27,6 +27,24 @@ export const FitnessContainer = () => {
     };
   }, []);
 
+  // Also handle direct start events to be robust when already on Fitness tab
+  useEffect(() => {
+    const handleStartRecommendedWorkout = (event: CustomEvent) => {
+      const { workoutType } = event.detail || {};
+      if (workoutType === 'abs') {
+        setActiveWorkout('abs');
+      } else if (workoutType === 'pushups') {
+        setActiveWorkout('pushups');
+      }
+    };
+
+    window.addEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
+
+    return () => {
+      window.removeEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
+    };
+  }, []);
+
   const handleBackToSelection = () => {
     setActiveWorkout('selection');
   };

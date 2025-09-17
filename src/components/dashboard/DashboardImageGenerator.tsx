@@ -7,8 +7,10 @@ import { SharingService } from '@/lib/services/sharingService';
 interface ChartDataPoint {
   date: string;
   dateDisplay: string;
-  sessions: number;
-  totalMinutes: number;
+  meditation: number;
+  fitness: number;
+  meditationMinutes: number;
+  fitnessMinutes: number;
 }
 
 interface DashboardImageGeneratorProps {
@@ -20,6 +22,7 @@ interface DashboardImageGeneratorProps {
   profileUrl?: string;
   chartData?: ChartDataPoint[];
   selectedPeriod?: 7 | 14 | 30;
+  chartType?: 'line' | 'bar';
 }
 
 export const DashboardImageGenerator = ({
@@ -30,7 +33,8 @@ export const DashboardImageGenerator = ({
   totalDuration,
   profileUrl,
   chartData,
-  selectedPeriod
+  selectedPeriod,
+  chartType = 'line'
 }: DashboardImageGeneratorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -77,7 +81,7 @@ export const DashboardImageGenerator = ({
     ctx.font = 'bold 48px Impact, Arial Black, sans-serif';
     ctx.textAlign = 'center';
     ctx.letterSpacing = '4px';
-    ctx.fillText('MY MEDITATION JOURNEY', canvas.width / 2, 60);
+    ctx.fillText('MY WELLNESS JOURNEY', canvas.width / 2, 60);
 
     // Add subtitle with user and period info
     ctx.fillStyle = '#a1a1aa';
@@ -110,15 +114,15 @@ export const DashboardImageGenerator = ({
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 20px Space Mono';
     ctx.textAlign = 'left';
-    ctx.fillText(`Meditation Frequency - ${selectedPeriod || 30} Days`, chartX + 20, chartY - 10);
+    ctx.fillText(`Wellness Frequency - ${selectedPeriod || 30} Days`, chartX + 20, chartY - 10);
     
     ctx.fillStyle = '#a1a1aa';
     ctx.font = '14px Space Mono';
-    ctx.fillText('Sessions per day', chartX + 20, chartY + 25);
+    ctx.fillText('Activities per day', chartX + 20, chartY + 25);
 
-    // Draw the meditation frequency chart
+    // Draw the wellness frequency chart
     if (chartData && chartData.length > 0) {
-      const maxSessions = Math.max(...chartData.map(d => d.sessions), 1);
+      const maxSessions = Math.max(...chartData.map(d => Math.max(d.meditation, d.fitness)), 1);
       
       // Draw grid lines first
       ctx.strokeStyle = 'rgba(161, 161, 170, 0.3)';
@@ -143,52 +147,127 @@ export const DashboardImageGenerator = ({
         ctx.stroke();
       }
 
-      // Calculate data points for the visible data
-      const dataPoints = visibleData.map((point, index) => {
+      // Calculate data points for meditation and fitness
+      const meditationPoints = visibleData.map((point, index) => {
         const x = chartX + 40 + (index * (chartWidth - 80)) / Math.max(visibleData.length - 1, 1);
-        const normalizedSessions = point.sessions / maxSessions;
+        const normalizedSessions = point.meditation / maxSessions;
         const y = chartY + chartHeight - 40 - (normalizedSessions * (chartHeight - 80));
-        return { x, y, sessions: point.sessions, date: point.dateDisplay };
+        return { x, y, sessions: point.meditation, date: point.dateDisplay };
       });
 
-      // Draw connecting lines if we have multiple points
-      if (dataPoints.length > 1) {
-        const lineGradient = ctx.createLinearGradient(chartX, 0, chartX + chartWidth, 0);
-        lineGradient.addColorStop(0, '#9C27B0');
-        lineGradient.addColorStop(1, '#FF8A00');
-        
-        ctx.strokeStyle = lineGradient;
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        
-        ctx.beginPath();
-        ctx.moveTo(dataPoints[0].x, dataPoints[0].y);
-        for (let i = 1; i < dataPoints.length; i++) {
-          ctx.lineTo(dataPoints[i].x, dataPoints[i].y);
-        }
-        ctx.stroke();
-      }
+      const fitnessPoints = visibleData.map((point, index) => {
+        const x = chartX + 40 + (index * (chartWidth - 80)) / Math.max(visibleData.length - 1, 1);
+        const normalizedSessions = point.fitness / maxSessions;
+        const y = chartY + chartHeight - 40 - (normalizedSessions * (chartHeight - 80));
+        return { x, y, sessions: point.fitness, date: point.dateDisplay };
+      });
 
-      // Draw data points with glow
-      dataPoints.forEach(point => {
-        if (point.sessions > 0) {
-          // Outer glow
-          ctx.fillStyle = '#FF8A00';
-          ctx.shadowColor = '#FF8A00';
-          ctx.shadowBlur = 10;
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
-          ctx.fill();
-          ctx.shadowBlur = 0;
+      if (chartType === 'line') {
+        // Draw meditation line
+        if (meditationPoints.length > 1) {
+          const meditationGradient = ctx.createLinearGradient(chartX, 0, chartX + chartWidth, 0);
+          meditationGradient.addColorStop(0, '#9C27B0');
+          meditationGradient.addColorStop(1, '#FF8A00');
           
-          // Inner core
-          ctx.fillStyle = '#9C27B0';
+          ctx.strokeStyle = meditationGradient;
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
           ctx.beginPath();
-          ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
-          ctx.fill();
+          ctx.moveTo(meditationPoints[0].x, meditationPoints[0].y);
+          for (let i = 1; i < meditationPoints.length; i++) {
+            ctx.lineTo(meditationPoints[i].x, meditationPoints[i].y);
+          }
+          ctx.stroke();
         }
-      });
+
+        // Draw fitness line (dashed)
+        if (fitnessPoints.length > 1) {
+          const fitnessGradient = ctx.createLinearGradient(chartX, 0, chartX + chartWidth, 0);
+          fitnessGradient.addColorStop(0, '#1E40AF');
+          fitnessGradient.addColorStop(1, '#60A5FA');
+          
+          ctx.strokeStyle = fitnessGradient;
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.setLineDash([8, 4]);
+          
+          ctx.beginPath();
+          ctx.moveTo(fitnessPoints[0].x, fitnessPoints[0].y);
+          for (let i = 1; i < fitnessPoints.length; i++) {
+            ctx.lineTo(fitnessPoints[i].x, fitnessPoints[i].y);
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Draw meditation points
+        meditationPoints.forEach(point => {
+          if (point.sessions > 0) {
+            ctx.fillStyle = '#FF8A00';
+            ctx.shadowColor = '#FF8A00';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            ctx.fillStyle = '#9C27B0';
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        });
+
+        // Draw fitness points
+        fitnessPoints.forEach(point => {
+          if (point.sessions > 0) {
+            ctx.fillStyle = '#60A5FA';
+            ctx.shadowColor = '#60A5FA';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            ctx.fillStyle = '#1E40AF';
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        });
+      } else {
+        // Draw bars for both meditation and fitness
+        const barWidth = Math.max(8, (chartWidth - 80) / (visibleData.length * 3));
+        
+        visibleData.forEach((point, index) => {
+          const baseX = chartX + 40 + (index * (chartWidth - 80)) / Math.max(visibleData.length - 1, 1);
+          
+          // Meditation bar
+          if (point.meditation > 0) {
+            const meditationHeight = (point.meditation / maxSessions) * (chartHeight - 80);
+            const meditationGradient = ctx.createLinearGradient(0, chartY + chartHeight - 40, 0, chartY + chartHeight - 40 - meditationHeight);
+            meditationGradient.addColorStop(0, '#9C27B0');
+            meditationGradient.addColorStop(1, '#FF8A00');
+            
+            ctx.fillStyle = meditationGradient;
+            ctx.fillRect(baseX - barWidth, chartY + chartHeight - 40 - meditationHeight, barWidth, meditationHeight);
+          }
+          
+          // Fitness bar
+          if (point.fitness > 0) {
+            const fitnessHeight = (point.fitness / maxSessions) * (chartHeight - 80);
+            const fitnessGradient = ctx.createLinearGradient(0, chartY + chartHeight - 40, 0, chartY + chartHeight - 40 - fitnessHeight);
+            fitnessGradient.addColorStop(0, '#1E40AF');
+            fitnessGradient.addColorStop(1, '#60A5FA');
+            
+            ctx.fillStyle = fitnessGradient;
+            ctx.fillRect(baseX, chartY + chartHeight - 40 - fitnessHeight, barWidth, fitnessHeight);
+          }
+        });
+      }
 
       // Add Y-axis labels
       ctx.fillStyle = '#a1a1aa';
@@ -215,7 +294,7 @@ export const DashboardImageGenerator = ({
       ctx.fillStyle = '#666';
       ctx.font = '16px Space Mono';
       ctx.textAlign = 'center';
-      ctx.fillText('No meditation data available', chartX + chartWidth / 2, chartY + chartHeight / 2);
+      ctx.fillText('No wellness data available', chartX + chartWidth / 2, chartY + chartHeight / 2);
       
       // Draw empty grid anyway for visual consistency
       ctx.strokeStyle = 'rgba(161, 161, 170, 0.1)';
@@ -228,6 +307,35 @@ export const DashboardImageGenerator = ({
         ctx.stroke();
       }
     }
+
+    // Add legend for the chart
+    const legendY = chartY + chartHeight + 10;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '14px Space Mono';
+    ctx.textAlign = 'left';
+
+    // Meditation legend
+    ctx.fillStyle = '#FF8A00';
+    ctx.fillRect(chartX + 20, legendY, 15, 3);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('🧘 Meditation', chartX + 45, legendY + 10);
+
+    // Fitness legend  
+    ctx.fillStyle = '#60A5FA';
+    if (chartType === 'line') {
+      ctx.setLineDash([4, 2]);
+      ctx.strokeStyle = '#60A5FA';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(chartX + 160, legendY + 1.5);
+      ctx.lineTo(chartX + 175, legendY + 1.5);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else {
+      ctx.fillRect(chartX + 160, legendY, 15, 3);
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('💪 Fitness', chartX + 185, legendY + 10);
 
     // Stats cards layout - positioned below the chart
     const cardY = chartY + chartHeight + 40;
@@ -320,7 +428,7 @@ export const DashboardImageGenerator = ({
     logo.src = '/lovable-uploads/a707377f-d19b-40cc-a022-c7baa7bbced8.png';
 
     return canvas;
-  }, [userEmail, totalPoints, streak, totalSessions, totalDuration, profileUrl, chartData, selectedPeriod]);
+  }, [userEmail, totalPoints, streak, totalSessions, totalDuration, profileUrl, chartData, selectedPeriod, chartType]);
 
   const handleDownload = useCallback(() => {
     const canvas = generateImage();
@@ -332,13 +440,13 @@ export const DashboardImageGenerator = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `meditation-journey-${Date.now()}.png`;
+      a.download = `wellness-journey-${Date.now()}.png`;
       a.click();
       URL.revokeObjectURL(url);
       
       toast({
         title: "Image downloaded!",
-        description: "Your meditation journey image has been saved.",
+        description: "Your wellness journey image has been saved.",
       });
     }, 'image/png');
   }, [generateImage]);
@@ -351,10 +459,10 @@ export const DashboardImageGenerator = ({
       if (!blob) return;
 
       // Try to share using Web Share API with image
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'meditation-journey.png', { type: 'image/png' })] })) {
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'wellness-journey.png', { type: 'image/png' })] })) {
         try {
           const displayName = userEmail.split('@')[0];
-          const text = `🧘‍♀️ Check out my meditation journey on @ROJOasis! 
+          const text = `🧘‍♀️ Check out my wellness journey on @ROJOasis! 
       
 📊 ${totalPoints.toFixed(1)} points earned
 🔥 ${streak} day streak
@@ -367,7 +475,7 @@ Join me at roseofjericho.xyz${profileUrl ? `\n${profileUrl}` : ''}
 
           await navigator.share({
             text,
-            files: [new File([blob], 'meditation-journey.png', { type: 'image/png' })]
+            files: [new File([blob], 'wellness-journey.png', { type: 'image/png' })]
           });
           return;
         } catch (error) {

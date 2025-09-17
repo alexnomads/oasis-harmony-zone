@@ -197,6 +197,7 @@ export default function MeditationTrendChart({ sessions, userStreak, userTotalPo
                   profileUrl={`https://roseofjericho.xyz/profile/${user.email?.split('@')[0]}`}
                   chartData={chartData}
                   selectedPeriod={selectedPeriod}
+                  chartType={chartType}
                 />
               </div>
             )}

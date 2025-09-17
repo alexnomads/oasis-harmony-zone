@@ -11,8 +11,11 @@ type LeaderboardEntry = {
   user_id: string;
   total_points: number;
   meditation_streak: number;
+  fitness_streak: number;
   total_sessions: number;
   total_meditation_time: number;
+  total_fitness_sessions: number;
+  total_fitness_time: number;
   display_name: string;
   email: string;
   active_streak: number; // Added the active_streak property that's required by LeaderboardEntry
@@ -70,7 +73,7 @@ export const GlobalLeaderboard = () => {
       ) : (
         <>
           <div className="text-sm text-zinc-400 mb-2">
-            Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalUsers)} of {totalUsers} meditators
+            Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalUsers)} of {totalUsers} users
           </div>
           
           <div className="space-y-3">

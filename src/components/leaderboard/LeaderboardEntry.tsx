@@ -10,8 +10,11 @@ type LeaderboardEntryProps = {
     user_id: string;
     total_points: number;
     meditation_streak: number;
+    fitness_streak: number;
     total_sessions: number;
     total_meditation_time: number;
+    total_fitness_sessions: number;
+    total_fitness_time: number;
     display_name: string;
     email: string;
     active_streak: number; // Using the active_streak field from the SQL view
@@ -100,11 +103,27 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
       </div>
       
       <div className="text-right flex-shrink-0">
-        <p className="font-medium text-vibrantOrange text-base sm:text-lg whitespace-nowrap">{entry.total_sessions} sessions</p>
-        <p className="text-xs sm:text-sm text-zinc-400 flex items-center justify-end gap-1 whitespace-nowrap">
-          <Timer className="h-3 w-3" />
-          {formatDuration(entry.total_meditation_time)}
-        </p>
+        <div className="space-y-1">
+          {/* Meditation Stats */}
+          <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
+            <span>🧘</span>
+            <span className="font-medium text-vibrantOrange">{entry.total_sessions}</span>
+            <span className="text-zinc-400">({formatDuration(entry.total_meditation_time)})</span>
+          </div>
+          
+          {/* Fitness Stats */}
+          <div className="flex items-center justify-end gap-1 text-xs sm:text-sm">
+            <span>💪</span>
+            <span className="font-medium text-vibrantOrange">{entry.total_fitness_sessions || 0}</span>
+            <span className="text-zinc-400">({formatDuration(entry.total_fitness_time || 0)})</span>
+          </div>
+          
+          {/* Individual Streaks */}
+          <div className="flex items-center justify-end gap-2 text-xs text-zinc-500">
+            <span>🧘 {entry.meditation_streak}d</span>
+            <span>💪 {entry.fitness_streak || 0}d</span>
+          </div>
+        </div>
       </div>
     </motion.div>
     </Link>

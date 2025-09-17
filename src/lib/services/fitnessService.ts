@@ -32,7 +32,7 @@ export class FitnessService extends BaseService {
         reps_completed: repsCompleted,
         duration,
         points_earned: totalPoints,
-        verified: false // Points pending verification
+        verified: false // Only reps need verification, time/sessions always count
       };
       
       const result = await supabase
@@ -91,10 +91,10 @@ export class FitnessService extends BaseService {
       // Calculate total reps
       const totalReps = sessions.reduce((sum, session) => sum + session.reps_completed, 0);
       
-      // Calculate fitness points (only verified sessions count towards points)
-      const fitnessPoints = sessions
-        .filter(session => session.verified)
-        .reduce((sum, session) => sum + session.points_earned, 0);
+  // Calculate fitness points (only verified sessions count towards points)
+  const fitnessPoints = sessions
+    .filter(session => session.verified)
+    .reduce((sum, session) => sum + session.points_earned, 0);
       
       // Calculate week streak (consecutive days with workouts in the last 7 days)
       const weekStreak = this.calculateWeekStreak(sessions);

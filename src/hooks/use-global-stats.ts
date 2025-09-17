@@ -96,10 +96,10 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         return sum + (session.duration || 0);
       }, 0);
 
-      // Get fitness sessions
+      // Get fitness sessions - always count sessions and time, regardless of verification
       let fitnessQuery = supabase
         .from('fitness_sessions')
-        .select('duration');
+        .select('duration, reps_completed');
 
       if (timePeriod !== "all") {
         let startDate: Date | null = null;

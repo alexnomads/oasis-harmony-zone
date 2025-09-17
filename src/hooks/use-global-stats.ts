@@ -30,13 +30,14 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
       const { data: leaderboardData, error: leaderboardError } = await supabase
         .from('global_leaderboard')
         .select('user_id');
-        
-      if (leaderboardError) {
-        console.error("Error fetching leaderboard data:", leaderboardError);
-        throw leaderboardError;
-      }
       
-      const totalUsersCount = leaderboardData?.length || 0;
+      // Don't block fitness stats if leaderboard view is missing or restricted by RLS
+      let totalUsersCount = 0;
+      if (leaderboardError) {
+        console.warn("Leaderboard view unavailable, continuing without user count:", leaderboardError.message);
+      } else {
+        totalUsersCount = leaderboardData?.length || 0;
+      }
       console.log("Total users count from leaderboard:", totalUsersCount);
       
       let completedSessions: any[] = [];

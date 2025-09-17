@@ -312,9 +312,9 @@ export const QuickMeditation: React.FC = () => {
         }} transition={{
           duration: 0.6
         }} className="space-y-2">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-white to-vibrantOrange bg-clip-text text-transparent">
-                Start Your Meditation
-              </h1>
+              <h2 className="text-3xl md:text-5xl font-bold glitch-text mb-4" data-text="🧘🏻‍♀️MEDITATION ZONE🧘🏻‍♀️">
+                🧘🏻‍♀️MEDITATION ZONE🧘🏻‍♀️
+              </h2>
               
             </motion.div>
 

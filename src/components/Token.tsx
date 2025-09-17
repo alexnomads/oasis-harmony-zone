@@ -38,7 +38,7 @@ export const Token = () => {
         duration: 0.6
       }} className="text-center mb-12">
           <span className="inline-block px-4 py-1.5 mb-6 text-sm font-medium bg-white/10 text-white rounded-full">
-            ROJ Token
+            Our Tokens Utility
           </span>
           <h2 className="text-4xl font-bold mb-4 text-white">
             Powering the Wellness Economy

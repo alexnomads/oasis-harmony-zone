@@ -44,7 +44,7 @@ export const Token = () => {
             Powering the Wellness Economy
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
-            Our native token enables seamless access to wellness services and rewards active community participation
+            Our native tokens enable seamless access to wellness services and rewards active community participation
           </p>
           
           <div className="flex justify-center items-center mb-12">

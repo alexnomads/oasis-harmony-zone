@@ -31,7 +31,7 @@ export class FitnessService {
         reps_completed: repsCompleted,
         duration,
         points_earned: totalPoints,
-        verified: false // Only reps need verification, time/sessions always count
+        verified: true // Auto-verify sessions for immediate points and leaderboard display
       };
       
       const { data, error } = await supabase

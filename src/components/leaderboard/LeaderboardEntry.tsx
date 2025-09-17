@@ -16,7 +16,6 @@ type LeaderboardEntryProps = {
     total_fitness_sessions: number;
     total_fitness_time: number;
     display_name: string;
-    email: string;
     active_streak: number; // Using the active_streak field from the SQL view
   };
   index: number;
@@ -49,14 +48,7 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
     }
   };
 
-  const getUsernameFromEmail = (email: string): string => {
-    if (!email || !email.includes('@')) return email;
-    return email.split('@')[0];
-  };
-
-  const displayName = entry.display_name && entry.display_name !== 'User ' + entry.user_id.substring(0, 8)
-    ? entry.display_name
-    : getUsernameFromEmail(entry.email || '');
+  const displayName = entry.display_name || `User ${entry.user_id.substring(0, 8)}`;
   
   const globalRank = (currentPage - 1) * itemsPerPage + index + 1;
   
@@ -64,8 +56,8 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
   // This ensures streaks are only counted for users who have meditated today or yesterday
   const streak = entry.active_streak;
 
-  // Generate username slug for URL
-  const usernameSlug = getUsernameFromEmail(entry.email);
+  // Generate username slug for URL using display_name
+  const usernameSlug = entry.display_name.replace(/\s+/g, '-').toLowerCase();
 
   return (
     <Link to={`/global-dashboard/${usernameSlug}`} className="block">

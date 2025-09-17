@@ -245,7 +245,6 @@ export type Database = {
         Row: {
           active_streak: number | null
           display_name: string | null
-          email: string | null
           fitness_streak: number | null
           last_fitness_date: string | null
           last_meditation_date: string | null

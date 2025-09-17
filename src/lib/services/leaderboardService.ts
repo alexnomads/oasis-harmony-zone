@@ -60,12 +60,12 @@ export class LeaderboardService extends BaseService {
     try {
       console.log(`Fetching user profile for username: ${username}`);
       
-      // First try to find by exact username match (from email)
+      // Search by display name only (email is no longer exposed for security)
       const { data, error } = await retryOperation(async () =>
         supabase
           .from('global_leaderboard')
           .select('*')
-          .or(`email.ilike.${username}@%,display_name.ilike.%${username}%`)
+          .ilike('display_name', `%${username}%`)
           .limit(1)
           .single()
       );

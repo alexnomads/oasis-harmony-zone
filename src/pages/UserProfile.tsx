@@ -21,6 +21,8 @@ import { LeaderboardService } from "@/lib/services/leaderboardService";
 import { toast } from "sonner";
 import { DashboardImageGenerator } from "@/components/dashboard/DashboardImageGenerator";
 import { formatDurationDetails } from "@/lib/utils/timeFormat";
+import { MeditationService } from "@/lib/meditationService";
+import { FitnessService } from "@/lib/services/fitnessService";
 
 type UserProfileData = {
   user_id: string;
@@ -34,12 +36,23 @@ type UserProfileData = {
   rank?: number;
 };
 
+interface ChartDataPoint {
+  date: string;
+  dateDisplay: string;
+  meditation: number;
+  fitness: number;
+  meditationMinutes: number;
+  fitnessMinutes: number;
+}
+
 export default function UserProfile() {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const selectedPeriod: 7 | 14 | 30 = 30;
 
   useEffect(() => {
     const fetchUserProfile = async () => {

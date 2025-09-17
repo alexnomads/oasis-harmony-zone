@@ -16,6 +16,7 @@ import { DashboardImageGenerator } from '@/components/dashboard/DashboardImageGe
 import { PetSection } from '@/components/pet/PetSection';
 import { MoodSessionEntry } from '@/components/dashboard/MoodSessionEntry';
 import { MeditationSessionEntry } from '@/components/dashboard/MeditationSessionEntry';
+import { FitnessSessionEntry } from '@/components/dashboard/FitnessSessionEntry';
 import { usePet } from '@/hooks/usePet';
 import { Badge } from '@/components/ui/badge';
 
@@ -23,13 +24,13 @@ export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { moodHistory } = usePet(user?.id);
-  const [sessionFilter, setSessionFilter] = useState<'all' | 'meditation' | 'mood'>('all');
+  const [sessionFilter, setSessionFilter] = useState<'all' | 'meditation' | 'mood' | 'fitness'>('all');
 
   useEffect(() => {
     if (!user) return;
 
     const channel = supabase
-      .channel(`user_meditation_${user.id}`)
+      .channel(`user_sessions_${user.id}`)
       .on('postgres_changes', { 
         event: 'INSERT', 
         schema: 'public', 
@@ -56,12 +57,25 @@ export default function Dashboard() {
           description: "Your dashboard has been updated with your latest session.",
         });
       })
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'fitness_sessions',
+        filter: `user_id=eq.${user.id}` 
+      }, (payload) => {
+        console.log("New user fitness session detected:", payload);
+        refetch();
+        toast({
+          title: "Fitness session completed!",
+          description: "Your dashboard has been updated with your latest workout.",
+        });
+      })
       .subscribe((status) => {
         console.log("User subscription status:", status);
         if (status === 'SUBSCRIBED') {
-          console.log("Successfully subscribed to user meditation updates for user:", user.id);
+          console.log("Successfully subscribed to user session updates for user:", user.id);
         } else if (status === 'CHANNEL_ERROR') {
-          console.error("Error subscribing to user meditation updates");
+          console.error("Error subscribing to user session updates");
           toast({
             title: "Connection Error",
             description: "Failed to subscribe to real-time updates. Your data may not be current.",
@@ -98,18 +112,30 @@ export default function Dashboard() {
   }, [user, loading, navigate]);
 
   const totalPoints = userData?.points?.total_points || 0;
-  const streak = userData?.points?.meditation_streak || 0;
-  const totalSessions = userData?.sessions?.length || 0;
+  const meditationStreak = userData?.points?.meditation_streak || 0;
+  const fitnessStreak = userData?.points?.fitness_streak || 0;
+  const totalMeditationSessions = userData?.sessions?.length || 0;
+  const totalFitnessSessions = userData?.fitnessSessions?.length || 0;
+  const totalSessions = totalMeditationSessions + totalFitnessSessions;
   
-  const totalDuration = userData?.sessions?.reduce((acc, session) => {
+  const totalMeditationDuration = userData?.sessions?.reduce((acc, session) => {
     const sessionDuration = session.duration || 0;
-    console.log(`Adding user session duration: ${sessionDuration}`);
+    console.log(`Adding meditation session duration: ${sessionDuration}`);
     return acc + sessionDuration;
   }, 0) || 0;
+
+  const totalFitnessDuration = userData?.fitnessSessions?.reduce((acc, session) => {
+    const sessionDuration = session.duration || 0;
+    console.log(`Adding fitness session duration: ${sessionDuration}`);
+    return acc + sessionDuration;
+  }, 0) || 0;
+
+  const totalDuration = totalMeditationDuration + totalFitnessDuration;
   
   console.log("Calculated user stats:", {
     totalPoints,
-    streak,
+    meditationStreak,
+    fitnessStreak,
     totalSessions,
     totalDuration
   });
@@ -119,12 +145,18 @@ export default function Dashboard() {
   if (loading || loadingData) return null;
 
   const recentSessions = userData?.sessions.slice(0, 5) || [];
+  const recentFitnessSessions = userData?.fitnessSessions?.slice(0, 5) || [];
   const recentMoods = moodHistory.slice(0, 5) || [];
   
   // Combine and sort recent activities
   const combinedActivities = [
     ...recentSessions.map(session => ({
       type: 'meditation' as const,
+      data: session,
+      date: new Date(session.created_at)
+    })),
+    ...recentFitnessSessions.map(session => ({
+      type: 'fitness' as const,
       data: session,
       date: new Date(session.created_at)
     })),
@@ -233,8 +265,8 @@ export default function Dashboard() {
                         <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm retro-text text-muted-foreground leading-tight">Current Streak</p>
-                        <h3 className="text-base sm:text-lg font-bold cyber-heading leading-tight">{streak} days</h3>
+                        <p className="text-xs sm:text-sm retro-text text-muted-foreground leading-tight">Meditation Streak</p>
+                        <h3 className="text-base sm:text-lg font-bold cyber-heading leading-tight">{meditationStreak} days</h3>
                       </div>
                     </div>
                   </div>
@@ -271,7 +303,7 @@ export default function Dashboard() {
 
             <MeditationTrendChart 
               sessions={userData?.sessions || []} 
-              userStreak={streak}
+              userStreak={meditationStreak}
               userTotalPoints={totalPoints}
             />
 
@@ -312,6 +344,12 @@ export default function Dashboard() {
                       >
                         Mood
                       </button>
+                      <button 
+                        className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'fitness' ? 'bg-primary/20' : 'bg-muted/20'}`}
+                        onClick={() => setSessionFilter('fitness')}
+                      >
+                        Fitness
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -321,6 +359,12 @@ export default function Dashboard() {
                        activity.type === 'meditation' ? (
                          <MeditationSessionEntry
                            key={`meditation-${activity.data.id}`}
+                           session={activity.data}
+                           index={index}
+                         />
+                       ) : activity.type === 'fitness' ? (
+                         <FitnessSessionEntry
+                           key={`fitness-${activity.data.id}`}
                            session={activity.data}
                            index={index}
                          />
@@ -345,12 +389,15 @@ export default function Dashboard() {
                       <p className="text-lg">
                         {sessionFilter === 'mood' ? 'No mood logs yet.' : 
                          sessionFilter === 'meditation' ? 'No meditation sessions yet.' : 
+                         sessionFilter === 'fitness' ? 'No fitness sessions yet.' :
                          'No activity yet.'}
                       </p>
                       <p className="mt-2 text-sm text-muted-foreground">
-                        {sessionFilter === 'mood' ? 'Check in with yourself in the pet section!' : 'Start your journey today!'}
+                        {sessionFilter === 'mood' ? 'Check in with yourself in the pet section!' : 
+                         sessionFilter === 'fitness' ? 'Start working out to see your progress!' :
+                         'Start your journey today!'}
                       </p>
-                      {sessionFilter !== 'mood' && (
+                      {sessionFilter !== 'mood' && sessionFilter !== 'fitness' && (
                         <button
                           onClick={() => navigate('/meditate')}
                           className="retro-button mt-6 px-6 py-3"

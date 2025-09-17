@@ -38,6 +38,9 @@ export interface UserPoints {
   total_points: number;
   meditation_streak: number;
   last_meditation_date: string | null;
+  fitness_points?: number;
+  fitness_streak?: number;
+  last_fitness_date: string | null;
   created_at: string;
   updated_at: string;
 }

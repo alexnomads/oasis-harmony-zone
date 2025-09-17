@@ -1,9 +1,9 @@
 import { supabase } from '../supabase';
 import { BaseService } from './baseService';
-import type { MeditationSession, UserPoints, UserProfile } from '../../types/database';
+import type { MeditationSession, UserPoints, UserProfile, FitnessSession } from '../../types/database';
 
 export class UserService extends BaseService {
-  // Get user's meditation history and points
+  // Get user's meditation history, fitness sessions, and points
   static async getUserHistory(userId: string) {
     try {
       console.log('Getting history for user:', userId);
@@ -17,6 +17,15 @@ export class UserService extends BaseService {
         
       const sessions = await this.executeQuery<MeditationSession[]>(() => Promise.resolve(sessionsResult));
       
+      // Get user's fitness sessions
+      const fitnessResult = await supabase
+        .from('fitness_sessions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+        
+      const fitnessSessions = await this.executeQuery<FitnessSession[]>(() => Promise.resolve(fitnessResult));
+      
       // Get user's points
       try {
         const pointsResult = await supabase
@@ -27,17 +36,21 @@ export class UserService extends BaseService {
           
         const points = await this.executeQuery<UserPoints>(() => Promise.resolve(pointsResult));
         
-        return { sessions, points };
+        return { sessions, fitnessSessions, points };
       } catch (error) {
         // If user has no points record yet, return default values
         if (error instanceof Error && error.message.includes('No data returned')) {
           return {
             sessions,
+            fitnessSessions,
             points: {
               user_id: userId,
               total_points: 0,
               meditation_streak: 0,
               last_meditation_date: null,
+              fitness_points: 0,
+              fitness_streak: 0,
+              last_fitness_date: null,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             } as UserPoints

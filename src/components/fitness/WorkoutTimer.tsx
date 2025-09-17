@@ -195,13 +195,15 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
           {!isRunning && !isCompleted && (
             <div className="text-center space-y-4">
               <h3 className="text-lg font-medium text-accent">Select Duration</h3>
-              <div className="flex justify-center gap-3">
+              <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2 sm:gap-3 max-w-sm mx-auto">
                 {presetDurations.map((preset) => (
                   <Button
                     key={preset.value}
                     variant={duration === preset.value ? "default" : "outline"}
                     onClick={() => selectDuration(preset.value)}
-                    className={duration === preset.value ? "retro-button" : ""}
+                    className={`min-h-[44px] text-sm font-semibold ${
+                      duration === preset.value ? "retro-button" : "hover:bg-accent/10"
+                    }`}
                   >
                     {preset.label}
                   </Button>
@@ -253,7 +255,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
 
           {/* Control Buttons */}
           {!showRepsInput && (
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 px-4">
               <AnimatePresence mode="wait">
                 {!isRunning ? (
                   <motion.div
@@ -261,13 +263,14 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
+                    className="w-full sm:w-auto"
                   >
                     <Button
                       onClick={handleStart}
-                      className="retro-button px-8 py-4 text-lg"
+                      className="retro-button w-full sm:w-auto px-6 sm:px-8 py-4 text-base sm:text-lg min-h-[48px]"
                       disabled={isCompleted}
                     >
-                      <Play className="w-5 h-5 mr-2" />
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       {timeRemaining === duration ? 'START' : 'RESUME'}
                     </Button>
                   </motion.div>
@@ -277,37 +280,40 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
+                    className="w-full sm:w-auto"
                   >
                     <Button
                       onClick={handlePause}
                       variant="outline"
-                      className="px-8 py-4 text-lg"
+                      className="w-full sm:w-auto px-6 sm:px-8 py-4 text-base sm:text-lg min-h-[48px] border-accent/30 hover:bg-accent/10"
                     >
-                      <Pause className="w-5 h-5 mr-2" />
+                      <Pause className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       PAUSE
                     </Button>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              <Button
-                onClick={handleReset}
-                variant="outline"
-                className="px-6 py-4"
-                disabled={isCompleted}
-              >
-                <RotateCcw className="w-5 h-5 mr-2" />
-                RESET
-              </Button>
-
-              {!isCompleted && timeRemaining < duration && (
+              <div className="flex gap-3 w-full sm:w-auto">
                 <Button
-                  onClick={handleComplete}
-                  className="retro-button px-6 py-4 bg-green-600 hover:bg-green-700"
+                  onClick={handleReset}
+                  variant="outline"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-4 text-sm sm:text-base min-h-[48px] border-accent/30 hover:bg-accent/10"
+                  disabled={isCompleted}
                 >
-                  FINISH EARLY
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  RESET
                 </Button>
-              )}
+
+                {!isCompleted && timeRemaining < duration && (
+                  <Button
+                    onClick={handleComplete}
+                    className="flex-1 sm:flex-none retro-button px-4 sm:px-6 py-4 text-sm sm:text-base min-h-[48px] bg-green-600 hover:bg-green-700"
+                  >
+                    FINISH EARLY
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 

@@ -5,23 +5,22 @@ import { Dumbbell, Users } from "lucide-react";
 import { AbsWorkout } from "./AbsWorkout";
 import { PushUpWorkout } from "./PushUpWorkout";
 import { FitnessStats } from "./FitnessStats";
-
 export const FitnessContainer = () => {
   const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups'>('selection');
 
   // Listen for recommended workout start events
   useEffect(() => {
     const handleSetWorkoutType = (event: CustomEvent) => {
-      const { workoutType } = event.detail;
+      const {
+        workoutType
+      } = event.detail;
       if (workoutType === 'abs') {
         setActiveWorkout('abs');
       } else if (workoutType === 'pushups') {
         setActiveWorkout('pushups');
       }
     };
-
     window.addEventListener('setWorkoutType', handleSetWorkoutType as EventListener);
-    
     return () => {
       window.removeEventListener('setWorkoutType', handleSetWorkoutType as EventListener);
     };
@@ -30,43 +29,36 @@ export const FitnessContainer = () => {
   // Also handle direct start events to be robust when already on Fitness tab
   useEffect(() => {
     const handleStartRecommendedWorkout = (event: CustomEvent) => {
-      const { workoutType } = event.detail || {};
+      const {
+        workoutType
+      } = event.detail || {};
       if (workoutType === 'abs') {
         setActiveWorkout('abs');
       } else if (workoutType === 'pushups') {
         setActiveWorkout('pushups');
       }
     };
-
     window.addEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
-
     return () => {
       window.removeEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
     };
   }, []);
-
   const handleBackToSelection = () => {
     setActiveWorkout('selection');
   };
-
   if (activeWorkout === 'abs') {
     return <AbsWorkout onBack={handleBackToSelection} />;
   }
-
   if (activeWorkout === 'pushups') {
     return <PushUpWorkout onBack={handleBackToSelection} />;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold mb-4 glitch-text" data-text="💪 FITNESS ZONE 💪">
           💪 FITNESS ZONE 💪
         </h2>
-        <p className="text-muted-foreground text-lg">
-          Choose your workout and earn points by posting proof on X.com
-        </p>
+        
       </div>
 
       {/* Fitness Stats */}
@@ -84,10 +76,7 @@ export const FitnessContainer = () => {
               <p className="text-muted-foreground">
                 Core strengthening exercises including plank holds and ab workouts
               </p>
-              <Button 
-                onClick={() => setActiveWorkout('abs')}
-                className="retro-button w-full py-3 text-lg"
-              >
+              <Button onClick={() => setActiveWorkout('abs')} className="retro-button w-full py-3 text-lg">
                 START ABS 🔥
               </Button>
             </div>
@@ -104,10 +93,7 @@ export const FitnessContainer = () => {
               <p className="text-muted-foreground">
                 Upper body strength with classic push-up challenges
               </p>
-              <Button 
-                onClick={() => setActiveWorkout('pushups')}
-                className="retro-button w-full py-3 text-lg"
-              >
+              <Button onClick={() => setActiveWorkout('pushups')} className="retro-button w-full py-3 text-lg">
                 START PUSH UPS 💥
               </Button>
             </div>
@@ -132,6 +118,5 @@ export const FitnessContainer = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };

@@ -34,6 +34,7 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
   const [showBreathingText, setShowBreathingText] = useState(true);
   const [pointsDeducted, setPointsDeducted] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
+  const [isVideoMuted, setIsVideoMuted] = useState(false);
   const { requestWakeLock, releaseWakeLock } = useWakeLock();
   
   const { showWarning, isCalibrating, isMoving } = useMovementDetection({
@@ -478,17 +479,27 @@ export const ImmersiveMeditationOverlay: React.FC<ImmersiveMeditationOverlayProp
                     src="/meditation-videos/5min-meditation.mp4"
                     autoPlay
                     loop
-                    muted
+                    muted={isVideoMuted}
                     className="w-full h-full object-cover"
                   />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowVideo(false)}
-                    className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 transition-all duration-300"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsVideoMuted(!isVideoMuted)}
+                      className="bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 transition-all duration-300"
+                    >
+                      {isVideoMuted ? '🔇' : '🔊'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowVideo(false)}
+                      className="bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 transition-all duration-300"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             )}

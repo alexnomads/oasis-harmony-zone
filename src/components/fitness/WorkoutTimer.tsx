@@ -19,6 +19,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   const [showRepsInput, setShowRepsInput] = useState(false);
   const [inputReps, setInputReps] = useState("");
   const [showVideo, setShowVideo] = useState(false);
+  const [isVideoMuted, setIsVideoMuted] = useState(false);
   const { toast } = useToast();
 
   const presetDurations = [
@@ -143,11 +144,19 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
                   src={getWorkoutVideo()!}
                   autoPlay
                   loop
-                  muted
+                  muted={isVideoMuted}
                   playsInline
                   className="w-full h-auto rounded-lg border border-accent/30"
                 />
-                <div className="absolute top-2 right-2">
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsVideoMuted(!isVideoMuted)}
+                    className="bg-black/50 border-accent/30"
+                  >
+                    {isVideoMuted ? '🔇' : '🔊'}
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"

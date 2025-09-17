@@ -43,10 +43,22 @@ export const MeditationContainer = () => {
       }));
     };
 
+    const handleStartRecommendedWorkout = (event: CustomEvent) => {
+      const { workoutType } = event.detail;
+      // Switch to fitness tab
+      setActiveTab("fitness");
+      // The FitnessContainer will handle the workout start
+      window.dispatchEvent(new CustomEvent('setWorkoutType', { 
+        detail: event.detail 
+      }));
+    };
+
     window.addEventListener('startRecommendedMeditation', handleStartRecommendedMeditation as EventListener);
+    window.addEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
     
     return () => {
       window.removeEventListener('startRecommendedMeditation', handleStartRecommendedMeditation as EventListener);
+      window.removeEventListener('startRecommendedWorkout', handleStartRecommendedWorkout as EventListener);
     };
   }, []);
 
@@ -150,7 +162,7 @@ export const MeditationContainer = () => {
 
           {/* Personalized Recommendations */}
           <div className="mt-12 max-w-6xl mx-auto">
-            <PersonalizedRecommendations />
+            <PersonalizedRecommendations type={activeTab === 'fitness' ? 'fitness' : 'meditation'} />
           </div>
         </div>
       </div>

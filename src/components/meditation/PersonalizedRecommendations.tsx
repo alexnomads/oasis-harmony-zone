@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, Brain, Zap, Moon, Sparkles } from 'lucide-react';
+import { Heart, Brain, Zap, Moon, Sparkles, Dumbbell, Timer } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { SessionService } from '@/lib/services/sessionService';
@@ -15,9 +15,14 @@ interface Recommendation {
   duration: number;
   icon: React.ReactNode;
   reason: string;
+  workoutType?: 'abs' | 'pushups';
 }
 
-export const PersonalizedRecommendations = () => {
+interface PersonalizedRecommendationsProps {
+  type?: 'meditation' | 'fitness';
+}
+
+export const PersonalizedRecommendations = ({ type = 'meditation' }: PersonalizedRecommendationsProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
@@ -26,7 +31,7 @@ export const PersonalizedRecommendations = () => {
 
   useEffect(() => {
     generateRecommendations();
-  }, [user]);
+  }, [user, type]);
 
   const generateRecommendations = async () => {
     if (!user) {
@@ -35,27 +40,40 @@ export const PersonalizedRecommendations = () => {
     }
 
     try {
-      // Fetch user's meditation history
-      const { data: sessions } = await supabase
-        .from('meditation_sessions')
-        .select('duration, created_at')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
+      if (type === 'fitness') {
+        // Fetch user's fitness history
+        const { data: fitnessSessions } = await supabase
+          .from('fitness_sessions')
+          .select('workout_type, duration, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(10);
 
-      // Fetch user's mood logs
-      const { data: moods } = await supabase
-        .from('daily_moods')
-        .select('mood_rating, created_at')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(7);
+        const recs = generateFitnessRecommendations(fitnessSessions || []);
+        setRecommendations(recs);
+      } else {
+        // Fetch user's meditation history
+        const { data: sessions } = await supabase
+          .from('meditation_sessions')
+          .select('duration, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(10);
 
-      const recs = generatePersonalizedRecommendations(sessions || [], moods || []);
-      setRecommendations(recs);
+        // Fetch user's mood logs
+        const { data: moods } = await supabase
+          .from('daily_moods')
+          .select('mood_rating, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(7);
+
+        const recs = generatePersonalizedRecommendations(sessions || [], moods || []);
+        setRecommendations(recs);
+      }
     } catch (error) {
       console.error('Error fetching user data:', error);
-      setRecommendations(getDefaultRecommendations());
+      setRecommendations(type === 'fitness' ? getDefaultFitnessRecommendations() : getDefaultRecommendations());
     } finally {
       setLoading(false);
     }
@@ -74,6 +92,91 @@ export const PersonalizedRecommendations = () => {
 
     return uniqueRecommendations;
   };
+
+  const generateFitnessRecommendations = (sessions: any[]): Recommendation[] => {
+    const recs: Recommendation[] = [];
+    const currentHour = new Date().getHours();
+
+    // Time-based fitness recommendations
+    if (currentHour < 10) {
+      recs.push({
+        id: 'morning-abs',
+        title: 'Morning Core',
+        description: 'Start your day with an energizing abs workout',
+        duration: 300, // 5 minutes
+        icon: <Dumbbell className="w-4 h-4" />,
+        reason: 'Perfect for morning energy',
+        workoutType: 'abs'
+      });
+    } else if (currentHour >= 10 && currentHour < 18) {
+      recs.push({
+        id: 'midday-pushups',
+        title: 'Power Push-ups',
+        description: 'Quick upper body strength session',
+        duration: 120, // 2 minutes
+        icon: <Zap className="w-4 h-4" />,
+        reason: 'Great for midday boost',
+        workoutType: 'pushups'
+      });
+    } else {
+      recs.push({
+        id: 'evening-plank',
+        title: 'Evening Plank',
+        description: 'End your day with core stability',
+        duration: 120, // 2 minutes
+        icon: <Timer className="w-4 h-4" />,
+        reason: 'Perfect evening routine',
+        workoutType: 'abs'
+      });
+    }
+
+    // Based on fitness history
+    if (sessions.length > 0) {
+      const recentWorkout = sessions[0];
+      const oppositeWorkout = recentWorkout.workout_type === 'abs' ? 'pushups' : 'abs';
+      
+      recs.push({
+        id: 'balance-workout',
+        title: oppositeWorkout === 'abs' ? 'Core Focus' : 'Upper Body',
+        description: oppositeWorkout === 'abs' ? 'Balance with abs training' : 'Build upper body strength',
+        duration: 300, // 5 minutes
+        icon: <Dumbbell className="w-4 h-4" />,
+        reason: `Balance your ${recentWorkout.workout_type} training`,
+        workoutType: oppositeWorkout
+      });
+    }
+
+    // Fill with defaults if needed
+    while (recs.length < 2) {
+      const defaults = getDefaultFitnessRecommendations();
+      const newRec = defaults.find(d => !recs.some(r => r.id === d.id));
+      if (newRec) recs.push(newRec);
+      else break;
+    }
+
+    return getUniqueRecommendations(recs).slice(0, 2);
+  };
+
+  const getDefaultFitnessRecommendations = (): Recommendation[] => [
+    {
+      id: 'beginner-abs',
+      title: 'Quick Abs',
+      description: 'Simple 5-minute core workout',
+      duration: 300,
+      icon: <Dumbbell className="w-4 h-4" />,
+      reason: 'Great for getting started',
+      workoutType: 'abs'
+    },
+    {
+      id: 'pushup-challenge',
+      title: 'Push-up Power',
+      description: 'Build upper body strength',
+      duration: 120,
+      icon: <Zap className="w-4 h-4" />,
+      reason: 'Popular strength exercise',
+      workoutType: 'pushups'
+    }
+  ];
 
   const generatePersonalizedRecommendations = (sessions: any[], moods: any[]): Recommendation[] => {
     const recs: Recommendation[] = [];
@@ -171,40 +274,53 @@ export const PersonalizedRecommendations = () => {
     }
   ];
 
-  const startMeditationSession = async (duration: number, title: string) => {
+  const startSession = async (rec: Recommendation) => {
     if (!user) {
       toast({
         title: "Sign in required",
-        description: "Please sign in to start a meditation session.",
+        description: "Please sign in to start a session.",
         variant: "destructive"
       });
       return;
     }
 
     try {
-      setStartingSession(title);
+      setStartingSession(rec.title);
       
-      // Create session in database
-      const session = await SessionService.startSession(user.id, 'mindfulness');
-      
-      // Show success message
-      const displayDuration = duration === 30 ? "30-second" : `${Math.floor(duration / 60)}-minute`;
-      toast({
-        title: "Starting Meditation",
-        description: `${title} - ${displayDuration} session starting now.`
-      });
+      if (type === 'fitness') {
+        // For fitness, dispatch event to start workout
+        const displayDuration = rec.duration === 30 ? "30-second" : `${Math.floor(rec.duration / 60)}-minute`;
+        toast({
+          title: "Starting Workout",
+          description: `${rec.title} - ${displayDuration} ${rec.workoutType} workout starting now.`
+        });
 
-      // Switch to Quick Meditation tab and trigger the session
-      // You can emit a custom event that the parent component can listen to
-      window.dispatchEvent(new CustomEvent('startRecommendedMeditation', { 
-        detail: { duration, sessionId: session.id, title } 
-      }));
+        // Switch to fitness workout
+        window.dispatchEvent(new CustomEvent('startRecommendedWorkout', { 
+          detail: { duration: rec.duration, workoutType: rec.workoutType, title: rec.title } 
+        }));
+      } else {
+        // Create meditation session in database
+        const session = await SessionService.startSession(user.id, 'mindfulness');
+        
+        // Show success message
+        const displayDuration = rec.duration === 30 ? "30-second" : `${Math.floor(rec.duration / 60)}-minute`;
+        toast({
+          title: "Starting Meditation",
+          description: `${rec.title} - ${displayDuration} session starting now.`
+        });
+
+        // Switch to Quick Meditation tab and trigger the session
+        window.dispatchEvent(new CustomEvent('startRecommendedMeditation', { 
+          detail: { duration: rec.duration, sessionId: session.id, title: rec.title } 
+        }));
+      }
 
     } catch (error) {
-      console.error('Error starting meditation session:', error);
+      console.error('Error starting session:', error);
       toast({
         title: "Failed to start session",
-        description: "There was an error starting your meditation session. Please try again.",
+        description: "There was an error starting your session. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -269,7 +385,7 @@ export const PersonalizedRecommendations = () => {
               <Button 
                 size="sm" 
                 className="retro-button text-xs px-4 py-2 min-w-[60px]"
-                onClick={() => startMeditationSession(rec.duration, rec.title)}
+                onClick={() => startSession(rec)}
                 disabled={startingSession === rec.title}
               >
                 {startingSession === rec.title ? 'Starting...' : 'START'}

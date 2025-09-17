@@ -3,7 +3,7 @@ import { Coins } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { TokenBuyButton } from "./TokenBuyButton";
-import { LifeBuyButton } from "./LifeBuyButton";
+
 export const Token = () => {
   const benefits = [{
     text: "Access to ROJ pop-up areas at conferences and in physical spots worldwide.",
@@ -47,8 +47,7 @@ export const Token = () => {
             Our native token enables seamless access to wellness services and rewards active community participation
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
-            <LifeBuyButton />
+          <div className="flex justify-center items-center mb-12">
             <TokenBuyButton />
           </div>
         </motion.div>

@@ -7,9 +7,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import thriveProtocolLogo from "@/assets/thrive-protocol-logo.png";
+
 const awards = [{
   name: "Thrive Protocol",
-  logo: "https://pbs.twimg.com/profile_images/1838974918848897025/sulX6L3i_400x400.jpg",
+  logo: thriveProtocolLogo,
   link: "https://x.com/thriveprotocol/status/1915387070433939723"
 }, {
   name: "Polygon",
@@ -40,9 +42,9 @@ export const Awards = () => {
       }} transition={{
         duration: 0.6
       }} className="text-center mb-8">
-          <span className="inline-block px-6 py-2 text-lg font-medium bg-white/10 text-white rounded-full">
-            Grants & Hackatons Won So far
-          </span>
+           <span className="inline-block px-6 py-2 text-lg font-medium bg-white/10 text-white rounded-full">
+             Grants & Hackathons Won So far
+           </span>
         </motion.div>
         
         {isMobile ? (
@@ -51,15 +53,24 @@ export const Awards = () => {
               <CarouselContent>
                 {awardsToShow.map((award, index) => (
                   <CarouselItem key={award.name}>
-                    <motion.a 
-                      href={award.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      initial={{ opacity: 0, scale: 0.8 }} 
-                      whileInView={{ opacity: 1, scale: 1 }} 
-                      whileHover={{ scale: 1.05 }} 
-                      transition={{ duration: 0.4, delay: index * 0.2 }} 
-                      className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-36 h-36 flex items-center justify-center mx-auto"
+                     <motion.a 
+                       href={award.link} 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       initial={{ opacity: 0, scale: 0.8 }} 
+                       whileInView={{ opacity: 1, scale: 1 }} 
+                       whileHover={{ scale: 1.05 }} 
+                       animate={{ 
+                         y: [0, -5, 0],
+                         transition: {
+                           duration: 2,
+                           repeat: Infinity,
+                           ease: "easeInOut",
+                           delay: index * 0.3
+                         }
+                       }}
+                       transition={{ duration: 0.4, delay: index * 0.2 }} 
+                       className="bg-black/20 backdrop-blur-sm p-4 rounded-xl border border-white/20 w-36 h-36 flex items-center justify-center mx-auto"
                     >
                       <img 
                         src={award.logo} 
@@ -83,16 +94,25 @@ export const Awards = () => {
         ) : (
           <div className="flex flex-row justify-center items-center gap-3 sm:gap-8">
             {awardsToShow.map((award, index) => (
-              <motion.a 
-                key={award.name}
-                href={award.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                initial={{ opacity: 0, scale: 0.8 }} 
-                whileInView={{ opacity: 1, scale: 1 }} 
-                whileHover={{ scale: 1.05 }} 
-                transition={{ duration: 0.4, delay: index * 0.2 }} 
-                className="bg-black/20 backdrop-blur-sm p-2 sm:p-4 rounded-xl border border-white/20 w-24 h-24 sm:w-36 sm:h-36 flex items-center justify-center"
+               <motion.a 
+                 key={award.name}
+                 href={award.link} 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 initial={{ opacity: 0, scale: 0.8 }} 
+                 whileInView={{ opacity: 1, scale: 1 }} 
+                 whileHover={{ scale: 1.05 }} 
+                 animate={{ 
+                   y: [0, -5, 0],
+                   transition: {
+                     duration: 2,
+                     repeat: Infinity,
+                     ease: "easeInOut",
+                     delay: index * 0.3
+                   }
+                 }}
+                 transition={{ duration: 0.4, delay: index * 0.2 }} 
+                 className="bg-black/20 backdrop-blur-sm p-2 sm:p-4 rounded-xl border border-white/20 w-24 h-24 sm:w-36 sm:h-36 flex items-center justify-center"
               >
                 <img 
                   src={award.logo} 

@@ -3,6 +3,8 @@ export type MeditationType = 'mindfulness' | 'breathing' | 'body_scan' | 'loving
 
 export type MeditationStatus = 'in_progress' | 'completed' | 'cancelled';
 
+export type WorkoutType = 'abs' | 'pushups';
+
 export interface MeditationSession {
   id: string;
   user_id: string;
@@ -16,6 +18,19 @@ export interface MeditationSession {
   notes_public: boolean;
   created_at: string;
   completed_at?: string;
+}
+
+export interface FitnessSession {
+  id: string;
+  user_id: string;
+  workout_type: WorkoutType;
+  reps_completed: number;
+  duration: number;
+  points_earned: number;
+  proof_url?: string;
+  verified: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UserPoints {

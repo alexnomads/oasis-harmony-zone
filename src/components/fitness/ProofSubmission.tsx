@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import { ExternalLink, Send, Camera, MessageSquare, ArrowLeft } from "lucide-rea
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
+import { FitnessService } from "@/lib/services/fitnessService";
+import type { FitnessSession } from "@/types/database";
 
 interface ProofSubmissionProps {
   workoutType: 'abs' | 'pushups';
@@ -21,8 +23,36 @@ interface ProofSubmissionProps {
 export const ProofSubmission = ({ workoutType, sessionData, onBack, onSkip }: ProofSubmissionProps) => {
   const [proofUrl, setProofUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fitnessSession, setFitnessSession] = useState<FitnessSession | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+
+  // Create fitness session when component mounts
+  useEffect(() => {
+    const createSession = async () => {
+      if (!user) return;
+      
+      try {
+        const session = await FitnessService.startSession(
+          user.id,
+          workoutType,
+          sessionData.reps_completed,
+          sessionData.duration
+        );
+        setFitnessSession(session);
+        console.log('Fitness session created:', session);
+      } catch (error) {
+        console.error('Error creating fitness session:', error);
+        toast({
+          title: "Session Error",
+          description: "Could not create fitness session. Please try again.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    createSession();
+  }, [user, workoutType, sessionData, toast]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -64,20 +94,28 @@ export const ProofSubmission = ({ workoutType, sessionData, onBack, onSkip }: Pr
       return;
     }
 
+    if (!fitnessSession) {
+      toast({
+        title: "Session not found",
+        description: "Please refresh and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      // Here you would normally save to database
-      // For now, we'll simulate the API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await FitnessService.submitProof(fitnessSession.id, proofUrl);
       
       toast({
         title: "Proof submitted! 🎉",
-        description: `Your ${workoutType} workout proof is being reviewed. Points will be awarded soon!`,
+        description: `Your ${workoutType} workout proof is being reviewed. Points will be awarded once verified!`,
       });
       
       onBack();
     } catch (error) {
+      console.error('Error submitting proof:', error);
       toast({
         title: "Submission failed",
         description: "Please try again or contact support.",
@@ -200,7 +238,7 @@ export const ProofSubmission = ({ workoutType, sessionData, onBack, onSkip }: Pr
               <div className="text-sm text-muted-foreground">
                 Send a video of your workout completion with this session ID: 
                 <span className="text-purple-400 font-mono block mt-1">
-                  {user?.id?.slice(0, 8)}-{workoutType}-{Date.now().toString().slice(-6)}
+                  {fitnessSession?.id?.slice(0, 8) || 'Loading...'}
                 </span>
               </div>
             </div>

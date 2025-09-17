@@ -3,10 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Trophy, Target, Zap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
+import { FitnessService } from "@/lib/services/fitnessService";
+import type { FitnessStats as FitnessStatsType } from "@/lib/services/fitnessService";
+import { useToast } from "@/hooks/use-toast";
 
 export const FitnessStats = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState({
+  const { toast } = useToast();
+  const [stats, setStats] = useState<FitnessStatsType>({
     totalWorkouts: 0,
     totalReps: 0,
     fitnessPoints: 0,
@@ -17,20 +21,26 @@ export const FitnessStats = () => {
   useEffect(() => {
     if (user) {
       fetchFitnessStats();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
   const fetchFitnessStats = async () => {
+    if (!user) return;
+    
     try {
-      // Mock data for now - in real implementation, this would fetch from database
-      setStats({
-        totalWorkouts: 12,
-        totalReps: 450,
-        fitnessPoints: 650,
-        weekStreak: 3
-      });
+      setLoading(true);
+      const fitnessStats = await FitnessService.getUserStats(user.id);
+      setStats(fitnessStats);
+      console.log('Fitness stats loaded:', fitnessStats);
     } catch (error) {
       console.error('Error fetching fitness stats:', error);
+      toast({
+        title: "Error loading stats",
+        description: "Could not load fitness statistics. Please refresh the page.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }

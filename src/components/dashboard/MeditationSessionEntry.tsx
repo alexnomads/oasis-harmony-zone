@@ -36,11 +36,16 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
     const date = new Date(dateString);
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
     
     if (isToday) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `Today ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (isYesterday) {
+      return `Yesterday ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     }
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
   };
 
   const formatDuration = (seconds: number) => {
@@ -90,24 +95,24 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.1 }}
-        className="p-4 sm:p-5 hover:bg-white/5 transition-colors cursor-pointer group"
+        className="p-3 sm:p-4 hover:bg-white/5 transition-colors cursor-pointer group border-l-2 border-primary/30"
         onClick={() => setShowEditModal(true)}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+          <div className="flex-1 space-y-2">
+            <div className="flex items-center gap-2">
               <span className="font-medium text-sm sm:text-base text-card-foreground">
                 {getMeditationTypeDisplay()}
               </span>
               <Edit3 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             
-            <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {formatDuration(session.duration)}
+                <span>{formatDuration(session.duration)}</span>
               </div>
-              <span>{formatDate(session.created_at)}</span>
+              <span className="text-xs">{formatDate(session.created_at)}</span>
             </div>
 
             {reflection?.notes && (
@@ -129,7 +134,7 @@ export const MeditationSessionEntry = ({ session, index }: MeditationSessionEntr
             )}
           </div>
 
-          <div className="text-right ml-4">
+          <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1 sm:text-right">
             <p className="text-xs sm:text-sm text-vibrantOrange font-medium">
               +{session.points_earned.toFixed(1)} pts
             </p>

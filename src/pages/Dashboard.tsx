@@ -325,30 +325,30 @@ export default function Dashboard() {
                 <div className="border-b border-primary/30 pb-4 mb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <h2 className="cyber-heading text-xl sm:text-2xl">Recent Activity</h2>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-3">
                       <button 
-                        className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'all' ? 'bg-primary/20' : 'bg-muted/20'}`}
+                        className={`tape-card px-4 py-2 text-sm font-medium transition-all ${sessionFilter === 'all' ? 'bg-primary/20 text-primary' : 'bg-muted/20 text-muted-foreground hover:bg-muted/30'}`}
                         onClick={() => setSessionFilter('all')}
                       >
-                        All
+                        All ({combinedActivities.length})
                       </button>
                       <button 
-                        className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'meditation' ? 'bg-primary/20' : 'bg-muted/20'}`}
+                        className={`tape-card px-4 py-2 text-sm font-medium transition-all ${sessionFilter === 'meditation' ? 'bg-primary/20 text-primary' : 'bg-muted/20 text-muted-foreground hover:bg-muted/30'}`}
                         onClick={() => setSessionFilter('meditation')}
                       >
-                        Meditation
+                        🧘 Meditation
                       </button>
                       <button 
-                        className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'mood' ? 'bg-primary/20' : 'bg-muted/20'}`}
+                        className={`tape-card px-4 py-2 text-sm font-medium transition-all ${sessionFilter === 'mood' ? 'bg-primary/20 text-primary' : 'bg-muted/20 text-muted-foreground hover:bg-muted/30'}`}
                         onClick={() => setSessionFilter('mood')}
                       >
-                        Mood
+                        💭 Mood
                       </button>
                       <button 
-                        className={`tape-card px-3 py-1 text-sm ${sessionFilter === 'fitness' ? 'bg-primary/20' : 'bg-muted/20'}`}
+                        className={`tape-card px-4 py-2 text-sm font-medium transition-all ${sessionFilter === 'fitness' ? 'bg-primary/20 text-primary' : 'bg-muted/20 text-muted-foreground hover:bg-muted/30'}`}
                         onClick={() => setSessionFilter('fitness')}
                       >
-                        Fitness
+                        💪 Fitness
                       </button>
                     </div>
                   </div>

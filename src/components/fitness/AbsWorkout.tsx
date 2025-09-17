@@ -41,14 +41,55 @@ export const AbsWorkout = ({
         <Button variant="ghost" onClick={onBack} className="text-accent hover:text-accent/80">
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h2 className="text-3xl font-bold glitch-text" data-text="🏋️‍♂️ ABS WORKOUT">
-          🏋️‍♂️ ABS WORKOUT
+        <h2 className="text-3xl font-bold glitch-text" data-text="🏋️‍♂️ ABS & PLANK">
+          🏋️‍♂️ ABS & PLANK
         </h2>
       </div>
 
       {/* Workout Instructions */}
       <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
-        
+        <CardContent className="p-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-xl font-semibold text-accent mb-3">📋 Instructions</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Choose <strong>2 MIN</strong> for plank hold (time-based)
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Choose longer durations for rep-based abs exercises
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Watch the video guide when available
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Your screen will stay on during the workout
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-accent mb-3">🎯 Tips</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Keep your core tight and body straight for plank
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Focus on quality over quantity for reps
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Breathe steadily throughout the exercise
+                </li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Timer Component */}

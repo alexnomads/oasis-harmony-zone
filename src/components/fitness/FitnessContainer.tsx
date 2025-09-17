@@ -80,9 +80,9 @@ export const FitnessContainer = () => {
               <div className="text-6xl group-hover:scale-110 transition-transform duration-300">
                 🏋️‍♂️
               </div>
-              <h3 className="text-2xl font-bold text-accent">ABS WORKOUT</h3>
+              <h3 className="text-2xl font-bold text-accent">ABS & PLANK</h3>
               <p className="text-muted-foreground">
-                Core strengthening exercises to build your abs
+                Core strengthening exercises including plank holds and ab workouts
               </p>
               <Button 
                 onClick={() => setActiveWorkout('abs')}

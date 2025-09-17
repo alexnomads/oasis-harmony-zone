@@ -13,10 +13,9 @@ export const useWakeLock = () => {
 
   const requestWakeLock = async (): Promise<boolean> => {
     if (Capacitor.isNativePlatform()) {
-      // For native platforms, we'll use CSS and meta viewport to prevent sleep
-      // and add event listeners to keep the app active
+      // For native platforms, use meta viewport and prevent screen sleep
       try {
-        // Add a meta tag to prevent viewport scaling
+        // Add a meta tag to prevent viewport scaling and keep screen active
         let metaViewport = document.querySelector('meta[name="viewport"]');
         if (!metaViewport) {
           metaViewport = document.createElement('meta');
@@ -27,15 +26,16 @@ export const useWakeLock = () => {
         
         // Keep the app active by triggering periodic events
         const keepActive = () => {
-          // Trigger a small touch event to keep the app active
-          document.dispatchEvent(new Event('touchstart'));
+          // Trigger a small invisible event to keep the app active
+          const event = new Event('touchstart');
+          document.dispatchEvent(event);
         };
         
         const intervalId = setInterval(keepActive, 10000); // Every 10 seconds
         (wakeLockRef as any).current = { intervalId, type: 'native' };
         
         setIsWakeLockActive(true);
-        console.log('Native wake lock is active');
+        console.log('Native wake lock simulation is active');
         return true;
       } catch (error) {
         console.error('Failed to acquire native wake lock:', error);

@@ -48,7 +48,48 @@ export const PushUpWorkout = ({
 
       {/* Workout Instructions */}
       <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
-        
+        <CardContent className="p-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-xl font-semibold text-accent mb-3">📋 Instructions</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Select your workout duration
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Complete as many push-ups as possible
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Log your reps when the timer ends
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Your screen will stay on during the workout
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-accent mb-3">🎯 Tips</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Keep your body in a straight line
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Lower your chest close to the ground
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-accent">•</span>
+                  Focus on controlled movements
+                </li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Timer Component */}

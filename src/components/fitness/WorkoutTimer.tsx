@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Play, Pause, RotateCcw, Plus, Minus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWakeLock } from "@/hooks/useWakeLock";
 
 interface WorkoutTimerProps {
   workoutType: 'abs' | 'pushups';
@@ -21,6 +22,7 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
   const [showVideo, setShowVideo] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(false);
   const { toast } = useToast();
+  const { requestWakeLock, releaseWakeLock } = useWakeLock();
 
   const presetDurations = [
     { label: "1 MIN", value: 60 },
@@ -37,8 +39,18 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     if (workoutType === 'abs' && duration === 600) {
       return '/workout-videos/10min-abs.mp4';
     }
+    if (workoutType === 'abs' && duration === 120) {
+      return '/workout-videos/2min-plank.mp4';
+    }
     return null;
   };
+
+  // Cleanup wake lock on component unmount
+  useEffect(() => {
+    return () => {
+      releaseWakeLock();
+    };
+  }, [releaseWakeLock]);
 
   // Timer effect
   useEffect(() => {
@@ -72,11 +84,15 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     }
     setIsRunning(true);
     setShowVideo(true);
+    // Request wake lock to prevent screen from turning off during workout
+    requestWakeLock();
   };
 
   const handlePause = () => {
     setIsRunning(false);
     setShowVideo(false);
+    // Release wake lock when paused
+    releaseWakeLock();
   };
 
   const handleReset = () => {
@@ -86,12 +102,17 @@ export const WorkoutTimer = ({ workoutType, onComplete }: WorkoutTimerProps) => 
     setShowRepsInput(false);
     setInputReps("");
     setShowVideo(false);
+    // Release wake lock when reset
+    releaseWakeLock();
   };
 
   const handleComplete = () => {
     const actualDuration = duration - timeRemaining;
     setIsCompleted(true);
     setIsRunning(false);
+    
+    // Release wake lock when workout is complete
+    releaseWakeLock();
     
     // For plank (2 minutes), skip reps input
     if (workoutType === 'abs' && duration === 120) {

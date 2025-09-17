@@ -10,7 +10,7 @@ interface ActiveMeditatorsCardProps {
 export function ActiveMeditatorsCard({ totalUsers, isLoading }: ActiveMeditatorsCardProps) {
   return (
     <StatCard
-      title="Active Meditators"
+      title="Active Wellness Seekers"
       subtitle="Registered Users"
       value={totalUsers}
       isLoading={isLoading}

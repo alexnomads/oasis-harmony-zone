@@ -67,6 +67,59 @@ export default function UserProfile() {
         const profile = await LeaderboardService.getUserByUsername(username);
         if (profile) {
           setUserProfile(profile);
+          
+          // Fetch meditation sessions for chart data
+          const { sessions } = await MeditationService.getUserHistory(profile.user_id);
+          
+          // Fetch fitness sessions
+          const fitnessData = await FitnessService.getUserSessions(profile.user_id);
+          
+          // Generate chart data for the selected period
+          const days = [];
+          const today = new Date();
+          
+          for (let i = selectedPeriod - 1; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            days.push({
+              date: date.toISOString().split('T')[0],
+              dateDisplay: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+              meditation: 0,
+              fitness: 0,
+              meditationMinutes: 0,
+              fitnessMinutes: 0
+            });
+          }
+
+          // Process meditation sessions
+          if (sessions?.length) {
+            const completedSessions = sessions.filter((session: any) => 
+              session.status === 'completed' || (!session.status && session.duration > 0)
+            );
+            
+            completedSessions.forEach((session: any) => {
+              const sessionDate = new Date(session.created_at).toISOString().split('T')[0];
+              const dayData = days.find(day => day.date === sessionDate);
+              if (dayData) {
+                dayData.meditation += 1;
+                dayData.meditationMinutes += Math.round(session.duration / 60);
+              }
+            });
+          }
+
+          // Process fitness sessions
+          if (fitnessData?.length) {
+            fitnessData.forEach((session: any) => {
+              const sessionDate = new Date(session.created_at).toISOString().split('T')[0];
+              const dayData = days.find(day => day.date === sessionDate);
+              if (dayData) {
+                dayData.fitness += 1;
+                dayData.fitnessMinutes += Math.round(session.duration / 60);
+              }
+            });
+          }
+
+          setChartData(days);
         } else {
           setError("User not found");
         }
@@ -79,7 +132,7 @@ export default function UserProfile() {
     };
 
     fetchUserProfile();
-  }, [username]);
+  }, [username, selectedPeriod]);
 
   const getInitials = (name: string) => {
     if (name.includes('@')) {
@@ -283,6 +336,9 @@ export default function UserProfile() {
                 totalSessions={userProfile.total_sessions}
                 totalDuration={formatDurationDetails(userProfile.total_meditation_time)}
                 profileUrl={window.location.href}
+                chartData={chartData}
+                selectedPeriod={selectedPeriod}
+                chartType="line"
               />
             </CardContent>
           </Card>

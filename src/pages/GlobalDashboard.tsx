@@ -12,16 +12,18 @@ export default function GlobalDashboard() {
     <div className="min-h-screen relative">
       <RealTimeUpdates refetch={refetch} />
       <Header />
-      <div className="container mx-auto px-4 pt-24 pb-16">
-        <div className="mb-6 sm:mb-8">
-          <h1 className="cyber-heading text-3xl sm:text-4xl text-center sm:text-left">
+      <div className="container mx-auto px-4 pt-20 pb-8">
+        <div className="mb-4">
+          <h1 className="cyber-heading text-2xl sm:text-3xl text-center">
             Global Dashboard
           </h1>
-          <p className="retro-text text-muted-foreground mt-2 text-center sm:text-left">Meditation & Fitness Statistics</p>
+          <p className="retro-text text-muted-foreground mt-1 text-center text-sm">Real-time wellness community insights</p>
         </div>
 
         <GlobalStatsSection stats={stats} isLoading={isLoading} />
-        <LeaderboardSection />
+        <div className="mt-8">
+          <LeaderboardSection />
+        </div>
       </div>
     </div>
   );

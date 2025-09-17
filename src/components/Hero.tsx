@@ -97,7 +97,7 @@ export const Hero = () => {
             <button onClick={handleMainButtonClick} className="retro-button px-3 sm:px-8 py-4 sm:py-6 text-xs sm:text-lg rounded-full w-full sm:w-auto max-w-[320px] sm:max-w-none">
               {user ? <>
                   
-                  <span className="text-center leading-tight font-extrabold text-2xl">MEDITATE &amp; GET HEALTH POINTS NOW 🧘🏻</span>
+                  <span className="text-center leading-tight font-extrabold text-2xl">Get Health Points Now 💪🏻🧘🏻‍♀️</span>
                 </> : "Sign In"}
             </button>
             

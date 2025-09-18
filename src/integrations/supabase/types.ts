@@ -239,6 +239,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          nickname: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          nickname?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          nickname?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       global_leaderboard: {
@@ -263,6 +290,10 @@ export type Database = {
       add_shared_column_if_not_exists: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      extract_nickname_from_email: {
+        Args: { email_text: string }
+        Returns: string
       }
       get_all_completed_sessions: {
         Args: Record<PropertyKey, never>

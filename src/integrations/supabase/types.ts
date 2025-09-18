@@ -48,7 +48,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "companion_pets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "global_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       fitness_sessions: {
         Row: {
@@ -120,7 +128,15 @@ export type Database = {
           type?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meditation_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "global_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       mood_logs: {
         Row: {
@@ -153,7 +169,15 @@ export type Database = {
           symptoms?: string[] | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mood_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "global_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       pet_achievements: {
         Row: {
@@ -177,7 +201,15 @@ export type Database = {
           unlocked_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pet_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "global_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       roj_currency: {
         Row: {
@@ -201,7 +233,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "roj_currency_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "global_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_points: {
         Row: {
@@ -237,7 +277,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_points_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "global_leaderboard"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
     }
     Views: {
@@ -294,23 +342,6 @@ export type Database = {
           status: Database["public"]["Enums"]["meditation_status"]
           type: string
           user_id: string | null
-        }[]
-      }
-      get_global_leaderboard: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          active_streak: number
-          display_name: string
-          fitness_streak: number
-          last_fitness_date: string
-          last_meditation_date: string
-          meditation_streak: number
-          total_fitness_sessions: number
-          total_fitness_time: number
-          total_meditation_time: number
-          total_points: number
-          total_sessions: number
-          user_id: string
         }[]
       }
       get_users_by_meditation_period: {

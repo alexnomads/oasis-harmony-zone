@@ -64,18 +64,18 @@ export class LeaderboardService extends BaseService {
       let data = null;
       let error = null;
       
-      // Try to match by user_id substring first (most reliable)
-      if (username.length <= 8 && /^[a-f0-9-]+$/i.test(username)) {
-        const userIdMatch = await retryOperation(async () =>
+      // If it's a full UUID, match directly by user_id
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(username)) {
+        const exactIdMatch = await retryOperation(async () =>
           supabase
             .from('global_leaderboard')
             .select('*')
-            .like('user_id', `${username}%`)
+            .eq('user_id', username)
             .maybeSingle()
         );
-        
-        if (userIdMatch.data) {
-          data = userIdMatch.data;
+        if (exactIdMatch.data) {
+          data = exactIdMatch.data;
         }
       }
       

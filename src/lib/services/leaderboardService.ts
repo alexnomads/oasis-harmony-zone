@@ -60,15 +60,78 @@ export class LeaderboardService extends BaseService {
     try {
       console.log(`Fetching user profile for username: ${username}`);
       
-      // Search by display name only (email is no longer exposed for security)
-      const { data, error } = await retryOperation(async () =>
-        supabase
-          .from('global_leaderboard')
-          .select('*')
-          .ilike('display_name', `%${username}%`)
-          .limit(1)
-          .single()
-      );
+      // Try multiple search strategies to find the user
+      let data = null;
+      let error = null;
+      
+      // Try to match by user_id substring first (most reliable)
+      if (username.length <= 8 && /^[a-f0-9-]+$/i.test(username)) {
+        const userIdMatch = await retryOperation(async () =>
+          supabase
+            .from('global_leaderboard')
+            .select('*')
+            .like('user_id', `${username}%`)
+            .maybeSingle()
+        );
+        
+        if (userIdMatch.data) {
+          data = userIdMatch.data;
+        }
+      }
+      
+      if (!data) {
+        // First, try exact display name match
+        const exactMatch = await retryOperation(async () =>
+          supabase
+            .from('global_leaderboard')
+            .select('*')
+            .eq('display_name', username)
+            .maybeSingle()
+        );
+        
+        if (exactMatch.data) {
+          data = exactMatch.data;
+        } else {
+          // Try case-insensitive partial match
+          const partialMatch = await retryOperation(async () =>
+            supabase
+              .from('global_leaderboard')
+              .select('*')
+              .ilike('display_name', `%${username}%`)
+              .maybeSingle()
+          );
+          
+          if (partialMatch.data) {
+            data = partialMatch.data;
+          } else {
+            // Try searching with slug conversion (replace hyphens with spaces)
+            const slugToName = username.replace(/-/g, ' ');
+            const slugMatch = await retryOperation(async () =>
+              supabase
+                .from('global_leaderboard')
+                .select('*')
+                .ilike('display_name', `%${slugToName}%`)
+                .maybeSingle()
+            );
+            
+            if (slugMatch.data) {
+              data = slugMatch.data;
+            } else {
+              // Finally, try to match against old-style usernames (user_xxxx pattern)
+              const oldStyleMatch = await retryOperation(async () =>
+                supabase
+                  .from('global_leaderboard')
+                  .select('*')
+                  .like('display_name', `%${username.replace(/[^a-zA-Z0-9]/g, '')}%`)
+                  .maybeSingle()
+              );
+              
+              data = oldStyleMatch.data;
+              error = oldStyleMatch.error;
+            }
+          }
+        }
+      }
       
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error('Error fetching user by username:', error);

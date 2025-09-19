@@ -56,8 +56,8 @@ export const LeaderboardEntry = ({ entry, index, currentPage, itemsPerPage }: Le
   // This ensures streaks are only counted for users who have meditated today or yesterday
   const streak = entry.active_streak;
 
-  // Generate username slug for URL using display_name
-  const usernameSlug = entry.display_name.replace(/\s+/g, '-').toLowerCase();
+  // Generate username slug for URL using user_id for better consistency
+  const usernameSlug = entry.user_id.substring(0, 8);
 
   return (
     <Link to={`/global-dashboard/${usernameSlug}`} className="block">

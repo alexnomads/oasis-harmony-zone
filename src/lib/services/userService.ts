@@ -27,37 +27,25 @@ export class UserService extends BaseService {
       const fitnessSessions = await this.executeQuery<FitnessSession[]>(() => Promise.resolve(fitnessResult));
       
       // Get user's points
-      try {
-        const pointsResult = await supabase
-          .from('user_points')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-          
-        const points = await this.executeQuery<UserPoints>(() => Promise.resolve(pointsResult));
+      const pointsResult = await supabase
+        .from('user_points')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
         
-        return { sessions, fitnessSessions, points };
-      } catch (error) {
-        // If user has no points record yet, return default values
-        if (error instanceof Error && error.message.includes('No data returned')) {
-          return {
-            sessions,
-            fitnessSessions,
-            points: {
-              user_id: userId,
-              total_points: 0,
-              meditation_streak: 0,
-              last_meditation_date: null,
-              fitness_points: 0,
-              fitness_streak: 0,
-              last_fitness_date: null,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            } as UserPoints
-          };
-        }
-        throw error;
-      }
+      const points = pointsResult.data || {
+        user_id: userId,
+        total_points: 0,
+        meditation_streak: 0,
+        last_meditation_date: null,
+        fitness_points: 0,
+        fitness_streak: 0,
+        last_fitness_date: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      } as UserPoints;
+      
+      return { sessions, fitnessSessions, points };
     } catch (error) {
       console.error('Error fetching user history:', error);
       throw error;
@@ -71,16 +59,14 @@ export class UserService extends BaseService {
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
         
       if (error) {
-        if (error.message.includes('No data returned')) {
-          return null;
-        }
+        console.error('Error fetching user profile:', error);
         throw error;
       }
       
-      return data as UserProfile;
+      return data as UserProfile | null;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       throw error;

@@ -66,7 +66,17 @@ export const Hero = () => {
           
           <div className="w-full flex justify-center mb-2 sm:mb-4">
             <div className="relative">
-              <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-[0_0_20px_hsl(var(--primary))]" />
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full drop-shadow-[0_0_20px_hsl(var(--primary))]"
+                style={{ filter: 'drop-shadow(0 0 20px hsl(var(--primary)))' }}
+              >
+                <source src="/mascot-logo.mp4" type="video/mp4" />
+                <img src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" alt="ROJ Logo" className="w-24 h-24 sm:w-32 sm:h-32" />
+              </video>
               <div className="absolute inset-0 rounded-full border border-primary/30 animate-pulse py-0"></div>
             </div>
           </div>

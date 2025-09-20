@@ -134,12 +134,22 @@ export const Header = () => {
           </div>
 
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            <img 
-              src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
-              alt="Rose of Jericho" 
-              className="h-6 w-auto md:h-8 cursor-pointer drop-shadow-[0_0_10px_hsl(var(--primary))]"
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              className="h-6 w-6 md:h-8 md:w-8 object-cover rounded-full cursor-pointer drop-shadow-[0_0_10px_hsl(var(--primary))]"
               onClick={() => navigate('/')}
-            />
+              style={{ filter: 'drop-shadow(0 0 10px hsl(var(--primary)))' }}
+            >
+              <source src="/mascot-logo.mp4" type="video/mp4" />
+              <img 
+                src="/lovable-uploads/277670c3-781e-4608-8e2f-d502243f163b.png" 
+                alt="Rose of Jericho" 
+                className="h-6 w-auto md:h-8"
+              />
+            </video>
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-2">

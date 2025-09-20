@@ -308,6 +308,21 @@ export type Database = {
           user_id: string | null
         }[]
       }
+      get_all_fitness_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          duration: number
+          id: string
+          points_earned: number
+          proof_url: string | null
+          reps_completed: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+          workout_type: string
+        }[]
+      }
       get_all_meditation_users: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -325,6 +340,21 @@ export type Database = {
           status: Database["public"]["Enums"]["meditation_status"]
           type: string
           user_id: string | null
+        }[]
+      }
+      get_filtered_fitness_sessions: {
+        Args: { start_date: string }
+        Returns: {
+          created_at: string
+          duration: number
+          id: string
+          points_earned: number
+          proof_url: string | null
+          reps_completed: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+          workout_type: string
         }[]
       }
       get_users_by_meditation_period: {

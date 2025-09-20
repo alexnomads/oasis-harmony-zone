@@ -97,12 +97,21 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
         return sum + (session.duration || 0);
       }, 0);
 
-      // Get fitness sessions - always count sessions and time, regardless of verification
-      let fitnessQuery = supabase
-        .from('fitness_sessions')
-        .select('duration, reps_completed');
-
-      if (timePeriod !== "all") {
+      // Get fitness sessions using database functions to bypass RLS
+      let fitnessData: any[] = [];
+      
+      if (timePeriod === "all") {
+        // Get ALL fitness sessions
+        const { data: allFitnessSessions, error: fitnessError } = await supabase
+          .rpc('get_all_fitness_sessions');
+          
+        if (fitnessError) {
+          console.error("Error fetching all fitness sessions:", fitnessError);
+          throw fitnessError;
+        }
+        
+        fitnessData = allFitnessSessions || [];
+      } else {
         let startDate: Date | null = null;
         const now = new Date();
         startDate = new Date();
@@ -122,15 +131,25 @@ export function useGlobalStats(timePeriod: TimePeriod = "all") {
             break;
         }
         
-        fitnessQuery = fitnessQuery.gte('created_at', startDate.toISOString());
+        // Get filtered fitness sessions for the selected time period
+        const { data: filteredFitnessSessions, error: filteredFitnessError } = await supabase
+          .rpc('get_filtered_fitness_sessions', { 
+            start_date: startDate.toISOString() 
+          });
+          
+        if (filteredFitnessError) {
+          console.error("Error fetching filtered fitness sessions:", filteredFitnessError);
+          throw filteredFitnessError;
+        }
+        
+        fitnessData = filteredFitnessSessions || [];
+        console.log(`Filtered fitness sessions for period ${timePeriod}:`, fitnessData.length);
       }
-
-      const { data: fitnessData, error: fitnessError } = await fitnessQuery;
       
-      const totalFitnessSessions = fitnessData?.length || 0;
-      const totalFitnessTime = fitnessData?.reduce((sum, session) => {
+      const totalFitnessSessions = fitnessData.length;
+      const totalFitnessTime = fitnessData.reduce((sum, session) => {
         return sum + (session.duration || 0);
-      }, 0) || 0;
+      }, 0);
 
       console.log(`Stats for ${timePeriod}: Users: ${totalUsersCount}, Meditation Sessions: ${completedSessions.length}, Meditation Time: ${totalMeditationTime}, Fitness Sessions: ${totalFitnessSessions}, Fitness Time: ${totalFitnessTime}`);
 

@@ -124,30 +124,35 @@ export const Programs = () => {
                           {program.title === "Guided Meditation" && (
                             user ? (
                                <button 
-                                 className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                                 className="retro-button w-full px-6 py-4 text-base rounded-full"
                                  onClick={() => window.location.href = "/meditate"}
                                >
                                  <Play className="w-4 h-4 mr-2" />
                                  Meditate & Accrue Points Now
                                </button>
                             ) : (
-                              <Button 
-                                className="w-full bg-white/10 hover:bg-white/20 text-white"
+                              <button 
+                                className="retro-button w-full px-6 py-4 text-base rounded-full"
                                 onClick={() => window.location.href = "/?login=true"}
                               >
                                 <LogIn className="w-4 h-4 mr-2" />
                                 Log In
-                              </Button>
+                              </button>
                             )
                           )}
                           
                           {program.title === "Fitness Programs" && (
-                            <TokenBuyButton />
+                            <button 
+                              className="retro-button w-full px-6 py-4 text-base rounded-full"
+                              onClick={() => window.location.href = user ? "/meditate" : "/?login=true"}
+                            >
+                              Get Fit & Accrue Points Now
+                            </button>
                           )}
                           
                           {program.title === "Community Sessions" && (
                           <button 
-                            className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                            className="retro-button w-full px-6 py-4 text-base rounded-full"
                             onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
@@ -206,30 +211,35 @@ export const Programs = () => {
                     {program.title === "Guided Meditation" && (
                       user ? (
                         <button 
-                          className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                          className="retro-button w-full px-6 py-4 text-base rounded-full"
                           onClick={() => window.location.href = "/meditate"}
                         >
                           <Play className="w-4 h-4 mr-2" />
                           Meditate & Accrue Points Now
                         </button>
                       ) : (
-                        <Button 
-                          className="w-full bg-white/10 hover:bg-white/20 text-white"
+                        <button 
+                          className="retro-button w-full px-6 py-4 text-base rounded-full"
                           onClick={() => window.location.href = "/?login=true"}
                         >
                           <LogIn className="w-4 h-4 mr-2" />
                           Log In
-                        </Button>
+                        </button>
                       )
                     )}
                     
                     {program.title === "Fitness Programs" && (
-                      <TokenBuyButton />
+                      <button 
+                        className="retro-button w-full px-6 py-4 text-base rounded-full"
+                        onClick={() => window.location.href = user ? "/meditate" : "/?login=true"}
+                      >
+                        Get Fit & Accrue Points Now
+                      </button>
                     )}
                     
                     {program.title === "Community Sessions" && (
                       <button 
-                        className="retro-button w-full px-6 py-3 text-sm rounded-full"
+                        className="retro-button w-full px-6 py-4 text-base rounded-full"
                         onClick={() => window.open('https://t.me/roseofjerichoweb3', '_blank')}
                       >
                         <MessageSquare className="w-4 h-4 mr-2" />

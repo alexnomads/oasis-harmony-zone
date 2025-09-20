@@ -1,28 +1,28 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { TokenRiskWarningDialog } from "./TokenRiskWarningDialog";
-import pumpFunLogo from "@/assets/pump-fun-logo.png";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const TokenBuyButton = () => {
-  const [showWarning, setShowWarning] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const handleBuyClick = () => {
-    setShowWarning(true);
-  };
-
-  const handleProceed = () => {
-    window.open("https://pump.fun/coin/EvGUSZsjvts61TxfUv21jF7gpmezxeQbvPpsQqt9pump", "_blank");
+  const handleGetFitClick = () => {
+    if (user) {
+      navigate('/meditate');
+    } else {
+      navigate('/?login=true');
+    }
   };
   return (
     <>
       <div className="flex justify-center items-center w-full gap-4 flex-wrap">
         <button 
           className="retro-button py-6 px-8 text-xl rounded-full glitch-text hover:opacity-90 transition-opacity" 
-          onClick={handleBuyClick} 
-          data-text="Buy $ROJ now on Pump Fun"
+          onClick={handleGetFitClick} 
+          data-text="Get Fit & Accrue Points Now"
         >
           <div className="flex items-center gap-3">
-            <span>Buy $ROJ now on Pump Fun</span>
+            <span>Get Fit & Accrue Points Now</span>
           </div>
         </button>
         
@@ -35,12 +35,6 @@ export const TokenBuyButton = () => {
           </div>
         </button>
       </div>
-      
-      <TokenRiskWarningDialog
-        open={showWarning}
-        onClose={() => setShowWarning(false)}
-        onProceed={handleProceed}
-      />
     </>
   );
 };

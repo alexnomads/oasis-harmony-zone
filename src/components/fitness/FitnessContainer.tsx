@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dumbbell, Users } from "lucide-react";
+import { Dumbbell, Users, Camera } from "lucide-react";
 import { AbsWorkout } from "./AbsWorkout";
 import { PushUpWorkout } from "./PushUpWorkout";
 import { BicepsWorkout } from "./BicepsWorkout";
 import { FitnessStats } from "./FitnessStats";
+import { CameraFitnessTracker } from "./CameraFitnessTracker";
 export const FitnessContainer = () => {
-  const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups' | 'biceps'>('selection');
+  const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups' | 'biceps' | 'ai-tracker'>('selection');
+  const [selectedExercise, setSelectedExercise] = useState<'abs' | 'pushups' | 'biceps' | null>(null);
 
   // Listen for recommended workout start events
   useEffect(() => {
@@ -50,7 +52,31 @@ export const FitnessContainer = () => {
   }, []);
   const handleBackToSelection = () => {
     setActiveWorkout('selection');
+    setSelectedExercise(null);
   };
+
+  const handleAITrackerComplete = (reps: number, duration: number, formScore: number) => {
+    // Handle completion with AI tracking data
+    console.log('AI Workout completed:', { reps, duration, formScore });
+    // You could integrate with FitnessService here to save the session
+    setActiveWorkout('selection');
+    setSelectedExercise(null);
+  };
+
+  const startAITracker = (exercise: 'abs' | 'pushups' | 'biceps') => {
+    setSelectedExercise(exercise);
+    setActiveWorkout('ai-tracker');
+  };
+
+  if (activeWorkout === 'ai-tracker' && selectedExercise) {
+    return (
+      <CameraFitnessTracker 
+        exerciseType={selectedExercise}
+        onComplete={handleAITrackerComplete}
+        onBack={handleBackToSelection}
+      />
+    );
+  }
   if (activeWorkout === 'abs') {
     return <AbsWorkout onBack={handleBackToSelection} />;
   }
@@ -84,9 +110,15 @@ export const FitnessContainer = () => {
               <p className="text-muted-foreground">
                 Core strengthening exercises including plank holds and ab workouts
               </p>
-              <Button onClick={() => setActiveWorkout('abs')} className="retro-button w-full py-3 text-lg">
-                START ABS 🔥
-              </Button>
+              <div className="space-y-2">
+                <Button onClick={() => setActiveWorkout('abs')} className="retro-button w-full py-3 text-lg">
+                  START ABS 🔥
+                </Button>
+                <Button onClick={() => startAITracker('abs')} variant="secondary" className="w-full py-2 text-sm">
+                  <Camera className="w-4 h-4 mr-2" />
+                  AI Tracker
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -101,9 +133,15 @@ export const FitnessContainer = () => {
               <p className="text-muted-foreground">
                 Upper body strength with classic push-up challenges
               </p>
-              <Button onClick={() => setActiveWorkout('pushups')} className="retro-button w-full py-3 text-lg">
-                START PUSH UPS 💥
-              </Button>
+              <div className="space-y-2">
+                <Button onClick={() => setActiveWorkout('pushups')} className="retro-button w-full py-3 text-lg">
+                  START PUSH UPS 💥
+                </Button>
+                <Button onClick={() => startAITracker('pushups')} variant="secondary" className="w-full py-2 text-sm">
+                  <Camera className="w-4 h-4 mr-2" />
+                  AI Tracker
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -118,9 +156,15 @@ export const FitnessContainer = () => {
               <p className="text-muted-foreground">
                 Build those arms with focused bicep curl exercises
               </p>
-              <Button onClick={() => setActiveWorkout('biceps')} className="retro-button w-full py-3 text-lg">
-                START BICEPS 🔥
-              </Button>
+              <div className="space-y-2">
+                <Button onClick={() => setActiveWorkout('biceps')} className="retro-button w-full py-3 text-lg">
+                  START BICEPS 🔥
+                </Button>
+                <Button onClick={() => startAITracker('biceps')} variant="secondary" className="w-full py-2 text-sm">
+                  <Camera className="w-4 h-4 mr-2" />
+                  AI Tracker
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

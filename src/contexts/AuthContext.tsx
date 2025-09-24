@@ -61,6 +61,7 @@ type AuthContextType = AuthState & {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signInWithSolana: () => Promise<void>;
+  signInWithX: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -328,6 +329,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const signInWithX = async () => {
+    try {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+      
+      const redirectUrl = `${getSiteUrl()}/auth/callback`;
+      console.log('Using X OAuth redirect URL:', redirectUrl);
+      
+      const { error } = await retryOperation(() =>
+        supabase.auth.signInWithOAuth({
+          provider: 'twitter',
+          options: {
+            redirectTo: redirectUrl,
+          },
+        })
+      );
+      
+      if (error) throw error;
+      
+      // OAuth redirect happens automatically, no need to navigate manually
+      
+    } catch (error) {
+      const message = handleAuthError(error as Error | AuthError);
+      setState(prev => ({ ...prev, error: message }));
+      toast({
+        title: 'X Sign In Failed',
+        description: message,
+        variant: 'destructive',
+      });
+    } finally {
+      setState(prev => ({ ...prev, loading: false }));
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -337,6 +371,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signOut,
         resetPassword,
         signInWithSolana,
+        signInWithX,
       }}
     >
       {children}

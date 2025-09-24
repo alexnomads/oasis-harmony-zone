@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { User, Mail, Calendar, Settings, Twitter, Instagram } from "lucide-react";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ActivityTracker } from "./ActivityTracker";
 import { EditProfileDialog } from "./EditProfileDialog";
+import { ConnectedAccounts } from "./ConnectedAccounts";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserService } from "@/lib/services/userService";
 import type { UserProfile as UserProfileType } from "@/types/database";
@@ -99,6 +99,8 @@ export const UserProfile = () => {
       </Card>
 
       <ActivityTracker />
+      
+      <ConnectedAccounts />
 
       <EditProfileDialog
         open={isEditDialogOpen}

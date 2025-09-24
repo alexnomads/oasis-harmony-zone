@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { motion } from 'framer-motion';
-import { User, Wallet } from 'lucide-react';
+import { User, Wallet, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,7 +38,7 @@ export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
-  const { signIn, signUp, resetPassword, signInWithSolana, loading } = useAuth();
+  const { signIn, signUp, resetPassword, signInWithSolana, signInWithX, loading } = useAuth();
   
   const form = useForm({
     resolver: zodResolver(showForgotPassword ? resetPasswordSchema : authSchema),
@@ -115,25 +115,46 @@ export const AuthForm = () => {
             <>
               {!showForgotPassword && (
                 <>
-                  <Button
-                    onClick={signInWithSolana}
-                    disabled={loading}
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transition-all duration-300 relative"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                          <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
-                        </div>
-                        <span className="opacity-0">Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Wallet className="mr-2 h-4 w-4" />
-                        Sign in with Solana
-                      </>
-                    )}
-                  </Button>
+                  <div className="space-y-2">
+                    <Button
+                      onClick={signInWithX}
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 relative"
+                    >
+                      {loading ? (
+                        <>
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
+                          </div>
+                          <span className="opacity-0">Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Twitter className="mr-2 h-4 w-4" />
+                          Sign in with X
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={signInWithSolana}
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transition-all duration-300 relative"
+                    >
+                      {loading ? (
+                        <>
+                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white" />
+                          </div>
+                          <span className="opacity-0">Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Wallet className="mr-2 h-4 w-4" />
+                          Sign in with Solana
+                        </>
+                      )}
+                    </Button>
+                  </div>
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-zinc-700" />

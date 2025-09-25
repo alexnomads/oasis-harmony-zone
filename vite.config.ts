@@ -35,7 +35,10 @@ export default defineConfig(({ mode }) => ({
       'react-dom',
       '@tensorflow/tfjs',
       '@tensorflow-models/pose-detection',
-      '@mediapipe/pose'
+      '@mediapipe/pose',
+      '@tensorflow/tfjs-backend-webgpu',
+      '@tensorflow/tfjs-backend-cpu',
+      '@tensorflow/tfjs-backend-webgl'
     ],
   },
 }));

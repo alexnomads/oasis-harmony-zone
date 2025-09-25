@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Camera, CameraOff, RotateCcw, Award, Users } from 'lucide-react';
-import { usePoseDetection } from '@/hooks/usePoseDetection';
+import { useEnhancedPoseDetection } from '@/hooks/useEnhancedPoseDetection';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/ui/use-toast';
 import type { WorkoutType } from '@/types/database';
@@ -28,7 +28,7 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
   const [isActive, setIsActive] = useState(false);
   const [showPoseOverlay, setShowPoseOverlay] = useState(true);
   
-  const { poses, isLoading, error, exerciseMetrics, resetReps } = usePoseDetection(
+  const { poses, isLoading, error, exerciseMetrics, resetReps } = useEnhancedPoseDetection(
     videoRef,
     exerciseType
   );
@@ -260,10 +260,14 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
     }
   };
 
-  const getExerciseName = () => {
-    switch (exerciseType) {
+  const getExerciseName = (type?: WorkoutType) => {
+    const exerciseToUse = type || exerciseType;
+    switch (exerciseToUse) {
       case 'pushups': return 'Push-ups';
       case 'abs': return 'Abs & Core';
+      case 'abs-situps': return 'Sit-ups';
+      case 'abs-crunches': return 'Crunches';
+      case 'plank': return 'Plank';
       case 'biceps': return 'Bicep Curls';
       default: return 'Exercise';
     }
@@ -462,6 +466,63 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
             </CardContent>
           </Card>
 
+          {/* Enhanced Metrics Cards */}
+          {exerciseMetrics.timeUnderTension !== undefined && exerciseMetrics.timeUnderTension > 0 && (
+            <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold text-blue-400 mb-1">
+                  {exerciseMetrics.timeUnderTension}s
+                </div>
+                <p className="text-sm text-muted-foreground">Hold Time</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Rep Quality */}
+          <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">Rep Quality</span>
+                <span className={`text-sm font-bold ${
+                  exerciseMetrics.repQuality > 80 ? 'text-green-400' :
+                  exerciseMetrics.repQuality > 60 ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {exerciseMetrics.repQuality}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-1.5">
+                <motion.div
+                  className={`h-1.5 rounded-full ${
+                    exerciseMetrics.repQuality > 80 ? 'bg-green-400' :
+                    exerciseMetrics.repQuality > 60 ? 'bg-yellow-400' : 'bg-red-400'
+                  }`}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${exerciseMetrics.repQuality}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Body Orientation & Detection */}
+          <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
+            <CardContent className="p-4">
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Body View:</span>
+                  <span className="capitalize font-medium">{exerciseMetrics.bodyOrientation}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Detected:</span>
+                  <span className="capitalize font-medium">{exerciseMetrics.detectedExercise || 'Unknown'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Confidence:</span>
+                  <span className="font-medium">{exerciseMetrics.confidence}%</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           {/* Reset Button */}
           <Button 
             onClick={resetReps} 
@@ -475,16 +536,54 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
         </div>
       </div>
 
+      {/* Live Coaching & Instructions */}
+      {exerciseMetrics.suggestions.length > 0 && isActive && (
+        <Card className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 backdrop-blur-sm border border-yellow-500/30">
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-yellow-400 mb-2 flex items-center gap-2">
+              🤖 Live AI Coaching
+            </h3>
+            <div className="space-y-1">
+              {exerciseMetrics.suggestions.map((suggestion, index) => (
+                <motion.p 
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-sm text-yellow-200"
+                >
+                  • {suggestion}
+                </motion.p>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Instructions */}
       <Card className="bg-gradient-to-r from-accent/10 to-primary/10 backdrop-blur-sm border border-accent/20">
         <CardContent className="p-4">
-          <h3 className="font-semibold text-accent mb-2">🎯 AI Tracking Tips</h3>
-          <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Ensure your full body is visible in the camera frame</li>
-            <li>• Maintain good lighting for better tracking accuracy</li>
-            <li>• Keep a steady pace for accurate rep counting</li>
-            <li>• Higher form scores earn bonus points! 🏆</li>
-          </ul>
+          <h3 className="font-semibold text-accent mb-2">🎯 AI Tracking Guide</h3>
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+            <div>
+              <h4 className="font-medium text-accent mb-1">Body Positioning:</h4>
+              <ul className="space-y-1">
+                <li>• <strong>Push-ups:</strong> Front or side view</li>
+                <li>• <strong>Abs:</strong> Side view preferred</li>
+                <li>• <strong>Plank:</strong> Side view for best tracking</li>
+                <li>• <strong>Biceps:</strong> Front view recommended</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-accent mb-1">Pro Tips:</h4>
+              <ul className="space-y-1">
+                <li>• Ensure full body is visible</li>
+                <li>• Maintain good lighting</li>
+                <li>• Follow AI coaching suggestions</li>
+                <li>• High form scores = bonus points! 🏆</li>
+              </ul>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

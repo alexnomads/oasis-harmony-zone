@@ -24,11 +24,18 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
+          'tensorflow': ['@tensorflow/tfjs', '@tensorflow-models/pose-detection'],
         },
       },
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom'],
+    include: [
+      'react', 
+      'react-dom',
+      '@tensorflow/tfjs',
+      '@tensorflow-models/pose-detection',
+      '@mediapipe/pose'
+    ],
   },
 }));

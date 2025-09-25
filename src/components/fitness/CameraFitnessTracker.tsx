@@ -117,10 +117,18 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
 
   // Stop camera stream
   const stopCamera = () => {
+    // Stop video playback and clear source
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.srcObject = null;
+    }
+    
+    // Stop all tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
+    
     setIsStreaming(false);
     setIsActive(false);
   };
@@ -289,54 +297,56 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
           <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
             <CardContent className="p-4">
               <div className="relative aspect-video bg-black/30 rounded-lg overflow-hidden">
-                {isStreaming ? (
-                  <>
-                    <video
-                      ref={videoRef}
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      muted
-                      playsInline
-                    />
-                    {showPoseOverlay && (
-                      <canvas
-                        ref={canvasRef}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        style={{ mixBlendMode: 'screen' }}
-                      />
-                    )}
-                    
-                    {/* Status Overlay */}
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        exerciseMetrics.confidence > 70 
-                          ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
-                          : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                      }`}>
-                        Tracking: {exerciseMetrics.confidence}%
-                      </div>
-                      
-                      {isActive && (
-                        <div className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 animate-pulse">
-                          🔴 RECORDING
-                        </div>
-                      )}
+                {/* Always render video and canvas elements */}
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  playsInline
+                />
+                {showPoseOverlay && (
+                  <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ mixBlendMode: 'screen' }}
+                  />
+                )}
+                
+                {/* Status Overlay - only show when streaming */}
+                {isStreaming && (
+                  <div className="absolute top-4 left-4 flex flex-col gap-2">
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      exerciseMetrics.confidence > 70 
+                        ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+                        : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                    }`}>
+                      Tracking: {exerciseMetrics.confidence}%
                     </div>
-
-                    {/* Center guidance */}
-                    {exerciseMetrics.confidence < 50 && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center text-white/80 bg-black/50 p-4 rounded-lg">
-                          <Users className="w-8 h-8 mx-auto mb-2" />
-                          <p>Position yourself in the center</p>
-                          <p className="text-sm">Make sure your full body is visible</p>
-                        </div>
+                    
+                    {isActive && (
+                      <div className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 animate-pulse">
+                        🔴 RECORDING
                       </div>
                     )}
-                  </>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-white/60">
-                    <div className="text-center">
+                  </div>
+                )}
+
+                {/* Center guidance - only show when streaming */}
+                {isStreaming && exerciseMetrics.confidence < 50 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-white/80 bg-black/50 p-4 rounded-lg">
+                      <Users className="w-8 h-8 mx-auto mb-2" />
+                      <p>Position yourself in the center</p>
+                      <p className="text-sm">Make sure your full body is visible</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Camera not active overlay */}
+                {!isStreaming && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="text-center text-white/80">
                       <Camera className="w-16 h-16 mx-auto mb-4" />
                       <p>Camera not active</p>
                       <p className="text-sm">Click "Start Camera" to begin</p>
@@ -391,8 +401,8 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
             <CardContent className="p-4 text-center">
               <motion.div
                 key={exerciseMetrics.reps}
-                initial={{ scale: 1.2, color: '#00ff00' }}
-                animate={{ scale: 1, color: 'inherit' }}
+                initial={{ scale: 1.2 }}
+                animate={{ scale: 1 }}
                 className="text-3xl font-bold text-accent mb-2"
               >
                 {exerciseMetrics.reps}

@@ -49,6 +49,7 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
   // Start camera stream
   const startCamera = async () => {
     try {
+      console.log('Starting camera...');
       const constraints = {
         video: {
           width: { ideal: 640 },
@@ -58,23 +59,57 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
       };
       
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('Camera stream obtained:', stream);
       streamRef.current = stream;
       
       if (videoRef.current) {
+        console.log('Setting video source...');
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        setIsStreaming(true);
         
-        toast({
-          title: "Camera Active",
-          description: "Position yourself in frame and click Start Workout"
-        });
+        // Wait for video metadata to load
+        const videoElement = videoRef.current;
+        
+        const handleLoadedMetadata = () => {
+          console.log('Video metadata loaded, starting playback...');
+          videoElement.play().then(() => {
+            console.log('Video playing successfully');
+            setIsStreaming(true);
+            toast({
+              title: "Camera Active",
+              description: "Position yourself in frame and click Start Workout"
+            });
+          }).catch((playErr) => {
+            console.error('Error playing video:', playErr);
+            toast({
+              title: "Playback Error",
+              description: "Failed to start video playback",
+              variant: "destructive"
+            });
+          });
+        };
+        
+        const handleError = (err: Event) => {
+          console.error('Video error:', err);
+          toast({
+            title: "Video Error",
+            description: "Failed to initialize video stream",
+            variant: "destructive"
+          });
+        };
+        
+        videoElement.addEventListener('loadedmetadata', handleLoadedMetadata, { once: true });
+        videoElement.addEventListener('error', handleError, { once: true });
+        
+        // Set video attributes
+        videoElement.autoplay = true;
+        videoElement.muted = true;
+        videoElement.playsInline = true;
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
       toast({
         title: "Camera Error",
-        description: "Unable to access camera. Please check permissions.",
+        description: `Unable to access camera: ${err instanceof Error ? err.message : 'Unknown error'}`,
         variant: "destructive"
       });
     }

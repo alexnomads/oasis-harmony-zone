@@ -274,32 +274,32 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-7xl mx-auto px-4 space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onBack} className="text-accent hover:text-accent/80">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+          <Button variant="ghost" onClick={onBack} className="text-accent hover:text-accent/80 shrink-0">
             ← Back
           </Button>
-          <h2 className="text-2xl font-bold text-accent">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-accent truncate">
             {getExerciseEmoji()} AI {getExerciseName()} Tracker
           </h2>
         </div>
         <Button
           variant="ghost"
           onClick={() => setShowPoseOverlay(!showPoseOverlay)}
-          className="text-sm"
+          className="text-sm shrink-0"
         >
           {showPoseOverlay ? 'Hide' : 'Show'} Pose
         </Button>
       </div>
 
       {/* Camera and Metrics */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Camera Feed */}
-        <div className="lg:col-span-2">
-          <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
-            <CardContent className="p-4">
+        <div className="lg:col-span-2 w-full">
+          <Card className="bg-black/20 backdrop-blur-sm border border-accent/30 w-full">
+            <CardContent className="p-3 md:p-4">
               <div className="relative aspect-video bg-black/30 rounded-lg overflow-hidden">
                 {/* Always render video and canvas elements */}
                 <video
@@ -360,24 +360,24 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
               </div>
 
               {/* Camera Controls */}
-              <div className="flex justify-center gap-4 mt-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-4 px-2">
                 {!isStreaming ? (
-                  <Button onClick={startCamera} className="retro-button">
+                  <Button onClick={startCamera} className="retro-button w-full sm:w-auto">
                     <Camera className="w-4 h-4 mr-2" />
                     Start Camera
                   </Button>
                 ) : (
                   <>
-                    {!isActive ? (
-                      <Button onClick={startWorkout} className="retro-button">
+                     {!isActive ? (
+                      <Button onClick={startWorkout} className="retro-button w-full sm:w-auto">
                         Start Workout
                       </Button>
                     ) : (
-                      <Button onClick={completeWorkout} className="retro-button">
+                      <Button onClick={completeWorkout} className="retro-button w-full sm:w-auto">
                         Complete Workout
                       </Button>
                     )}
-                    <Button onClick={stopCamera} variant="secondary">
+                    <Button onClick={stopCamera} variant="secondary" className="w-full sm:w-auto">
                       <CameraOff className="w-4 h-4 mr-2" />
                       Stop Camera
                     </Button>
@@ -389,7 +389,7 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
         </div>
 
         {/* Metrics Sidebar */}
-        <div className="space-y-4">
+        <div className="w-full space-y-4 lg:max-w-xs">
           {/* Timer */}
           <Card className="bg-black/20 backdrop-blur-sm border border-accent/30">
             <CardContent className="p-4 text-center">

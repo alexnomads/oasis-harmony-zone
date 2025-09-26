@@ -13,8 +13,12 @@ import { useToast } from "@/hooks/use-toast";
 export const FitnessContainer = () => {
   const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups' | 'biceps' | 'ai-tracker'>('selection');
   const [selectedExercise, setSelectedExercise] = useState<'abs' | 'pushups' | 'biceps' | null>(null);
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
 
   // Listen for recommended workout start events
   useEffect(() => {
@@ -59,34 +63,27 @@ export const FitnessContainer = () => {
     setActiveWorkout('selection');
     setSelectedExercise(null);
   };
-
   const handleAITrackerComplete = async (reps: number, duration: number, formScore: number) => {
     if (!user) {
       toast({
         title: "Authentication Required",
         description: "Please sign in to save your workout session.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     try {
       // Save AI-tracked workout session with double points
-      const session = await FitnessService.startSession(
-        user.id,
-        selectedExercise as any, // Map to WorkoutType
-        reps,
-        duration,
-        true, // isAiTracked = true for double points
-        formScore,
-        selectedExercise // aiExerciseType
+      const session = await FitnessService.startSession(user.id, selectedExercise as any,
+      // Map to WorkoutType
+      reps, duration, true,
+      // isAiTracked = true for double points
+      formScore, selectedExercise // aiExerciseType
       );
-
       console.log('AI Workout saved successfully:', session);
-      
       toast({
         title: "🤖 AI Workout Completed!",
-        description: `Great job! You earned ${session.points_earned} points (2x AI bonus) for ${reps} reps in ${Math.round(duration / 60)}min with ${Math.round(formScore * 100)}% form quality.`,
+        description: `Great job! You earned ${session.points_earned} points (2x AI bonus) for ${reps} reps in ${Math.round(duration / 60)}min with ${Math.round(formScore * 100)}% form quality.`
       });
 
       // Return to selection screen
@@ -97,24 +94,16 @@ export const FitnessContainer = () => {
       toast({
         title: "Save Failed",
         description: "Could not save your workout session. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const startAITracker = (exercise: 'abs' | 'pushups' | 'biceps') => {
     setSelectedExercise(exercise);
     setActiveWorkout('ai-tracker');
   };
-
   if (activeWorkout === 'ai-tracker' && selectedExercise) {
-    return (
-      <CameraFitnessTracker 
-        exerciseType={selectedExercise}
-        onComplete={handleAITrackerComplete}
-        onBack={handleBackToSelection}
-      />
-    );
+    return <CameraFitnessTracker exerciseType={selectedExercise} onComplete={handleAITrackerComplete} onBack={handleBackToSelection} />;
   }
   if (activeWorkout === 'abs') {
     return <AbsWorkout onBack={handleBackToSelection} />;
@@ -146,9 +135,7 @@ export const FitnessContainer = () => {
                 🏋️‍♂️
               </div>
               <h3 className="text-2xl font-bold text-accent">ABS & PLANK</h3>
-              <p className="text-muted-foreground">
-                Core strengthening exercises including plank holds and ab workouts
-              </p>
+              <p className="text-muted-foreground">Core strengthening exercises including plank &amp; abs workouts</p>
               <div className="space-y-2">
                 <Button onClick={() => setActiveWorkout('abs')} className="retro-button w-full py-3 text-lg">
                   START ABS 🔥

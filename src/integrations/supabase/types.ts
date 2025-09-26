@@ -52,8 +52,11 @@ export type Database = {
       }
       fitness_sessions: {
         Row: {
+          ai_exercise_type: string | null
+          ai_tracked: boolean | null
           created_at: string
           duration: number
+          form_score: number | null
           id: string
           points_earned: number
           proof_url: string | null
@@ -64,8 +67,11 @@ export type Database = {
           workout_type: string
         }
         Insert: {
+          ai_exercise_type?: string | null
+          ai_tracked?: boolean | null
           created_at?: string
           duration?: number
+          form_score?: number | null
           id?: string
           points_earned?: number
           proof_url?: string | null
@@ -76,8 +82,11 @@ export type Database = {
           workout_type: string
         }
         Update: {
+          ai_exercise_type?: string | null
+          ai_tracked?: boolean | null
           created_at?: string
           duration?: number
+          form_score?: number | null
           id?: string
           points_earned?: number
           proof_url?: string | null
@@ -311,8 +320,11 @@ export type Database = {
       get_all_fitness_sessions: {
         Args: Record<PropertyKey, never>
         Returns: {
+          ai_exercise_type: string | null
+          ai_tracked: boolean | null
           created_at: string
           duration: number
+          form_score: number | null
           id: string
           points_earned: number
           proof_url: string | null
@@ -345,8 +357,11 @@ export type Database = {
       get_filtered_fitness_sessions: {
         Args: { start_date: string }
         Returns: {
+          ai_exercise_type: string | null
+          ai_tracked: boolean | null
           created_at: string
           duration: number
+          form_score: number | null
           id: string
           points_earned: number
           proof_url: string | null

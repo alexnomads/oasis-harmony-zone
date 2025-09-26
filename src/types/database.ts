@@ -29,6 +29,9 @@ export interface FitnessSession {
   points_earned: number;
   proof_url?: string;
   verified: boolean;
+  ai_tracked: boolean;
+  form_score?: number;
+  ai_exercise_type?: string;
   created_at: string;
   updated_at: string;
 }

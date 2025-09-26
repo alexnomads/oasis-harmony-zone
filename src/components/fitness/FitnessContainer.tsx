@@ -7,9 +7,14 @@ import { PushUpWorkout } from "./PushUpWorkout";
 import { BicepsWorkout } from "./BicepsWorkout";
 import { FitnessStats } from "./FitnessStats";
 import { CameraFitnessTracker } from "./CameraFitnessTracker";
+import { FitnessService } from "@/lib/services/fitnessService";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 export const FitnessContainer = () => {
   const [activeWorkout, setActiveWorkout] = useState<'selection' | 'abs' | 'pushups' | 'biceps' | 'ai-tracker'>('selection');
   const [selectedExercise, setSelectedExercise] = useState<'abs' | 'pushups' | 'biceps' | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   // Listen for recommended workout start events
   useEffect(() => {
@@ -55,12 +60,46 @@ export const FitnessContainer = () => {
     setSelectedExercise(null);
   };
 
-  const handleAITrackerComplete = (reps: number, duration: number, formScore: number) => {
-    // Handle completion with AI tracking data
-    console.log('AI Workout completed:', { reps, duration, formScore });
-    // You could integrate with FitnessService here to save the session
-    setActiveWorkout('selection');
-    setSelectedExercise(null);
+  const handleAITrackerComplete = async (reps: number, duration: number, formScore: number) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to save your workout session.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Save AI-tracked workout session with double points
+      const session = await FitnessService.startSession(
+        user.id,
+        selectedExercise as any, // Map to WorkoutType
+        reps,
+        duration,
+        true, // isAiTracked = true for double points
+        formScore,
+        selectedExercise // aiExerciseType
+      );
+
+      console.log('AI Workout saved successfully:', session);
+      
+      toast({
+        title: "🤖 AI Workout Completed!",
+        description: `Great job! You earned ${session.points_earned} points (2x AI bonus) for ${reps} reps in ${Math.round(duration / 60)}min with ${Math.round(formScore * 100)}% form quality.`,
+      });
+
+      // Return to selection screen
+      setActiveWorkout('selection');
+      setSelectedExercise(null);
+    } catch (error) {
+      console.error('Failed to save AI workout:', error);
+      toast({
+        title: "Save Failed",
+        description: "Could not save your workout session. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const startAITracker = (exercise: 'abs' | 'pushups' | 'biceps') => {

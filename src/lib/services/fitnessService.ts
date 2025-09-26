@@ -14,10 +14,13 @@ export class FitnessService {
     userId: string,
     workoutType: WorkoutType,
     repsCompleted: number,
-    duration: number
+    duration: number,
+    isAiTracked: boolean = false,
+    formScore?: number,
+    aiExerciseType?: string
   ): Promise<FitnessSession> {
     try {
-      console.log('Starting fitness session for user:', userId, 'type:', workoutType);
+      console.log('Starting fitness session for user:', userId, 'type:', workoutType, 'AI tracked:', isAiTracked);
       
       // Calculate points based on duration (similar to meditation system)
       let basePoints;
@@ -41,7 +44,9 @@ export class FitnessService {
       // Consistency bonus for longer sessions
       const consistencyBonus = duration >= 300 ? 2 : 0; // +2 points for 5+ minute sessions
       
-      const totalPoints = basePoints + repBonus + consistencyBonus;
+      // AI Camera bonus: double points for AI-verified workouts
+      const baseTotal = basePoints + repBonus + consistencyBonus;
+      const totalPoints = isAiTracked ? baseTotal * 2 : baseTotal;
       
       const sessionData = {
         user_id: userId,
@@ -49,7 +54,10 @@ export class FitnessService {
         reps_completed: repsCompleted,
         duration,
         points_earned: totalPoints,
-        verified: true // Auto-verify sessions for immediate points and leaderboard display
+        verified: true, // Auto-verify sessions for immediate points and leaderboard display
+        ai_tracked: isAiTracked,
+        form_score: formScore,
+        ai_exercise_type: aiExerciseType
       };
       
       const { data, error } = await supabase

@@ -68,6 +68,29 @@ export const FitnessContainer = () => {
       return;
     }
 
+    // Validate workout before awarding points
+    if (reps === 0) {
+      toast({
+        title: "No Reps Detected",
+        description: "The AI didn't detect any completed repetitions. Try adjusting your camera angle and form, then start a new session.",
+        variant: "destructive"
+      });
+      setActiveWorkout('selection');
+      setSelectedExercise(null);
+      return;
+    }
+
+    if (duration < 10) {
+      toast({
+        title: "Session Too Short",
+        description: "Session must be at least 10 seconds to earn points.",
+        variant: "destructive"
+      });
+      setActiveWorkout('selection');
+      setSelectedExercise(null);
+      return;
+    }
+
     try {
       // Save AI-tracked workout session with double points
       const session = await FitnessService.startSession(
@@ -83,7 +106,7 @@ export const FitnessContainer = () => {
       console.log('AI Workout saved successfully:', session);
       toast({
         title: "🤖 AI Workout Completed!",
-        description: `Great job! You earned ${session.points_earned} points (2x AI bonus) for ${reps} reps in ${Math.round(duration / 60)}min with ${Math.round(formScore * 100)}% form quality.`
+        description: `Great job! You earned ${session.points_earned} points (2x AI bonus) for ${reps} reps in ${Math.round(duration / 60)}min with ${Math.round(formScore)}% avg form quality.`
       });
 
       // Return to selection screen

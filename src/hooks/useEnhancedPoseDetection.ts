@@ -59,6 +59,8 @@ export const useEnhancedPoseDetection = (
   const plankStartTimeRef = useRef<number | null>(null);
   const recentRepScoresRef = useRef<number[]>([]);
   const bodyOrientationHistoryRef = useRef<string[]>([]);
+  const lastRepTimeRef = useRef<number>(0); // Prevent rapid rep counting
+  const debugCounterRef = useRef(0); // For debug logging frequency
 
   // Initialize TensorFlow and pose detector
   useEffect(() => {
@@ -87,7 +89,7 @@ export const useEnhancedPoseDetection = (
     initializePoseDetection();
   }, []);
 
-  // Detect body orientation based on pose
+  // Enhanced body orientation detection with push-up specific logic
   const detectBodyOrientation = useCallback((pose: Pose): 'front' | 'side' | 'lying' | 'unknown' => {
     const keypoints = pose.keypoints;
     const leftShoulder = keypoints.find(kp => kp.name === 'left_shoulder');
@@ -95,12 +97,14 @@ export const useEnhancedPoseDetection = (
     const leftHip = keypoints.find(kp => kp.name === 'left_hip');
     const rightHip = keypoints.find(kp => kp.name === 'right_hip');
     const nose = keypoints.find(kp => kp.name === 'nose');
+    const leftWrist = keypoints.find(kp => kp.name === 'left_wrist');
+    const rightWrist = keypoints.find(kp => kp.name === 'right_wrist');
 
     if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !nose) {
       return 'unknown';
     }
 
-    const minConfidence = 0.3;
+    const minConfidence = 0.2; // Lower threshold for better detection
     if ([leftShoulder, rightShoulder, leftHip, rightHip, nose].some(kp => (kp?.score || 0) < minConfidence)) {
       return 'unknown';
     }
@@ -109,20 +113,32 @@ export const useEnhancedPoseDetection = (
     const shoulderWidth = Math.abs(leftShoulder.x - rightShoulder.x);
     const hipWidth = Math.abs(leftHip.x - rightHip.x);
     
-    // Calculate body vertical alignment
+    // Calculate body alignment ratios
     const shoulderMidY = (leftShoulder.y + rightShoulder.y) / 2;
     const hipMidY = (leftHip.y + rightHip.y) / 2;
     const bodyHeight = Math.abs(shoulderMidY - hipMidY);
 
-    // Determine orientation
-    if (shoulderWidth < 0.05 && hipWidth < 0.05) {
-      // Very narrow profile - likely side view
+    // Special logic for push-up position detection
+    if (leftWrist && rightWrist) {
+      const avgWristY = (leftWrist.y + rightWrist.y) / 2;
+      const avgShoulderY = (leftShoulder.y + rightShoulder.y) / 2;
+      
+      // If wrists are below shoulders, likely in push-up position
+      if (avgWristY > avgShoulderY && bodyHeight > 0.08) {
+        // Check if body is horizontal-ish (push-up position)
+        const bodyAngle = Math.abs(shoulderMidY - hipMidY);
+        if (bodyAngle < 0.15) {
+          return 'lying'; // Push-up position
+        }
+      }
+    }
+
+    // Standard orientation detection
+    if (shoulderWidth < 0.04 && hipWidth < 0.04) {
       return 'side';
-    } else if (bodyHeight < 0.1) {
-      // Very short body height - likely lying down
+    } else if (bodyHeight < 0.08) {
       return 'lying';
-    } else if (shoulderWidth > 0.1 && hipWidth > 0.1) {
-      // Good width and height - likely front view
+    } else if (shoulderWidth > 0.08 && hipWidth > 0.08) {
       return 'front';
     }
 
@@ -144,12 +160,17 @@ export const useEnhancedPoseDetection = (
 
     if (!leftElbow || !rightElbow || !leftShoulder || !rightShoulder) return null;
 
-    // Check for push-ups (arms extended, body aligned)
-    if (leftWrist && rightWrist && orientation === 'front') {
+    // Enhanced push-up detection (works from multiple angles)
+    if (leftWrist && rightWrist && (orientation === 'front' || orientation === 'lying')) {
       const avgElbowY = (leftElbow.y + rightElbow.y) / 2;
       const avgWristY = (leftWrist.y + rightWrist.y) / 2;
+      const avgShoulderY = (leftShoulder.y + rightShoulder.y) / 2;
       
-      if (avgElbowY > avgWristY) { // Arms extended downward
+      // Check for push-up arm position and body alignment
+      const armsExtended = avgElbowY > avgWristY;
+      const bodyInPushupPosition = avgWristY > avgShoulderY;
+      
+      if (armsExtended && bodyInPushupPosition) {
         return 'pushups';
       }
     }
@@ -257,19 +278,51 @@ export const useEnhancedPoseDetection = (
           const elbowAngleR = calculateAngle(rightShoulder, rightElbow, rightWrist);
           const avgElbowAngle = (elbowAngleL + elbowAngleR) / 2;
 
-          // Body alignment score
+          // Enhanced form scoring for push-ups
           const shoulderAlignment = Math.abs(leftShoulder.y - rightShoulder.y);
           const wristAlignment = Math.abs(leftWrist.y - rightWrist.y);
-          formScore = Math.max(0, 100 - (shoulderAlignment + wristAlignment) * 200);
+          
+          // Body alignment score (head-shoulder-hip line)
+          let bodyAlignment = 100;
+          if (leftHip && rightHip && nose) {
+            const shoulderMidY = (leftShoulder.y + rightShoulder.y) / 2;
+            const hipMidY = (leftHip.y + rightHip.y) / 2;
+            const bodyLineDeviation = Math.abs(shoulderMidY - hipMidY);
+            bodyAlignment = Math.max(0, 100 - bodyLineDeviation * 400);
+          }
+          
+          // Combined form score with emphasis on body alignment
+          formScore = Math.max(0, 
+            (bodyAlignment * 0.6 + 
+            (100 - shoulderAlignment * 150) * 0.2 + 
+            (100 - wristAlignment * 150) * 0.2)
+          );
 
-          // Rep counting with form validation
-          const goodForm = formScore > 60;
-          if (avgElbowAngle < 90 && exerciseStateRef.current !== 'down' && goodForm) {
+          // Enhanced rep counting with better thresholds and hysteresis
+          const minFormForRep = 40; // Lowered from 60
+          const goodForm = formScore > minFormForRep;
+          const now = Date.now();
+          const minTimeBetweenReps = 800; // Minimum 800ms between reps
+          
+          // Debug logging every 30 frames
+          debugCounterRef.current++;
+          if (debugCounterRef.current % 30 === 0) {
+            console.log(`Push-up debug: angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%, state=${exerciseStateRef.current}, orientation=${dominantOrientation}`);
+          }
+          
+          // Down position: elbows bent significantly
+          if (avgElbowAngle < 110 && exerciseStateRef.current !== 'down' && goodForm) {
             exerciseStateRef.current = 'down';
-          } else if (avgElbowAngle > 150 && exerciseStateRef.current === 'down') {
+            console.log(`Push-up DOWN detected: angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%`);
+          } 
+          // Up position: elbows extended with hysteresis and time validation
+          else if (avgElbowAngle > 140 && exerciseStateRef.current === 'down' && goodForm && (now - lastRepTimeRef.current) > minTimeBetweenReps) {
             exerciseStateRef.current = 'up';
             repCountRef.current += 1;
             reps = repCountRef.current;
+            lastRepTimeRef.current = now;
+            
+            console.log(`Push-up REP completed: ${reps}, angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%`);
             
             // Track rep quality
             recentRepScoresRef.current.push(formScore);
@@ -278,15 +331,18 @@ export const useEnhancedPoseDetection = (
             }
           }
 
-          // Suggestions based on form
-          if (dominantOrientation === 'side') {
-            suggestions.push('Try facing the camera for better push-up tracking');
+          // Enhanced suggestions
+          if (dominantOrientation === 'unknown') {
+            suggestions.push('Position camera at a side angle for optimal push-up tracking');
           }
-          if (formScore < 50) {
-            suggestions.push('Keep your body straight and aligned');
+          if (formScore < 40) {
+            suggestions.push('Keep your body in straight line from head to heels');
           }
-          if (avgElbowAngle > 120 && exerciseStateRef.current === 'down') {
-            suggestions.push('Go lower - aim for 90 degree elbow angle');
+          if (avgElbowAngle > 130 && exerciseStateRef.current === 'down') {
+            suggestions.push('Go lower - bend elbows to about 90 degrees');
+          }
+          if (shoulderAlignment > 0.1) {
+            suggestions.push('Keep shoulders level and aligned');
           }
         }
         break;
@@ -491,6 +547,8 @@ export const useEnhancedPoseDetection = (
     plankStartTimeRef.current = null;
     recentRepScoresRef.current = [];
     bodyOrientationHistoryRef.current = [];
+    lastRepTimeRef.current = 0;
+    debugCounterRef.current = 0;
     setExerciseMetrics({
       reps: 0,
       formScore: 0,
@@ -514,6 +572,8 @@ export const useEnhancedPoseDetection = (
       exerciseStateRef.current = 'neutral';
       plankStartTimeRef.current = null;
       recentRepScoresRef.current = [];
+      lastRepTimeRef.current = 0;
+      debugCounterRef.current = 0;
       setExerciseMetrics(prev => ({ 
         ...prev, 
         reps: 0, 

@@ -1,12 +1,8 @@
 
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
-}
+const supabaseUrl = "https://kesejxmbfvpkgnwofiys.supabase.co"
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtlc2VqeG1iZnZwa2dud29maXlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNzM0NjIsImV4cCI6MjA1NDg0OTQ2Mn0.uhIvHz-e0hDXH71YdPXlFlDK-aBCyjbttNi4qMy_PwE"
 
 // Get the current site URL for redirects, handling both local and production environments
 export const getSiteUrl = () => {

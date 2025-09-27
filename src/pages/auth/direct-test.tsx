@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { signInWithPassword } from '@/lib/supabase';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL = "https://kesejxmbfvpkgnwofiys.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtlc2VqeG1iZnZwa2dud29maXlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNzM0NjIsImV4cCI6MjA1NDg0OTQ2Mn0.uhIvHz-e0hDXH71YdPXlFlDK-aBCyjbttNi4qMy_PwE";
 
 export default function DirectTest() {
   const [status, setStatus] = useState({

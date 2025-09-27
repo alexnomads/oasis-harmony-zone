@@ -6,7 +6,6 @@ import { FitnessSessionsCard } from "./stats/FitnessSessionsCard";
 import { TotalFitnessTimeCard } from "./stats/TotalFitnessTimeCard";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useRef } from "react";
-import Autoplay from "embla-carousel-autoplay";
 interface GlobalStatsSectionProps {
   stats: GlobalStats;
   isLoading: boolean;
@@ -15,10 +14,6 @@ export function GlobalStatsSection({
   stats,
   isLoading
 }: GlobalStatsSectionProps) {
-  const plugin = useRef(Autoplay({
-    delay: 4000,
-    stopOnInteraction: true
-  }));
   return <div className="space-y-6">
       {/* Compact Header */}
       <div className="text-center">
@@ -28,7 +23,7 @@ export function GlobalStatsSection({
 
       {/* Mobile Carousel View */}
       <div className="block md:hidden">
-        <Carousel plugins={[plugin.current]} className="w-full max-w-sm mx-auto" onMouseEnter={plugin.current.stop} onMouseLeave={plugin.current.reset}>
+        <Carousel className="w-full max-w-sm mx-auto">
           <CarouselContent>
             <CarouselItem>
               <div className="p-1">

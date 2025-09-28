@@ -28,6 +28,10 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
   const [isActive, setIsActive] = useState(false);
   const [showPoseOverlay, setShowPoseOverlay] = useState(true);
   
+  // Track form scores throughout the workout for average calculation
+  const [formScores, setFormScores] = useState<number[]>([]);
+  const [sampleCount, setSampleCount] = useState(0);
+  
   const { poses, isLoading, error, exerciseMetrics, resetReps } = useEnhancedPoseDetection(
     videoRef,
     exerciseType
@@ -45,6 +49,25 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
     
     return () => clearInterval(interval);
   }, [isActive, isStreaming]);
+
+  // Track form scores during active workout
+  useEffect(() => {
+    if (isActive && exerciseMetrics.isExercising && exerciseMetrics.formScore > 0) {
+      setSampleCount(prev => prev + 1);
+      
+      // Sample form score every 10 frames to avoid overwhelming the array
+      if (sampleCount % 10 === 0) {
+        setFormScores(prev => {
+          const newScores = [...prev, exerciseMetrics.formScore];
+          // Keep only last 200 samples to prevent memory issues
+          if (newScores.length > 200) {
+            newScores.shift();
+          }
+          return newScores;
+        });
+      }
+    }
+  }, [isActive, exerciseMetrics.isExercising, exerciseMetrics.formScore, sampleCount]);
 
   // Start camera stream
   const startCamera = async () => {
@@ -146,6 +169,9 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
     
     setIsActive(true);
     setDuration(0);
+    // Reset form tracking
+    setFormScores([]);
+    setSampleCount(0);
     resetReps();
     
     toast({
@@ -168,16 +194,23 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
     setIsActive(false);
     stopCamera();
     
+    // Calculate average form score from collected samples
+    const averageFormScore = formScores.length > 0 
+      ? Math.round(formScores.reduce((sum, score) => sum + score, 0) / formScores.length)
+      : exerciseMetrics.repQuality || 0; // Fallback to repQuality if no samples
+    
     // Calculate bonus points for good form
-    const formBonus = exerciseMetrics.formScore > 80 ? 5 : 
-                     exerciseMetrics.formScore > 60 ? 3 : 0;
+    const formBonus = averageFormScore > 80 ? 5 : 
+                     averageFormScore > 60 ? 3 : 0;
+    
+    console.log(`Workout completed: ${exerciseMetrics.reps} reps, ${formScores.length} form samples, avg form: ${averageFormScore}%`);
     
     toast({
       title: "Workout Complete! 🎉",
-      description: `${exerciseMetrics.reps} reps completed with ${exerciseMetrics.formScore}% form accuracy`
+      description: `${exerciseMetrics.reps} reps completed with ${averageFormScore}% avg form quality`
     });
     
-    onComplete(exerciseMetrics.reps, duration, exerciseMetrics.formScore);
+    onComplete(exerciseMetrics.reps, duration, averageFormScore);
   };
 
   // Draw pose overlay on canvas

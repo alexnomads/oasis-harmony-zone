@@ -29,6 +29,10 @@ export interface EnhancedExerciseMetrics {
   timeUnderTension?: number; // For planks
   repQuality: number; // Average quality of recent reps
   suggestions: string[];
+  // New resilience properties
+  trackingStatus: 'full' | 'partial' | 'recovering' | 'lost';
+  visibleKeypoints: string[];
+  trackingConfidenceBuffer: number;
 }
 
 export type ExerciseType = 'pushups' | 'abs' | 'biceps' | 'plank' | 'abs-situps' | 'abs-crunches' | 'auto';
@@ -50,7 +54,10 @@ export const useEnhancedPoseDetection = (
     detectedExercise: null,
     timeUnderTension: 0,
     repQuality: 0,
-    suggestions: []
+    suggestions: [],
+    trackingStatus: 'lost',
+    visibleKeypoints: [],
+    trackingConfidenceBuffer: 0
   });
   
   const animationRef = useRef<number>();
@@ -61,6 +68,17 @@ export const useEnhancedPoseDetection = (
   const bodyOrientationHistoryRef = useRef<string[]>([]);
   const lastRepTimeRef = useRef<number>(0); // Prevent rapid rep counting
   const debugCounterRef = useRef(0); // For debug logging frequency
+
+  // New resilience refs for enhanced tracking
+  const keypointMemoryRef = useRef<Map<string, { x: number, y: number, score: number, timestamp: number }[]>>(new Map());
+  const confidenceBufferRef = useRef<number[]>([]);
+  const lastFullTrackingTimeRef = useRef<number>(Date.now());
+  const trackingStateHistoryRef = useRef<'full' | 'partial' | 'recovering' | 'lost'>('lost');
+  const partialRepProgressRef = useRef<{ inProgress: boolean, startTime: number, minVisibilityMet: boolean }>({
+    inProgress: false,
+    startTime: 0,
+    minVisibilityMet: false
+  });
 
   // Initialize TensorFlow and pose detector
   useEffect(() => {
@@ -87,6 +105,91 @@ export const useEnhancedPoseDetection = (
     };
 
     initializePoseDetection();
+  }, []);
+
+  // ========= NEW RESILIENCE HELPER FUNCTIONS =========
+  
+  // Store keypoint positions in memory for temporal smoothing
+  const updateKeypointMemory = useCallback((keypoints: any[]) => {
+    const now = Date.now();
+    const memoryDuration = 2000; // Keep 2 seconds of history
+    
+    keypoints.forEach(kp => {
+      if (!kp.name || !kp.score || kp.score < 0.1) return;
+      
+      if (!keypointMemoryRef.current.has(kp.name)) {
+        keypointMemoryRef.current.set(kp.name, []);
+      }
+      
+      const history = keypointMemoryRef.current.get(kp.name)!;
+      history.push({ x: kp.x, y: kp.y, score: kp.score, timestamp: now });
+      
+      // Remove old entries
+      keypointMemoryRef.current.set(
+        kp.name, 
+        history.filter(entry => now - entry.timestamp < memoryDuration)
+      );
+    });
+  }, []);
+  
+  // Get keypoint with fallback to recent memory
+  const getKeypointWithFallback = useCallback((name: string, currentKeypoints: any[], minConfidence: number = 0.2) => {
+    // Try current detection first
+    const current = currentKeypoints.find(kp => kp.name === name);
+    if (current && (current.score || 0) > minConfidence) {
+      return current;
+    }
+    
+    // Fallback to recent memory
+    const history = keypointMemoryRef.current.get(name);
+    if (!history || history.length === 0) return null;
+    
+    // Get most recent high-confidence keypoint
+    const recent = history
+      .filter(kp => kp.score > minConfidence * 0.7) // Slightly lower threshold for memory
+      .sort((a, b) => b.timestamp - a.timestamp)[0];
+      
+    if (recent && Date.now() - recent.timestamp < 1000) { // Within last second
+      return { 
+        ...recent, 
+        name, 
+        isFromMemory: true,
+        confidence: recent.score * 0.8 // Reduce confidence for memory-based keypoints
+      };
+    }
+    
+    return null;
+  }, []);
+  
+  // Update confidence buffer and determine tracking status
+  const updateTrackingStatus = useCallback((currentConfidence: number, visibleKeypoints: string[]) => {
+    const now = Date.now();
+    
+    // Update confidence buffer
+    confidenceBufferRef.current.push(currentConfidence);
+    if (confidenceBufferRef.current.length > 10) {
+      confidenceBufferRef.current.shift();
+    }
+    
+    const avgConfidence = confidenceBufferRef.current.reduce((sum, c) => sum + c, 0) / confidenceBufferRef.current.length;
+    const keyRequiredKeypoints = ['left_shoulder', 'right_shoulder'];
+    const hasRequiredKeypoints = keyRequiredKeypoints.every(kp => visibleKeypoints.includes(kp));
+    
+    let trackingStatus: 'full' | 'partial' | 'recovering' | 'lost';
+    
+    if (hasRequiredKeypoints && avgConfidence > 0.6 && visibleKeypoints.length >= 6) {
+      trackingStatus = 'full';
+      lastFullTrackingTimeRef.current = now;
+    } else if (hasRequiredKeypoints && avgConfidence > 0.3 && visibleKeypoints.length >= 4) {
+      trackingStatus = 'partial';
+    } else if (visibleKeypoints.length >= 2 && now - lastFullTrackingTimeRef.current < 3000) {
+      trackingStatus = 'recovering';
+    } else {
+      trackingStatus = 'lost';
+    }
+    
+    trackingStateHistoryRef.current = trackingStatus;
+    return { trackingStatus, avgConfidence };
   }, []);
 
   // Enhanced body orientation detection with push-up specific logic
@@ -206,6 +309,8 @@ export const useEnhancedPoseDetection = (
     if (!pose.keypoints || pose.keypoints.length === 0) return;
 
     const keypoints = pose.keypoints;
+    updateKeypointMemory(keypoints);
+    
     let reps = repCountRef.current;
     let formScore = 0;
     let isExercising = false;
@@ -237,10 +342,9 @@ export const useEnhancedPoseDetection = (
       }
     }
 
-    // Get key body points with confidence check
+    // Get key body points with enhanced fallback system
     const getKeypoint = (name: string) => {
-      const kp = keypoints.find(kp => kp.name === name);
-      return kp && (kp.score || 0) > 0.3 ? kp : null;
+      return getKeypointWithFallback(name, keypoints, 0.2);
     };
 
     const nose = getKeypoint('nose');
@@ -255,12 +359,48 @@ export const useEnhancedPoseDetection = (
     const leftKnee = getKeypoint('left_knee');
     const rightKnee = getKeypoint('right_knee');
 
-    if (!leftShoulder || !rightShoulder) {
+    // Track visible keypoints
+    const visibleKeypoints = [
+      nose && 'nose',
+      leftShoulder && 'left_shoulder',
+      rightShoulder && 'right_shoulder', 
+      leftElbow && 'left_elbow',
+      rightElbow && 'right_elbow',
+      leftWrist && 'left_wrist',
+      rightWrist && 'right_wrist',
+      leftHip && 'left_hip',
+      rightHip && 'right_hip',
+      leftKnee && 'left_knee',
+      rightKnee && 'right_knee'
+    ].filter(Boolean) as string[];
+
+    // Update tracking status with resilience logic
+    const { trackingStatus, avgConfidence } = updateTrackingStatus(confidence, visibleKeypoints);
+
+    // Progressive degradation: continue with reduced functionality if minimal keypoints available
+    if (!leftShoulder && !rightShoulder && trackingStatus === 'lost') {
       setExerciseMetrics(prev => ({ 
         ...prev, 
-        confidence: 0, 
+        confidence: 0,
+        trackingStatus: 'lost',
+        visibleKeypoints: [],
+        trackingConfidenceBuffer: avgConfidence,
         bodyOrientation: dominantOrientation as any,
-        suggestions: ['Position yourself so both shoulders are visible to the camera']
+        suggestions: ['Position yourself so your shoulders are visible to the camera']
+      }));
+      return;
+    }
+
+    // Allow partial tracking with just one shoulder
+    if (!leftShoulder && !rightShoulder) {
+      setExerciseMetrics(prev => ({ 
+        ...prev, 
+        confidence: Math.round(avgConfidence * 100),
+        trackingStatus,
+        visibleKeypoints,
+        trackingConfidenceBuffer: avgConfidence,
+        bodyOrientation: dominantOrientation as any,
+        suggestions: ['Try to keep both shoulders in view of the camera']
       }));
       return;
     }
@@ -268,121 +408,145 @@ export const useEnhancedPoseDetection = (
     isExercising = true;
     confidence = [leftShoulder, rightShoulder, leftElbow, rightElbow]
       .filter(kp => kp)
-      .reduce((sum, kp) => sum + (kp?.score || 0), 0) / 4;
+      .reduce((sum, kp) => sum + (kp?.score || kp?.confidence || 0), 0) / 4;
 
-    // Exercise-specific analysis
+    // Exercise-specific analysis with enhanced resilience
     switch (currentExerciseType) {
       case 'pushups':
-        if (leftWrist && rightWrist && leftElbow && rightElbow) {
-          const elbowAngleL = calculateAngle(leftShoulder, leftElbow, leftWrist);
-          const elbowAngleR = calculateAngle(rightShoulder, rightElbow, rightWrist);
-          const avgElbowAngle = (elbowAngleL + elbowAngleR) / 2;
-
-          // Enhanced form scoring for push-ups
-          const shoulderAlignment = Math.abs(leftShoulder.y - rightShoulder.y);
-          const wristAlignment = Math.abs(leftWrist.y - rightWrist.y);
+        if ((leftWrist || rightWrist) && (leftElbow || rightElbow)) {
+          // Enhanced push-up logic with partial tracking
+          const leftAngle = leftShoulder && leftElbow && leftWrist ? 
+            calculateAngle(leftShoulder, leftElbow, leftWrist) : null;
+          const rightAngle = rightShoulder && rightElbow && rightWrist ? 
+            calculateAngle(rightShoulder, rightElbow, rightWrist) : null;
           
-          // Body alignment score (head-shoulder-hip line)
+          // Use available angle or interpolate
+          const avgElbowAngle = leftAngle && rightAngle ? (leftAngle + rightAngle) / 2 :
+                               leftAngle || rightAngle || 90; // Neutral assumption
+
+          // Enhanced form scoring with partial data
+          const shoulderAlignment = leftShoulder && rightShoulder ? 
+            Math.abs(leftShoulder.y - rightShoulder.y) : 0;
+          const wristAlignment = leftWrist && rightWrist ? 
+            Math.abs(leftWrist.y - rightWrist.y) : 0;
+          
+          // Body alignment score with graceful degradation
           let bodyAlignment = 100;
           if (leftHip && rightHip && nose) {
-            const shoulderMidY = (leftShoulder.y + rightShoulder.y) / 2;
+            const shoulderMidY = leftShoulder && rightShoulder ? 
+              (leftShoulder.y + rightShoulder.y) / 2 : 
+              (leftShoulder?.y || rightShoulder?.y || 0);
             const hipMidY = (leftHip.y + rightHip.y) / 2;
             const bodyLineDeviation = Math.abs(shoulderMidY - hipMidY);
             bodyAlignment = Math.max(0, 100 - bodyLineDeviation * 400);
           }
           
-          // Combined form score with emphasis on body alignment
-          formScore = Math.max(0, 
-            (bodyAlignment * 0.6 + 
-            (100 - shoulderAlignment * 150) * 0.2 + 
-            (100 - wristAlignment * 150) * 0.2)
-          );
+          // Progressive form scoring based on available data
+          const hasFullTracking = leftShoulder && rightShoulder && leftWrist && rightWrist;
+          formScore = hasFullTracking ? 
+            Math.max(0, (bodyAlignment * 0.6 + (100 - shoulderAlignment * 150) * 0.2 + (100 - wristAlignment * 150) * 0.2)) :
+            Math.max(0, bodyAlignment * 0.8 + 20); // Base score for partial tracking
 
-          // Enhanced rep counting with better thresholds and hysteresis
-          const minFormForRep = 40; // Lowered from 60
+          // Enhanced rep counting with frame-exit tolerance
+          const minFormForRep = trackingStatus === 'full' ? 40 : 25; // More forgiving for partial tracking
           const goodForm = formScore > minFormForRep;
           const now = Date.now();
-          const minTimeBetweenReps = 800; // Minimum 800ms between reps
+          const minTimeBetweenReps = 600; // Slightly reduced for better responsiveness
           
-          // Debug logging every 30 frames
-          debugCounterRef.current++;
-          if (debugCounterRef.current % 30 === 0) {
-            console.log(`Push-up debug: angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%, state=${exerciseStateRef.current}, orientation=${dominantOrientation}`);
+          // Partial rep progress tracking
+          if (avgElbowAngle < 110 && !partialRepProgressRef.current.inProgress && goodForm) {
+            partialRepProgressRef.current = {
+              inProgress: true,
+              startTime: now,
+              minVisibilityMet: trackingStatus !== 'lost'
+            };
+            exerciseStateRef.current = 'down';
+            console.log(`Push-up DOWN (${trackingStatus}): angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%`);
           }
           
-          // Down position: elbows bent significantly
-          if (avgElbowAngle < 110 && exerciseStateRef.current !== 'down' && goodForm) {
-            exerciseStateRef.current = 'down';
-            console.log(`Push-up DOWN detected: angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%`);
-          } 
-          // Up position: elbows extended with hysteresis and time validation
-          else if (avgElbowAngle > 140 && exerciseStateRef.current === 'down' && goodForm && (now - lastRepTimeRef.current) > minTimeBetweenReps) {
-            exerciseStateRef.current = 'up';
-            repCountRef.current += 1;
-            reps = repCountRef.current;
-            lastRepTimeRef.current = now;
+          // Complete rep with tolerance for brief frame exits
+          if (avgElbowAngle > 140 && partialRepProgressRef.current.inProgress && 
+              (goodForm || trackingStatus === 'recovering') && 
+              (now - lastRepTimeRef.current) > minTimeBetweenReps) {
             
-            console.log(`Push-up REP completed: ${reps}, angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%`);
+            const repDuration = now - partialRepProgressRef.current.startTime;
+            const minVisibilityMet = partialRepProgressRef.current.minVisibilityMet || trackingStatus !== 'lost';
             
-            // Track rep quality
-            recentRepScoresRef.current.push(formScore);
-            if (recentRepScoresRef.current.length > 5) {
-              recentRepScoresRef.current.shift();
+            // Complete rep if it meets minimum criteria
+            if (repDuration > 400 && minVisibilityMet) { // At least 400ms and some visibility
+              repCountRef.current += 1;
+              reps = repCountRef.current;
+              lastRepTimeRef.current = now;
+              exerciseStateRef.current = 'up';
+              
+              console.log(`Push-up REP completed (${trackingStatus}): ${reps}, angle=${Math.round(avgElbowAngle)}°, form=${Math.round(formScore)}%`);
+              
+              // Track rep quality
+              recentRepScoresRef.current.push(formScore);
+              if (recentRepScoresRef.current.length > 5) {
+                recentRepScoresRef.current.shift();
+              }
             }
+            
+            partialRepProgressRef.current.inProgress = false;
+          }
+          
+          // Update visibility tracking during rep
+          if (partialRepProgressRef.current.inProgress && trackingStatus !== 'lost') {
+            partialRepProgressRef.current.minVisibilityMet = true;
           }
 
-          // Enhanced suggestions
-          if (dominantOrientation === 'unknown') {
+          // Enhanced suggestions based on tracking status
+          if (trackingStatus === 'partial') {
+            suggestions.push('Try to keep your full body in view for better tracking');
+          } else if (trackingStatus === 'recovering') {
+            suggestions.push('Move back into camera view to continue tracking');
+          } else if (dominantOrientation === 'unknown') {
             suggestions.push('Position camera at a side angle for optimal push-up tracking');
           }
-          if (formScore < 40) {
+          
+          if (formScore < 40 && trackingStatus === 'full') {
             suggestions.push('Keep your body in straight line from head to heels');
-          }
-          if (avgElbowAngle > 130 && exerciseStateRef.current === 'down') {
-            suggestions.push('Go lower - bend elbows to about 90 degrees');
-          }
-          if (shoulderAlignment > 0.1) {
-            suggestions.push('Keep shoulders level and aligned');
           }
         }
         break;
 
+      // Similar enhancements for other exercises...
       case 'plank':
         if (leftHip && rightHip && nose) {
-          const shoulderCenter = {
+          const shoulderCenter = leftShoulder && rightShoulder ? {
             x: (leftShoulder.x + rightShoulder.x) / 2,
             y: (leftShoulder.y + rightShoulder.y) / 2
-          };
+          } : (leftShoulder || rightShoulder || { x: 0, y: 0 });
+          
           const hipCenter = {
             x: (leftHip.x + rightHip.x) / 2,
             y: (leftHip.y + rightHip.y) / 2
           };
 
-          // Body alignment for plank
+          // Body alignment for plank with partial tracking tolerance
           const bodyAngle = Math.abs(Math.atan2(
             hipCenter.y - shoulderCenter.y,
             hipCenter.x - shoulderCenter.x
           )) * (180 / Math.PI);
           
-          formScore = Math.max(0, 100 - Math.abs(bodyAngle - 180) * 2);
+          formScore = trackingStatus === 'full' ? 
+            Math.max(0, 100 - Math.abs(bodyAngle - 180) * 2) :
+            Math.max(0, 100 - Math.abs(bodyAngle - 180) * 3); // More tolerant for partial tracking
 
-          // Track plank hold time
-          if (formScore > 50) {
+          // Track plank hold time with interruption tolerance
+          if (formScore > 40) { // Lower threshold for partial tracking
             if (exerciseStateRef.current !== 'hold') {
               plankStartTimeRef.current = Date.now();
               exerciseStateRef.current = 'hold';
             }
-          } else {
+          } else if (trackingStatus === 'lost') {
+            // Don't reset immediately on lost tracking, allow recovery
             exerciseStateRef.current = 'neutral';
-            plankStartTimeRef.current = null;
           }
-
-          // Suggestions for plank
-          if (dominantOrientation === 'front') {
-            suggestions.push('Turn to the side for better plank form tracking');
-          }
-          if (formScore < 60) {
-            suggestions.push('Keep your body in a straight line from head to heels');
+          
+          if (trackingStatus === 'partial') {
+            suggestions.push('Keep your full body visible for accurate plank tracking');
           }
         }
         break;
@@ -390,21 +554,22 @@ export const useEnhancedPoseDetection = (
       case 'abs':
       case 'abs-situps':
       case 'abs-crunches':
+        // Similar resilience enhancements for abs exercises
         if (nose && leftHip && rightHip) {
           const hipCenter = {
             x: (leftHip.x + rightHip.x) / 2,
             y: (leftHip.y + rightHip.y) / 2
           };
 
-          // Different logic for crunches vs sit-ups
           const isCrunch = currentExerciseType === 'abs-crunches';
           const torsoMovement = Math.abs(nose.y - hipCenter.y);
           
-          // Form scoring based on controlled movement
-          const shoulderHipDistance = Math.abs(
+          const shoulderHipDistance = leftShoulder ? Math.abs(
             Math.sqrt(Math.pow(leftShoulder.x - hipCenter.x, 2) + Math.pow(leftShoulder.y - hipCenter.y, 2))
-          );
+          ) : 0.3; // Default assumption for partial tracking
+          
           formScore = Math.min(100, shoulderHipDistance * 300);
+          if (trackingStatus !== 'full') formScore *= 0.8; // Reduce for partial tracking
 
           // Rep counting with movement thresholds
           const movementThreshold = isCrunch ? 0.05 : 0.1;
@@ -421,29 +586,33 @@ export const useEnhancedPoseDetection = (
               recentRepScoresRef.current.shift();
             }
           }
-
-          // Suggestions
-          if (dominantOrientation === 'front' && leftKnee && rightKnee) {
-            suggestions.push('Turn to the side for better ab exercise tracking');
-          }
-          if (formScore < 40) {
-            suggestions.push('Focus on controlled movement - avoid using momentum');
+          
+          if (trackingStatus === 'partial') {
+            suggestions.push('Position yourself so your torso is fully visible');
           }
         }
         break;
 
       case 'biceps':
-        if (leftWrist && rightWrist && leftElbow && rightElbow) {
-          const elbowAngleL = calculateAngle(leftShoulder, leftElbow, leftWrist);
-          const elbowAngleR = calculateAngle(rightShoulder, rightElbow, rightWrist);
+        // Enhanced biceps tracking with partial visibility
+        if ((leftWrist || rightWrist) && (leftElbow || rightElbow)) {
+          const leftAngle = leftShoulder && leftElbow && leftWrist ? 
+            calculateAngle(leftShoulder, leftElbow, leftWrist) : null;
+          const rightAngle = rightShoulder && rightElbow && rightWrist ? 
+            calculateAngle(rightShoulder, rightElbow, rightWrist) : null;
           
-          // Elbow stability check
-          const elbowStabilityL = Math.abs(leftElbow.x - leftShoulder.x);
-          const elbowStabilityR = Math.abs(rightElbow.x - rightShoulder.x);
+          // Elbow stability check with graceful degradation
+          const elbowStabilityL = leftElbow && leftShoulder ? 
+            Math.abs(leftElbow.x - leftShoulder.x) : 0;
+          const elbowStabilityR = rightElbow && rightShoulder ? 
+            Math.abs(rightElbow.x - rightShoulder.x) : 0;
+          
           formScore = Math.max(0, 100 - (elbowStabilityL + elbowStabilityR) * 200);
+          if (trackingStatus !== 'full') formScore *= 0.7;
 
-          // Rep counting for bicep curls
-          const avgElbowAngle = (elbowAngleL + elbowAngleR) / 2;
+          // Rep counting for bicep curls with partial tracking
+          const avgElbowAngle = leftAngle && rightAngle ? (leftAngle + rightAngle) / 2 :
+                               leftAngle || rightAngle || 90;
           
           if (avgElbowAngle < 70 && exerciseStateRef.current !== 'up') {
             exerciseStateRef.current = 'up';
@@ -458,12 +627,8 @@ export const useEnhancedPoseDetection = (
             exerciseStateRef.current = 'down';
           }
 
-          // Suggestions
-          if (formScore < 50) {
-            suggestions.push('Keep your elbows close to your body');
-          }
-          if (dominantOrientation === 'side') {
-            suggestions.push('Face the camera for better bicep curl tracking');
+          if (trackingStatus === 'partial') {
+            suggestions.push('Keep both arms visible for accurate bicep curl tracking');
           }
         }
         break;
@@ -488,9 +653,12 @@ export const useEnhancedPoseDetection = (
       detectedExercise: currentExerciseType === 'auto' ? (detectExerciseType(pose, dominantOrientation) || 'unknown') : currentExerciseType,
       timeUnderTension,
       repQuality: Math.round(repQuality),
-      suggestions
+      suggestions,
+      trackingStatus,
+      visibleKeypoints,
+      trackingConfidenceBuffer: avgConfidence
     });
-  }, [exerciseType, detectBodyOrientation, detectExerciseType]);
+  }, [exerciseType, detectBodyOrientation, detectExerciseType, updateKeypointMemory, getKeypointWithFallback, updateTrackingStatus]);
 
   // Helper function to calculate angle between three points
   const calculateAngle = (a: PosePoint, b: PosePoint, c: PosePoint): number => {
@@ -549,6 +717,13 @@ export const useEnhancedPoseDetection = (
     bodyOrientationHistoryRef.current = [];
     lastRepTimeRef.current = 0;
     debugCounterRef.current = 0;
+    // Reset resilience refs
+    keypointMemoryRef.current.clear();
+    confidenceBufferRef.current = [];
+    lastFullTrackingTimeRef.current = Date.now();
+    trackingStateHistoryRef.current = 'lost';
+    partialRepProgressRef.current = { inProgress: false, startTime: 0, minVisibilityMet: false };
+    
     setExerciseMetrics({
       reps: 0,
       formScore: 0,
@@ -558,7 +733,10 @@ export const useEnhancedPoseDetection = (
       detectedExercise: null,
       timeUnderTension: 0,
       repQuality: 0,
-      suggestions: []
+      suggestions: [],
+      trackingStatus: 'lost',
+      visibleKeypoints: [],
+      trackingConfidenceBuffer: 0
     });
   }, [exerciseType]);
 
@@ -574,11 +752,19 @@ export const useEnhancedPoseDetection = (
       recentRepScoresRef.current = [];
       lastRepTimeRef.current = 0;
       debugCounterRef.current = 0;
+      // Reset resilience refs
+      keypointMemoryRef.current.clear();
+      confidenceBufferRef.current = [];
+      partialRepProgressRef.current = { inProgress: false, startTime: 0, minVisibilityMet: false };
+      
       setExerciseMetrics(prev => ({ 
         ...prev, 
         reps: 0, 
         timeUnderTension: 0,
-        repQuality: 0
+        repQuality: 0,
+        trackingStatus: 'lost',
+        visibleKeypoints: [],
+        trackingConfidenceBuffer: 0
       }));
     }
   };

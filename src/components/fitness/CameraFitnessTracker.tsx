@@ -350,22 +350,54 @@ export const CameraFitnessTracker: React.FC<CameraFitnessTrackerProps> = ({
                   />
                 )}
                 
-                {/* Status Overlay - only show when streaming */}
+                {/* Enhanced Tracking Status Overlay */}
                 {isStreaming && (
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      exerciseMetrics.confidence > 70 
-                        ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
-                        : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                  <div className="absolute top-4 left-4 right-4 z-30">
+                    <div className={`bg-black/80 backdrop-blur-sm rounded-lg p-3 border-2 ${
+                      exerciseMetrics.trackingStatus === 'full' ? 'border-green-500' :
+                      exerciseMetrics.trackingStatus === 'partial' ? 'border-yellow-500' :
+                      exerciseMetrics.trackingStatus === 'recovering' ? 'border-orange-500' :
+                      'border-red-500'
                     }`}>
-                      Tracking: {exerciseMetrics.confidence}%
-                    </div>
-                    
-                    {isActive && (
-                      <div className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 animate-pulse">
-                        🔴 RECORDING
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full ${
+                            exerciseMetrics.trackingStatus === 'full' ? 'bg-green-500' :
+                            exerciseMetrics.trackingStatus === 'partial' ? 'bg-yellow-500' :
+                            exerciseMetrics.trackingStatus === 'recovering' ? 'bg-orange-500 animate-pulse' :
+                            'bg-red-500'
+                          }`} />
+                          <span className="text-white font-medium text-sm">
+                            {exerciseMetrics.trackingStatus === 'full' ? 'Full Tracking' :
+                             exerciseMetrics.trackingStatus === 'partial' ? 'Partial Tracking' :
+                             exerciseMetrics.trackingStatus === 'recovering' ? 'Recovering...' :
+                             'Lost Tracking'}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-white text-xs">
+                            {exerciseMetrics.confidence}% confidence
+                          </div>
+                          <div className="text-white/70 text-xs">
+                            {exerciseMetrics.visibleKeypoints.length} keypoints
+                          </div>
+                        </div>
                       </div>
-                    )}
+                      
+                      {exerciseMetrics.suggestions.length > 0 && (
+                        <div className="text-yellow-300 text-xs">
+                          💡 {exerciseMetrics.suggestions[0]}
+                        </div>
+                      )}
+                      
+                      {isActive && (
+                        <div className="mt-2 pt-2 border-t border-white/20">
+                          <div className="text-red-300 text-xs font-medium animate-pulse">
+                            🔴 RECORDING WORKOUT
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

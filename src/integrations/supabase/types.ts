@@ -296,16 +296,13 @@ export type Database = {
       }
     }
     Functions: {
-      add_shared_column_if_not_exists: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      add_shared_column_if_not_exists: { Args: never; Returns: undefined }
       extract_nickname_from_email: {
         Args: { email_text: string }
         Returns: string
       }
       get_all_completed_sessions: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           completed_at: string | null
           created_at: string
@@ -316,9 +313,15 @@ export type Database = {
           type: string
           user_id: string | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "meditation_sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_all_fitness_sessions: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           ai_exercise_type: string | null
           ai_tracked: boolean | null
@@ -334,9 +337,15 @@ export type Database = {
           verified: boolean
           workout_type: string
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "fitness_sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_all_meditation_users: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           user_id: string
         }[]
@@ -353,6 +362,12 @@ export type Database = {
           type: string
           user_id: string | null
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "meditation_sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_filtered_fitness_sessions: {
         Args: { start_date: string }
@@ -371,6 +386,12 @@ export type Database = {
           verified: boolean
           workout_type: string
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "fitness_sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_users_by_meditation_period: {
         Args: { start_date: string }
@@ -382,18 +403,9 @@ export type Database = {
         Args: { seconds_param: number; user_id_param: string }
         Returns: undefined
       }
-      initialize_existing_user_pets: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      reload_types: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      safe_username_from_auth: {
-        Args: { uid: string }
-        Returns: string
-      }
+      initialize_existing_user_pets: { Args: never; Returns: undefined }
+      reload_types: { Args: never; Returns: undefined }
+      safe_username_from_auth: { Args: { uid: string }; Returns: string }
     }
     Enums: {
       meditation_status: "in_progress" | "completed" | "cancelled"

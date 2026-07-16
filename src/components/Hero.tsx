@@ -36,7 +36,7 @@ export const Hero = () => {
       navigate('/?login=true');
     }
   };
-  return <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-0 sm:pt-1 w-full">
+  return <section className="relative flex items-center justify-center overflow-hidden py-8 sm:py-12 w-full">
       <div className="absolute inset-0 w-full h-full">
         <video autoPlay loop muted playsInline className="absolute top-0 left-0 w-full h-full object-cover opacity-20">
           <source src="https://res.cloudinary.com/dxmgomw2n/video/upload/v1711411674/k9d0w0gw52chf4vw9nrs.mp4" type="video/mp4" />
